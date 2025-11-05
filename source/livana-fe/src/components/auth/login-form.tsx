@@ -6,6 +6,8 @@ import { Button } from "../ui/button";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useNavigate } from "react-router";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
@@ -18,6 +20,9 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { login } = useAuthStore();
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -26,8 +31,14 @@ export function LoginForm({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log("Login Data:", data);
+  const onSubmit = async (data: LoginFormValues) => {
+    console.log("Form Data:", data);
+
+    const { username, password } = data;
+
+    // call backend signup API here
+    await login(username, password);
+    navigate("/");
   };
 
   return (
