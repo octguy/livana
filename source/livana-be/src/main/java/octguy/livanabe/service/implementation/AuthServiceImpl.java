@@ -81,7 +81,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         // Still throw BadCredentialsException to avoid giving hints to attackers
         if (!user.isEnabled()) {
@@ -90,7 +90,7 @@ public class AuthServiceImpl implements IAuthService {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        request.getUsername(),
                         request.getPassword()
                 )
         );

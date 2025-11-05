@@ -13,9 +13,14 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByUsername(String username);
+
     // eager fetch roles with user, to avoid lazy loading issues (default fetch type for @ManyToMany is LAZY)
-    @Query("select u from User u left join fetch u.roleUsers ru left join fetch ru.role where u.email = :email")
-    Optional<User> findByEmailWithRoles(@Param("email") String email);
+//    @Query("select u from User u left join fetch u.roleUsers ru left join fetch ru.role where u.email = :email")
+//    Optional<User> findByEmailWithRoles(@Param("email") String email);
+
+    @Query("select u from User u left join fetch u.roleUsers ru left join fetch ru.role where u.username = :username")
+    Optional<User> findByUsernameWithRoles(@Param("username") String username);
 
     Boolean existsByEmail(String email);
 

@@ -22,12 +22,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) { // load by email indeed :D
-        User user = userRepository.findByEmailWithRoles(email) // fetch roles eagerly
-                .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
+    public UserDetails loadUserByUsername(String username) {
+        User user = userRepository.findByUsernameWithRoles(username) // fetch roles eagerly
+                .orElseThrow(() -> new UserNotFoundException("User with username " + username + " not found"));
 
         AuthCredential authCredential = authCredentialRepository.findByUser(user)
-                .orElseThrow(() -> new UserNotFoundException("Credentials for user with email " + email + " not found"));
+                .orElseThrow(() -> new UserNotFoundException("Credentials for user with username " + username + " not found"));
         return new CustomUserDetails(user, authCredential.getPassword());
     }
 }
