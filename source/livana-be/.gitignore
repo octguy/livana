@@ -36,11 +36,4 @@ out/
 ### VS Code ###
 .vscode/
 
-### env files ###
-.env
-
-### gradle files ###
-/gradle
-
-### MacOS ###
 .DS_Store
