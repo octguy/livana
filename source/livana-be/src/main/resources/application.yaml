@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: livana-be
+
+  # Database configuration
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  # JWT configuration
+  jwt:
+    secret-key: ${SPRING_JWT_SECRET_KEY}
+    secret-key-expiration: ${SPRING_JWT_SECRET_KEY_EXPIRATION}
+
+
+  # Expiration time of tokens
+  refresh-token:
+    expiration: ${REFRESH_TOKEN_EXPIRATION}
+  reset-password-token:
+    expiration: ${RESET_PASSWORD_TOKEN_EXPIRATION}
+  verification-code:
+    expiration: ${VERIFICATION_CODE_EXPIRATION}
+
+  # Additional configuration files
+  config:
+    import: optional:file:.env[.properties]
+
+  # Mail configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SUPPORT_EMAIL}
+    password: ${APP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
