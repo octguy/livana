@@ -96,8 +96,19 @@ public class AuthController {
 
     @Operation(summary = "Refresh authentication token", description = "Refresh the user's authentication token using a refresh token")
     @PostMapping("/refresh-token")
-    public ResponseEntity<ApiResponse<AuthResponse>> refreshToken(@RequestBody @Valid RefreshTokenRequest refreshTokenRequest) {
-        AuthResponse authResponse = authService.refreshToken(refreshTokenRequest);
+    public ResponseEntity<ApiResponse<AuthResponse>> refreshToken(@CookieValue(value = "refreshToken", required = false) String refreshToken) {
+        // If refresh token is not present in cookie, return 401
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            ApiResponse<AuthResponse> apiResponse = new ApiResponse<>(
+                    HttpStatus.UNAUTHORIZED,
+                    "Refresh token is missing",
+                    null,
+                    "REFRESH_TOKEN_MISSING"
+            );
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+
+        AuthResponse authResponse = authService.refreshToken(refreshToken);
 
         ApiResponse<AuthResponse> apiResponse = new ApiResponse<>(
                 HttpStatus.OK,
@@ -155,8 +166,28 @@ public class AuthController {
 
     @Operation(summary = "Logout user", description = "Logout the currently authenticated user")
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<String>> logout() {
-        authService.logout();
+    public ResponseEntity<ApiResponse<String>> logout(@CookieValue(value = "refreshToken", required = false) String refreshToken) {
+        // If refresh token is not present in cookie, return 401
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            ApiResponse<String> apiResponse = new ApiResponse<>(
+                    HttpStatus.UNAUTHORIZED,
+                    "Refresh token is missing",
+                    null,
+                    "REFRESH_TOKEN_MISSING"
+            );
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+
+        authService.logout(refreshToken);
+
+        // Clear cookie
+        ResponseCookie deletedCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/") // Available to entire application
+                .maxAge(0)
+                .sameSite("none")
+                .build();
 
         ApiResponse<String> apiResponse = new ApiResponse<>(
                 HttpStatus.OK,
@@ -165,15 +196,6 @@ public class AuthController {
                 null
         );
 
-        // Clear cookie
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
-                .httpOnly(true)
-                .secure(true)
-                .path("/") // Available to entire application
-                .maxAge(0)
-                .sameSite("none")
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, deletedCookie.toString()).body(apiResponse);
     }
 }

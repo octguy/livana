@@ -224,8 +224,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     @Transactional
-    public AuthResponse refreshToken(RefreshTokenRequest request) {
-        String token = request.getRefreshToken();
+    public AuthResponse refreshToken(String token) {
         RefreshToken refreshToken = refreshTokenService.findByToken(token);
 
         if (refreshTokenService.verifyExpiration(refreshToken)) {
@@ -234,16 +233,16 @@ public class AuthServiceImpl implements IAuthService {
         }
 
         User user = refreshToken.getUser();
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         String accessToken = jwtUtil.generateToken(userDetails);
-        String newRefreshToken = refreshTokenService.createRefreshToken(user).getToken();
+        String refreshTokenString = refreshToken.getToken();
 
         return AuthResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .accessToken(accessToken)
-                .refreshToken(newRefreshToken)
+                .refreshToken(refreshTokenString)
                 .build();
     }
 
@@ -294,10 +293,8 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     @Transactional
-    public void logout() {
-        User currentUser = getCurrentUser();
-        System.out.println(currentUser.getEmail());
-        refreshTokenService.deleteByUser(currentUser);
+    public void logout(String token) {
+        refreshTokenService.deleteByToken(token);
     }
 
     private User getCurrentUser() {

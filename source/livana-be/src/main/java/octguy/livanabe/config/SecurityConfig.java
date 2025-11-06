@@ -64,15 +64,14 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/dummy/**", "/api/v1/auth/change-password").hasRole("USER")
                         .requestMatchers("/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml",
                                 "/swagger-resources/**",
                                 "/webjars/**").permitAll()
-                        .requestMatchers("/api/v1/auth/logout").authenticated()
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/dummy/**", "/api/v1/auth/change-password").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))

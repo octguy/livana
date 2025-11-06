@@ -13,7 +13,7 @@ public interface IAuthService {
 
     void resendVerificationCode(String email);
 
-    AuthResponse refreshToken(RefreshTokenRequest request);
+    AuthResponse refreshToken(String token);
 
     void requestPasswordReset(ForgotPasswordRequest request);
 
@@ -21,6 +21,6 @@ public interface IAuthService {
 
     void changePassword(ChangePasswordRequest request);
 
-    void logout();
+    void logout(String token);
 }
 

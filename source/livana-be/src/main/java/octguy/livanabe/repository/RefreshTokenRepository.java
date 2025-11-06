@@ -17,6 +17,8 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID
 
     void deleteByUser(User user);
 
+    void deleteByToken(String token);
+
     // Find all refresh tokens whose expiry date plus 24 hours is before the current time.
     @Query(value = "select * from refresh_token " +
             "where (expiration + INTERVAL '24 hours') <= NOW()", nativeQuery = true)
