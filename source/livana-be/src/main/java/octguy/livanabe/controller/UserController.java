@@ -1,5 +1,6 @@
 package octguy.livanabe.controller;
 
+import octguy.livanabe.entity.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,7 +17,7 @@ import java.util.Map;
 public class UserController {
 
     @GetMapping("/me")
-    public ResponseEntity<Map<String, Object>> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getCurrentUser(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -31,6 +32,13 @@ public class UserController {
                 "roles", roles
         );
 
-        return ResponseEntity.ok(body);
+        ApiResponse<Map<String, Object>> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Current user fetched successfully",
+                body,
+                null
+        );
+
+        return ResponseEntity.ok(response);
     }
 }

@@ -8,6 +8,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   loading: false,
 
+  clearState: () => set({ accessToken: null, user: null, loading: false }),
+
   signUp: async (username, email, password) => {
     try {
       set({ loading: true });
@@ -32,16 +34,45 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       // Call the login service
       const data = await authService.login(username, password);
-      console.log("Login response data:", data);
+      // console.log("Login response data:", data);
 
       // On success
-      set({ accessToken: data.data.accessToken, user: data.data.user });
+      set({ accessToken: data.data.accessToken });
       toast.success("Đăng nhập thành công!");
 
-      console.log("Access Token", get().accessToken);
+      // Fetch user info after login
+      await get().fetchMe();
+
+      // console.log("Access Token", get().accessToken);
     } catch (error) {
       toast.error("Đăng nhập không thành công. Vui lòng thử lại.");
       console.error("Đăng nhập thất bại:", error);
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  logOut: async () => {
+    try {
+      get().clearState();
+      await authService.logOut();
+      toast.success("Đăng xuất thành công!");
+    } catch (error) {
+      toast.error("Đăng xuất không thành công. Vui lòng thử lại.");
+      console.error("Đăng xuất thất bại:", error);
+    }
+  },
+
+  fetchMe: async () => {
+    try {
+      set({ loading: true });
+      const user = await authService.fetchMe();
+      // console.log("fetchMe response data:", user);
+      set({ user: user.data });
+    } catch (error) {
+      toast.error("Không thể lấy thông tin người dùng. Vui lòng thử lại.");
+      console.error("Lấy thông tin người dùng thất bại:", error);
+      set({ accessToken: null, user: null });
     } finally {
       set({ loading: false });
     }
