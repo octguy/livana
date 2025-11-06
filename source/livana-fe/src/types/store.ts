@@ -1,3 +1,5 @@
+import type { ApiResponse } from "./apiResponse";
+import type { AuthResponse } from "./authResponse";
 import type { User } from "./user";
 
 export interface AuthState {
@@ -6,8 +8,15 @@ export interface AuthState {
   loading: boolean;
 
   setAccessToken: (accessToken: string) => void;
-  signUp: (username: string, email: string, password: string) => Promise<void>;
-  login: (username: string, password: string) => Promise<void>;
+  signUp: (
+    username: string,
+    email: string,
+    password: string
+  ) => Promise<ApiResponse<AuthResponse>>;
+  login: (
+    username: string,
+    password: string
+  ) => Promise<ApiResponse<AuthResponse>>;
   clearState: () => void;
   logOut: () => Promise<void>;
   fetchMe: () => Promise<void>;

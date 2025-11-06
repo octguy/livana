@@ -24,9 +24,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       // On success
       toast.success("Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.");
+
+      return data;
     } catch (error) {
       toast.error("Đăng ký không thành công. Vui lòng thử lại.");
       console.error("Đăng ký thất bại:", error);
+      throw error;
     } finally {
       set({ loading: false });
     }
@@ -38,7 +41,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       // Call the login service
       const data = await authService.login(username, password);
-      // console.log("Login response data:", data);
 
       // On success
       get().setAccessToken(data.data.accessToken);
@@ -46,11 +48,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       // Fetch user info after login
       await get().fetchMe();
-
-      // console.log("Access Token", get().accessToken);
+      return data;
     } catch (error) {
-      toast.error("Đăng nhập không thành công. Vui lòng thử lại.");
       console.error("Đăng nhập thất bại:", error);
+      toast.error("Đăng nhập không thành công. Vui lòng thử lại.");
+      throw error;
     } finally {
       set({ loading: false });
     }

@@ -1,8 +1,13 @@
 import api from "@/lib/axios";
+import type { ApiResponse } from "@/types/apiResponse";
+import type { AuthResponse } from "@/types/authResponse";
 
 export const authService = {
-  login: async (username: string, password: string) => {
-    const response = await api.post(
+  login: async (
+    username: string,
+    password: string
+  ): Promise<ApiResponse<AuthResponse>> => {
+    const response = await api.post<ApiResponse<AuthResponse>>(
       "/auth/login",
       {
         username,
@@ -15,8 +20,12 @@ export const authService = {
     return response.data;
   },
 
-  signUp: async (username: string, email: string, password: string) => {
-    const response = await api.post(
+  signUp: async (
+    username: string,
+    email: string,
+    password: string
+  ): Promise<ApiResponse<AuthResponse>> => {
+    const response = await api.post<ApiResponse<AuthResponse>>(
       "/auth/register",
       {
         username,
