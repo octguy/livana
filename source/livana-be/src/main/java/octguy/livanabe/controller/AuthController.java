@@ -8,7 +8,10 @@ import octguy.livanabe.dto.request.*;
 import octguy.livanabe.dto.response.AuthResponse;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.service.IAuthService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +21,9 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final IAuthService authService;
+
+    @Value("${spring.refresh-token.expiration}")
+    private Long refreshTokenExpiration;
 
     public AuthController(IAuthService authService) {
         this.authService = authService;
@@ -42,13 +48,22 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody @Valid LoginRequest loginRequest) {
         AuthResponse authResponse = authService.login(loginRequest);
 
+        // Create cookie
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", authResponse.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/") // Available to entire application
+                .maxAge(refreshTokenExpiration * 60)
+                .sameSite("none")
+                .build();
+
         ApiResponse<AuthResponse> apiResponse = new ApiResponse<>(
                 HttpStatus.OK,
                 "User logged in successfully",
                 authResponse,
                 null
         );
-        return ResponseEntity.ok(apiResponse);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(apiResponse);
     }
 
     @Operation(summary = "Verify user account", description = "Verify a user's account using a verification code sent via email")
@@ -149,6 +164,15 @@ public class AuthController {
                 "User logged out successfully",
                 null
         );
+
+        // Clear cookie
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/") // Available to entire application
+                .maxAge(0)
+                .sameSite("none")
+                .build();
 
         return ResponseEntity.ok(apiResponse);
     }
