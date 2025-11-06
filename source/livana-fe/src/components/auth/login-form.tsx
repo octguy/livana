@@ -8,10 +8,20 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router";
+import React, { useState } from "react";
 
+// require at least 1 digit, 1 special char, 1 uppercase letter
+const passwordRegex =
+  /(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])(?=.*[A-Z])/;
 const loginSchema = z.object({
   username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
-  password: z.string().min(8, "Mật khẩu phải có ít nhất 8 ký tự"),
+  password: z
+    .string()
+    .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+    .regex(
+      passwordRegex,
+      "Mật khẩu phải có ít nhất một số, 1 chữ hoa, 1 chữ cái đặc biệt"
+    ),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -23,12 +33,18 @@ export function LoginForm({
   const { login } = useAuthStore();
   const navigate = useNavigate();
 
+  // Add local state to show login error above the username field
+  const [loginError, setLoginError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    clearErrors,
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
   });
 
   const onSubmit = async (data: LoginFormValues) => {
@@ -36,9 +52,25 @@ export function LoginForm({
 
     const { username, password } = data;
 
-    // call backend signup API here
-    await login(username, password);
-    navigate("/");
+    try {
+      setLoginError(null);
+      const response = await login(username, password);
+      console.log("Login response:", response.message);
+      navigate("/");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      // Prefer friendly message for 401, otherwise server message or generic
+      const status = error?.response?.status ?? error?.status;
+      if (status === 401 || status === 404) {
+        setLoginError("Thông tin đăng nhập sai");
+      } else if (status === 500) {
+        setLoginError("Lỗi máy chủ. Vui lòng thử lại sau.");
+      } else if (error?.response?.data?.message) {
+        setLoginError(String(error.response.data.message));
+      } else {
+        setLoginError("Đăng nhập không thành công. Vui lòng thử lại.");
+      }
+    }
   };
 
   return (
@@ -61,6 +93,13 @@ export function LoginForm({
 
               {/* username */}
               <div className="flex flex-col gap-3">
+                {/* Show login error above the username label */}
+                {loginError && (
+                  <p className="text-destructive text-sm font-semibold bg-destructive/10 border border-destructive/20 rounded-md p-3">
+                    {loginError}
+                  </p>
+                )}
+
                 <Label htmlFor="username" className="block text-sm">
                   Tên đăng nhập
                 </Label>
@@ -69,6 +108,11 @@ export function LoginForm({
                   id="username"
                   placeholder="livana"
                   {...register("username")}
+                  onChange={(e) => {
+                    register("username").onChange(e);
+                    clearErrors("username");
+                    setLoginError(null); // also clear login error
+                  }}
                 />
                 {errors.username && (
                   <p className="text-destructive text-sm">
@@ -86,12 +130,21 @@ export function LoginForm({
                   type="password"
                   id="password"
                   {...register("password")}
+                  onChange={(e) => {
+                    register("password").onChange(e);
+                    clearErrors("password");
+                    setLoginError(null); // also clear login error
+                  }}
                 />
                 {errors.password && (
                   <p className="text-destructive text-sm">
                     {errors.password.message}
                   </p>
                 )}
+                {/* Note about password requirements */}
+                <p className="text-xs text-muted-foreground">
+                  Mật khẩu phải có ít nhất một số, 1 chữ hoa, 1 chữ cái đặc biệt
+                </p>
               </div>
 
               {/* nút đăng ký */}
