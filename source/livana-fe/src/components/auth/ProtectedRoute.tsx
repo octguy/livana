@@ -21,6 +21,7 @@ const ProtectedRoute = () => {
 
   useEffect(() => {
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (starting || loading) {

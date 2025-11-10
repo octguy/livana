@@ -48,6 +48,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       // Fetch user info after login
       await get().fetchMe();
+
       return data;
     } catch (error) {
       console.error("Đăng nhập thất bại:", error);

@@ -8,13 +8,21 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router";
+import React, { useState } from "react";
+import { PASSWORD_REGEX } from "@/constant/regex";
 
 const signUpSchema = z.object({
   firstname: z.string().min(1, "Tên bắt buộc phải có"),
   lastname: z.string().min(1, "Họ bắt buộc phải có"),
   username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
   email: z.email("Email không hợp lệ"),
-  password: z.string().min(8, "Mật khẩu phải có ít nhất 8 ký tự"),
+  password: z
+    .string()
+    .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+    .regex(
+      PASSWORD_REGEX,
+      "Mật khẩu phải có ít nhất một số, 1 chữ hoa, 1 chữ cái đặc biệt"
+    ),
 });
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
@@ -26,12 +34,18 @@ export function SignupForm({
   const { signUp } = useAuthStore();
   const navigate = useNavigate();
 
+  // Add local state to show signup error
+  const [signupError, setSignupError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    clearErrors,
   } = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
   });
 
   const onSubmit = async (data: SignUpFormValues) => {
@@ -39,9 +53,23 @@ export function SignupForm({
 
     const { username, email, password } = data;
 
-    // call backend signup API here
-    await signUp(username, email, password);
-    navigate("/login");
+    try {
+      setSignupError(null);
+      await signUp(username, email, password);
+      navigate("/login");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const status = error?.response?.status ?? error?.status;
+      if (status === 409) {
+        setSignupError("Tên đăng nhập hoặc email đã tồn tại");
+      } else if (status === 500) {
+        setSignupError("Lỗi máy chủ. Vui lòng thử lại sau.");
+      } else if (error?.response?.data?.message) {
+        setSignupError(String(error.response.data.message));
+      } else {
+        setSignupError("Đăng ký không thành công. Vui lòng thử lại.");
+      }
+    }
   };
 
   return (
@@ -64,11 +92,29 @@ export function SignupForm({
 
               {/* họ & tên */}
               <div className="grid grid-cols-2 gap-3">
+                {/* Show signup error above the name fields */}
+                {signupError && (
+                  <div className="col-span-2">
+                    <p className="text-destructive text-sm font-semibold bg-destructive/10 border border-destructive/20 rounded-md p-3">
+                      {signupError}
+                    </p>
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <Label htmlFor="lastname" className="block text-sm">
                     Họ
                   </Label>
-                  <Input type="text" id="lastname" {...register("lastname")} />
+                  <Input
+                    type="text"
+                    id="lastname"
+                    {...register("lastname")}
+                    onChange={(e) => {
+                      register("lastname").onChange(e);
+                      clearErrors("lastname");
+                      setSignupError(null);
+                    }}
+                  />
 
                   {errors.lastname && (
                     <p className="text-destructive text-sm">
@@ -84,6 +130,11 @@ export function SignupForm({
                     type="text"
                     id="firstname"
                     {...register("firstname")}
+                    onChange={(e) => {
+                      register("firstname").onChange(e);
+                      clearErrors("firstname");
+                      setSignupError(null);
+                    }}
                   />
                   {errors.firstname && (
                     <p className="text-destructive text-sm">
@@ -103,6 +154,11 @@ export function SignupForm({
                   id="username"
                   placeholder="livana"
                   {...register("username")}
+                  onChange={(e) => {
+                    register("username").onChange(e);
+                    clearErrors("username");
+                    setSignupError(null);
+                  }}
                 />
                 {errors.username && (
                   <p className="text-destructive text-sm">
@@ -121,6 +177,11 @@ export function SignupForm({
                   id="email"
                   placeholder="m@gmail.com"
                   {...register("email")}
+                  onChange={(e) => {
+                    register("email").onChange(e);
+                    clearErrors("email");
+                    setSignupError(null);
+                  }}
                 />
                 {errors.email && (
                   <p className="text-destructive text-sm">
@@ -138,6 +199,11 @@ export function SignupForm({
                   type="password"
                   id="password"
                   {...register("password")}
+                  onChange={(e) => {
+                    register("password").onChange(e);
+                    clearErrors("password");
+                    setSignupError(null);
+                  }}
                 />
                 {errors.password && (
                   <p className="text-destructive text-sm">

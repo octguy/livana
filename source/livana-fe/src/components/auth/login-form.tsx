@@ -9,17 +9,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router";
 import React, { useState } from "react";
+import { PASSWORD_REGEX } from "@/constant/regex";
 
-// require at least 1 digit, 1 special char, 1 uppercase letter
-const passwordRegex =
-  /(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])(?=.*[A-Z])/;
 const loginSchema = z.object({
   username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
   password: z
     .string()
     .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
     .regex(
-      passwordRegex,
+      PASSWORD_REGEX,
       "Mật khẩu phải có ít nhất một số, 1 chữ hoa, 1 chữ cái đặc biệt"
     ),
 });
