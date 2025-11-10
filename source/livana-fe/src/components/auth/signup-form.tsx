@@ -53,11 +53,11 @@ export function SignupForm({
   const onSubmit = async (data: SignUpFormValues) => {
     console.log("Form Data:", data);
 
-    const { username, email, password } = data;
+    const { firstname, lastname, username, email, password } = data;
 
     try {
       setSignupError(null);
-      await signUp(username, email, password);
+      await signUp(firstname, lastname, username, email, password);
       navigate("/verify", { state: { email } });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

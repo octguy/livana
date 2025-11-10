@@ -14,12 +14,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   clearState: () => set({ accessToken: null, user: null, loading: false }),
 
-  signUp: async (username, email, password) => {
+  signUp: async (firstName, lastName, username, email, password) => {
     try {
       set({ loading: true });
 
       // Call the signUp service
-      const data = await authService.signUp(username, email, password);
+      const data = await authService.signUp(
+        firstName,
+        lastName,
+        username,
+        email,
+        password
+      );
       console.log("SignUp response data:", data);
 
       // On success

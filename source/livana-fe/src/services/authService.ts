@@ -21,6 +21,8 @@ export const authService = {
   },
 
   signUp: async (
+    firstName: string,
+    lastName: string,
     username: string,
     email: string,
     password: string
@@ -28,6 +30,8 @@ export const authService = {
     const response = await api.post<ApiResponse<AuthResponse>>(
       "/auth/register",
       {
+        firstName,
+        lastName,
         username,
         email,
         password,

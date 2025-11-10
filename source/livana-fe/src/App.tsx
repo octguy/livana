@@ -3,10 +3,11 @@ import LogInPage from "./pages/auth/LogInPage";
 import SignUpPage from "./pages/auth/SignUpPage";
 import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
 import { Toaster } from "sonner";
-import DashboardPage from "./pages/auth/DashboardPage";
+import DashboardPage from "./pages/dashboard/DashboardPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import { ProfilePage } from "./pages/setting/profile";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/verify" element={<VerifyEmailPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
 
           {/* protected route */}
           <Route element={<ProtectedRoute />}>
