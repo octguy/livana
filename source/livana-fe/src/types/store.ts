@@ -27,4 +27,8 @@ export interface AuthState {
   ) => Promise<ApiResponse<string>>;
   resendVerificationCode: (email: string) => Promise<ApiResponse<string>>;
   forgotPassword: (email: string) => Promise<ApiResponse<string>>;
+  resetPassword: (
+    token: string,
+    newPassword: string
+  ) => Promise<ApiResponse<string>>;
 }

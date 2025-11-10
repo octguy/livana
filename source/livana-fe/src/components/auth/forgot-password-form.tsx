@@ -14,6 +14,7 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const forgotPasswordRequestSchema = z.object({
   email: z.email("Email không hợp lệ"),
@@ -77,7 +78,7 @@ export function ForgotPasswordForm({
           <form onSubmit={handleSubmit(onSubmit)}>
             <FieldGroup>
               {forgotPasswordError && (
-                <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+                <div className="text-destructive text-sm font-semibold bg-destructive/10 border border-destructive/20 rounded-md p-3">
                   {forgotPasswordError}
                 </div>
               )}
@@ -104,13 +105,16 @@ export function ForgotPasswordForm({
               </div>
               <Field>
                 <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   {isSubmitting ? "Đang xử lý..." : "Khôi phục mật khẩu"}
                 </Button>
               </Field>
               <div className="text-center text-sm">
                 Chưa có tài khoản?{" "}
                 <a
-                  href="/sign-up"
+                  href="/signup"
                   className="underline underline-offset-4 hover:text-primary"
                 >
                   Đăng ký ngay

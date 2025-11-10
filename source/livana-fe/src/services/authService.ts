@@ -103,4 +103,21 @@ export const authService = {
     );
     return response.data;
   },
+
+  resetPassword: async (
+    token: string,
+    newPassword: string
+  ): Promise<ApiResponse<string>> => {
+    const response = await api.post<ApiResponse<string>>(
+      "/auth/reset-password",
+      {
+        token,
+        newPassword,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  },
 };

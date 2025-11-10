@@ -144,4 +144,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: false });
     }
   },
+  resetPassword: async (token, newPassword) => {
+    try {
+      set({ loading: true });
+      const data = await authService.resetPassword(token, newPassword);
+      toast.success(
+        "Đặt lại mật khẩu thành công! Bạn có thể đăng nhập ngay bây giờ."
+      );
+      return data;
+    } catch (error) {
+      toast.error("Đặt lại mật khẩu không thành công. Vui lòng thử lại.");
+      console.error("Đặt lại mật khẩu thất bại:", error);
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
 }));
