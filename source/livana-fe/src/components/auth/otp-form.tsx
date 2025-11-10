@@ -35,7 +35,7 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
   // Redirect to signup if no email is provided
   useEffect(() => {
     if (!email) {
-      navigate("/signup");
+      navigate("/login");
     }
   }, [email, navigate]);
 
