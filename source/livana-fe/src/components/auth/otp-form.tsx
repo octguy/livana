@@ -19,7 +19,7 @@ import {
 import { useAuthStore } from "@/stores/useAuthStore";
 
 export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
-  const { verifyEmail } = useAuthStore();
+  const { verifyEmail, resendVerificationCode } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -32,7 +32,7 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending, setIsResending] = useState(false);
 
-  // Redirect to signup if no email is provided
+  // Redirect to login if no email is provided
   useEffect(() => {
     if (!email) {
       navigate("/login");
@@ -86,12 +86,12 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
     }
 
     try {
-      // setIsResending(true);
-      // setVerifyError(null);
-      // setResendSuccess(null);
-      // await resendVerificationCode(email);
-      // setResendSuccess("Mã xác thực mới đã được gửi đến email của bạn");
-      // setOtpValue("");
+      setIsResending(true);
+      setVerifyError(null);
+      setResendSuccess(null);
+      await resendVerificationCode(email);
+      setResendSuccess("Mã xác thực mới đã được gửi đến email của bạn");
+      setOtpValue("");
       console.log("Resend code functionality is not implemented yet.");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

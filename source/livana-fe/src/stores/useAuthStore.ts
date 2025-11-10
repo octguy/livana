@@ -116,4 +116,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: false });
     }
   },
+  resendVerificationCode: async (email) => {
+    try {
+      set({ loading: true });
+      const data = await authService.resendVerificationCode(email);
+      toast.success("Mã xác thực mới đã được gửi đến email của bạn");
+      return data;
+    } catch (error) {
+      toast.error("Không thể gửi lại mã xác thực. Vui lòng thử lại.");
+      console.error("Gửi lại mã xác thực thất bại:", error);
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
 }));

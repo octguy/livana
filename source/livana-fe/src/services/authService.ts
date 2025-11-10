@@ -76,4 +76,18 @@ export const authService = {
     );
     return response.data;
   },
+
+  resendVerificationCode: async (
+    email: string
+  ): Promise<ApiResponse<string>> => {
+    const response = await api.post<ApiResponse<string>>(
+      "/auth/resend-verification",
+      null,
+      {
+        params: { email },
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  },
 };

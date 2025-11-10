@@ -25,4 +25,5 @@ export interface AuthState {
     email: string,
     verificationCode: string
   ) => Promise<ApiResponse<string>>;
+  resendVerificationCode: (email: string) => Promise<ApiResponse<string>>;
 }
