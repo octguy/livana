@@ -59,4 +59,21 @@ export const authService = {
     });
     return response.data.data.accessToken;
   },
+
+  verifyEmail: async (
+    email: string,
+    verificationCode: string
+  ): Promise<ApiResponse<string>> => {
+    const response = await api.post<ApiResponse<string>>(
+      "/auth/verify",
+      {
+        email,
+        verificationCode,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  },
 };

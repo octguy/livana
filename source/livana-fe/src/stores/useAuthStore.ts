@@ -102,4 +102,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: false });
     }
   },
+  verifyEmail: async (email, verificationCode) => {
+    try {
+      set({ loading: true });
+      const data = await authService.verifyEmail(email, verificationCode);
+      toast.success("Xác thực email thành công!");
+      return data;
+    } catch (error) {
+      toast.error("Xác thực email không thành công. Vui lòng thử lại.");
+      console.error("Xác thực email thất bại:", error);
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
 }));

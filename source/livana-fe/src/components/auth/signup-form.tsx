@@ -57,7 +57,7 @@ export function SignupForm({
     try {
       setSignupError(null);
       await signUp(username, email, password);
-      navigate("/login");
+      navigate("/verify", { state: { email } });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const status = error?.response?.status ?? error?.status;
@@ -218,7 +218,7 @@ export function SignupForm({
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Đang đăng ký
+                Tạo tài khoản
               </Button>
 
               <div className="text-center text-sm">
