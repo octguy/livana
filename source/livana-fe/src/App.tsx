@@ -5,6 +5,7 @@ import VerifyEmailPage from "./pages/VerifyEmailPage";
 import { Toaster } from "sonner";
 import DashboardPage from "./pages/DashboardPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/login" element={<LogInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/verify" element={<VerifyEmailPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
           {/* protected route */}
           <Route element={<ProtectedRoute />}>

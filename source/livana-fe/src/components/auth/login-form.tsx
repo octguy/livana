@@ -123,9 +123,17 @@ export function LoginForm({
 
               {/* password */}
               <div className="flex flex-col gap-3">
-                <Label htmlFor="password" className="block text-sm">
-                  Mật khẩu
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="block text-sm">
+                    Mật khẩu
+                  </Label>
+                  <a
+                    href="/forgot-password"
+                    className="text-sm hover:text-primary"
+                  >
+                    Quên mật khẩu?
+                  </a>
+                </div>
                 <div className="relative">
                   <Input
                     type={showPassword ? "text" : "password"}

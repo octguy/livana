@@ -90,4 +90,17 @@ export const authService = {
     );
     return response.data;
   },
+
+  forgotPassword: async (email: string): Promise<ApiResponse<string>> => {
+    const response = await api.post<ApiResponse<string>>(
+      "/auth/forgot-password",
+      {
+        email,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  },
 };

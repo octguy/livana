@@ -130,4 +130,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: false });
     }
   },
+  forgotPassword: async (email) => {
+    try {
+      set({ loading: true });
+      const data = await authService.forgotPassword(email);
+      toast.success("Yêu cầu đặt lại mật khẩu đã được gửi đến email của bạn");
+      return data;
+    } catch (error) {
+      toast.error("Không thể gửi yêu cầu đặt lại mật khẩu. Vui lòng thử lại.");
+      console.error("Yêu cầu đặt lại mật khẩu thất bại:", error);
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
 }));
