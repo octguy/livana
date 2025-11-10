@@ -10,6 +10,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router";
 import React, { useState } from "react";
 import { PASSWORD_REGEX } from "@/constant/regex";
+import { Loader2 } from "lucide-react";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
@@ -147,6 +148,9 @@ export function LoginForm({
 
               {/* nút đăng ký */}
               <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Đăng nhập
               </Button>
 

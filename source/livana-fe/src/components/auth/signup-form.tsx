@@ -10,6 +10,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router";
 import React, { useState } from "react";
 import { PASSWORD_REGEX } from "@/constant/regex";
+import { Loader2 } from "lucide-react";
 
 const signUpSchema = z.object({
   firstname: z.string().min(1, "Tên bắt buộc phải có"),
@@ -214,7 +215,10 @@ export function SignupForm({
 
               {/* nút đăng ký */}
               <Button type="submit" className="w-full" disabled={isSubmitting}>
-                Tạo tài khoản
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Đang đăng ký
               </Button>
 
               <div className="text-center text-sm">
