@@ -1,12 +1,12 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import LogInPage from "./pages/LogInPage";
-import SignUpPage from "./pages/SignUpPage";
-import VerifyEmailPage from "./pages/VerifyEmailPage";
+import LogInPage from "./pages/auth/LogInPage";
+import SignUpPage from "./pages/auth/SignUpPage";
+import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
 import { Toaster } from "sonner";
-import DashboardPage from "./pages/DashboardPage";
+import DashboardPage from "./pages/auth/DashboardPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 
 function App() {
   return (
