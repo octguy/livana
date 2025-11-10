@@ -8,6 +8,7 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
 
+
   # JWT configuration
   jwt:
     secret-key: ${SPRING_JWT_SECRET_KEY}
@@ -38,3 +39,6 @@ spring:
           auth: true
           starttls:
             enable: true
+  jpa:
+    hibernate:
+      ddl-auto: update

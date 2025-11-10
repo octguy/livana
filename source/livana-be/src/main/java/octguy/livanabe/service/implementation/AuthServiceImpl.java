@@ -11,10 +11,7 @@ import octguy.livanabe.jwt.JwtUtil;
 import octguy.livanabe.repository.AuthCredentialRepository;
 import octguy.livanabe.repository.RoleRepository;
 import octguy.livanabe.repository.UserRepository;
-import octguy.livanabe.service.IAuthService;
-import octguy.livanabe.service.IEmailService;
-import octguy.livanabe.service.IPasswordResetTokenService;
-import octguy.livanabe.service.IRefreshTokenService;
+import octguy.livanabe.service.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -58,6 +55,8 @@ public class AuthServiceImpl implements IAuthService {
 
     private final IPasswordResetTokenService passwordResetTokenService;
 
+    private final IUserProfileService userProfileService;
+
 
     public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
                            JwtUtil jwtUtil, IEmailService emailService,
@@ -66,7 +65,9 @@ public class AuthServiceImpl implements IAuthService {
                            IRefreshTokenService refreshTokenService,
                            RoleRepository roleRepository,
                            UserDetailsServiceImpl userDetailsService,
-                           IPasswordResetTokenService passwordResetTokenService) {
+                           IPasswordResetTokenService passwordResetTokenService,
+                           IUserProfileService userProfileService) {
+        this.userProfileService = userProfileService;
         this.passwordResetTokenService = passwordResetTokenService;
         this.userDetailsService = userDetailsService;
         this.roleRepository = roleRepository;
@@ -152,6 +153,16 @@ public class AuthServiceImpl implements IAuthService {
         authCredential.setCreatedAt(LocalDateTime.now());
         authCredential.setUpdatedAt(LocalDateTime.now());
         authCredentialRepository.save(authCredential);
+
+        // Create user profile
+        String fullName = request.getFirstName() + " " + request.getLastName();
+        UserProfile userProfile = new UserProfile();
+        userProfile.setId(UUID.randomUUID());
+        userProfile.setUser(user);
+        userProfile.setDisplayName(fullName);
+        userProfile.setCreatedAt(LocalDateTime.now());
+        userProfile.setUpdatedAt(LocalDateTime.now());
+        userProfileService.create(userProfile);
 
         sendVerificationEmail(user.getEmail(), verificationCode);
 

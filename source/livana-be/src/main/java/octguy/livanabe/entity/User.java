@@ -39,9 +39,10 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RoleUser> roleUsers = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserInterest> userInterests = new HashSet<>();
+
     public void addRole(Role role) {
-        // System.out.println("User ID = " + this.getId());
-        // System.out.println("Role ID = " + role.getId());
         RoleUser roleUser = new RoleUser();
         roleUser.setRole(role);
         roleUser.setUser(this);
