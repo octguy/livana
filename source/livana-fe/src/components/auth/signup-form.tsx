@@ -10,7 +10,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router";
 import React, { useState } from "react";
 import { PASSWORD_REGEX } from "@/constant/regex";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 
 const signUpSchema = z.object({
   firstname: z.string().min(1, "Tên bắt buộc phải có"),
@@ -37,6 +37,7 @@ export function SignupForm({
 
   // Add local state to show signup error
   const [signupError, setSignupError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -196,21 +197,39 @@ export function SignupForm({
                 <Label htmlFor="password" className="block text-sm">
                   Mật khẩu
                 </Label>
-                <Input
-                  type="password"
-                  id="password"
-                  {...register("password")}
-                  onChange={(e) => {
-                    register("password").onChange(e);
-                    clearErrors("password");
-                    setSignupError(null);
-                  }}
-                />
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    className="pr-10"
+                    {...register("password")}
+                    onChange={(e) => {
+                      register("password").onChange(e);
+                      clearErrors("password");
+                      setSignupError(null);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
                 {errors.password && (
                   <p className="text-destructive text-sm">
                     {errors.password.message}
                   </p>
                 )}
+                {/* Note about password requirements */}
+                <p className="text-xs text-muted-foreground">
+                  Mật khẩu phải có ít nhất một số, 1 chữ hoa, 1 chữ cái đặc biệt
+                </p>
               </div>
 
               {/* nút đăng ký */}
