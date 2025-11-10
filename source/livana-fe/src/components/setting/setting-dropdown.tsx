@@ -49,7 +49,7 @@ export function SettingDropdown() {
       <DropdownMenuContent className="w-56" align="start">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/profile")}>
             Profile
             <DropdownMenuShortcut>
               <UserIcon></UserIcon>

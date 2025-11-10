@@ -1,6 +1,5 @@
 import Logout from "@/components/auth/logout";
 import { MainLayout } from "@/components/layout/main-layout";
-import { SettingDropdown } from "@/components/setting/setting-dropdown";
 import { Button } from "@/components/ui/button";
 import api from "@/lib/axios";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -25,10 +24,6 @@ const DashboardPage = () => {
   return (
     <MainLayout>
       <div className="relative min-h-screen">
-        <div className="absolute top-4 right-4">
-          <SettingDropdown />
-        </div>
-
         <div className="p-4">
           <Logout />
           <Button onClick={handleTest}>Test API</Button>
