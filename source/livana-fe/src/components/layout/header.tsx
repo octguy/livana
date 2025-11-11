@@ -36,7 +36,7 @@ export function Header() {
 
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" className="hidden md:inline-flex">
-            Cho thuê nhà
+            Chuyển sang hosting
           </Button>
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-5 w-5" />
