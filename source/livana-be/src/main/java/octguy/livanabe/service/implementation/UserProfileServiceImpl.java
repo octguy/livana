@@ -1,8 +1,10 @@
 package octguy.livanabe.service.implementation;
 
+import octguy.livanabe.dto.request.UpdateUserProfileRequest;
 import octguy.livanabe.dto.response.UserProfileResponse;
 import octguy.livanabe.entity.User;
 import octguy.livanabe.entity.UserProfile;
+import octguy.livanabe.exception.UserNotFoundException;
 import octguy.livanabe.repository.UserProfileRepository;
 import octguy.livanabe.service.IUserProfileService;
 import octguy.livanabe.utils.SecurityUtils;
@@ -60,20 +62,40 @@ public class UserProfileServiceImpl implements IUserProfileService {
     }
 
     @Override
-    public UserProfile update(UUID id, UserProfile userProfile) {
-        Optional<UserProfile> existing = userProfileRepository.findById(id);
+    public UserProfileResponse update(UUID id, UpdateUserProfileRequest updatedProfile) {
+        Optional<UserProfile> existing = userProfileRepository.findByUserId(id);
         if (existing.isEmpty()) {
-            return null;
+            throw new UserNotFoundException("User not found when updating profile with user id: " + id);
         }
         UserProfile current = existing.get();
-        // update allowed fields; leave id and user relation unless provided
-        current.setDisplayName(userProfile.getDisplayName());
-        current.setPhoneNumber(userProfile.getPhoneNumber());
-        current.setBio(userProfile.getBio());
-        current.setAvatarUrl(userProfile.getAvatarUrl());
-        current.setUpdatedAt(LocalDateTime.now());
 
-        return userProfileRepository.save(current);
+        if (updatedProfile.getFullName() != null) {
+            current.setDisplayName(updatedProfile.getFullName());
+        }
+
+        if (updatedProfile.getPhoneNumber() != null) {
+            current.setPhoneNumber(updatedProfile.getPhoneNumber());
+        }
+
+        if (updatedProfile.getBio() != null) {
+            current.setBio(updatedProfile.getBio());
+        }
+
+        if (updatedProfile.getAvatarUrl() != null) {
+            current.setAvatarUrl(updatedProfile.getAvatarUrl());
+        }
+
+        current.setUpdatedAt(LocalDateTime.now());
+        userProfileRepository.save(current);
+
+        return UserProfileResponse.builder()
+                .username(current.getUser().getUsername())
+                .email(current.getUser().getEmail())
+                .fullName(current.getDisplayName())
+                .phoneNumber(current.getPhoneNumber())
+                .bio(current.getBio())
+                .avatarUrl(current.getAvatarUrl())
+                .build();
     }
 
     @Override

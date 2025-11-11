@@ -64,8 +64,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/dummy/**", "/api/v1/auth/change-password",
-                                            "/api/v1/users/me").hasRole("USER")
+                        .requestMatchers("/api/v1/dummy/**",
+                                         "/api/v1/auth/change-password",
+                                         "/api/v1/users/me",
+                                            "/api/v1/users/**").hasRole("USER")
 
                         .requestMatchers("/swagger-ui/**",
                                 "/swagger-ui.html",

@@ -1,5 +1,6 @@
 package octguy.livanabe.service;
 
+import octguy.livanabe.dto.request.UpdateUserProfileRequest;
 import octguy.livanabe.dto.response.UserProfileResponse;
 import octguy.livanabe.entity.UserProfile;
 
@@ -16,7 +17,7 @@ public interface IUserProfileService {
 
     UserProfile findById(UUID id);
 
-    UserProfile update(UUID id, UserProfile userProfile);
+    UserProfileResponse update(UUID id, UpdateUserProfileRequest updateUserProfileRequest);
 
     void delete(UUID id);
 }

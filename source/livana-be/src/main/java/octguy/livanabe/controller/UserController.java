@@ -1,5 +1,7 @@
 package octguy.livanabe.controller;
 
+import jakarta.validation.Valid;
+import octguy.livanabe.dto.request.UpdateUserProfileRequest;
 import octguy.livanabe.dto.response.UserProfileResponse;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.entity.UserProfile;
@@ -35,22 +37,6 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    // --- UserProfile CRUD ---
-
-//    @PostMapping("/profiles")
-//    public ResponseEntity<ApiResponse<UserProfile>> createProfile(@RequestBody UserProfile profile) {
-//        UserProfile saved = userProfileService.create(profile);
-//
-//        ApiResponse<UserProfile> response = new ApiResponse<>(
-//                HttpStatus.CREATED,
-//                "Profile created",
-//                saved,
-//                null
-//        );
-//
-//        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-//    }
-
     @GetMapping("/profiles")
     public ResponseEntity<ApiResponse<List<UserProfile>>> listProfiles() {
         List<UserProfile> profiles = userProfileService.findAll();
@@ -69,12 +55,17 @@ public class UserController {
     }
 
     @PutMapping("/profiles/{id}")
-    public ResponseEntity<ApiResponse<UserProfile>> updateProfile(@PathVariable("id") UUID id, @RequestBody UserProfile update) {
-        UserProfile updated = userProfileService.update(id, update);
-        if (updated == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<>(HttpStatus.NOT_FOUND, "Profile not found", null, null));
-        }
-        ApiResponse<UserProfile> response = new ApiResponse<>(HttpStatus.OK, "Profile updated", updated, null);
+    public ResponseEntity<ApiResponse<UserProfileResponse>> updateProfile(@PathVariable("id") UUID id,
+                                                                          @Valid @RequestBody UpdateUserProfileRequest updatedProfile) {
+        UserProfileResponse updated = userProfileService.update(id, updatedProfile);
+
+        ApiResponse<UserProfileResponse> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Profile updated",
+                updated,
+                null
+        );
+
         return ResponseEntity.ok(response);
     }
 
