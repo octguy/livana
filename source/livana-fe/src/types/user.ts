@@ -1,4 +1,8 @@
 export interface User {
   username: string;
-  roles: string[];
+  email: string;
+  fullName: string;
+  phoneNumber?: string;
+  bio?: string;
+  avatarUrl?: string;
 }

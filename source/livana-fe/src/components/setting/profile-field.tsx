@@ -1,26 +1,25 @@
-import { Input } from "@/components/ui/input";
+import { forwardRef } from "react";
 import type { LucideIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
-interface ProfileFieldProps {
+interface ProfileFieldProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   icon: LucideIcon;
   label: string;
-  type?: string;
-  placeholder: string;
 }
 
-export function ProfileField({
-  icon: Icon,
-  label,
-  type = "text",
-  placeholder,
-}: ProfileFieldProps) {
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <Icon className="h-5 w-5 text-muted-foreground" />
-        <label className="text-sm font-medium">{label}</label>
+export const ProfileField = forwardRef<HTMLInputElement, ProfileFieldProps>(
+  ({ icon: Icon, label, ...props }, ref) => {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Icon className="h-5 w-5 text-muted-foreground" />
+          <label className="text-sm font-medium">{label}</label>
+        </div>
+        <Input ref={ref} {...props} />
       </div>
-      <Input type={type} placeholder={placeholder} className="w-full" />
-    </div>
-  );
-}
+    );
+  }
+);
+
+ProfileField.displayName = "ProfileField";
