@@ -10,6 +10,7 @@ export const userService = {
       phoneNumber?: string;
       bio?: string;
       avatarUrl?: string;
+      avatarPublicId?: string;
     }
   ): Promise<ApiResponse<User>> => {
     const response = await api.put<ApiResponse<User>>(

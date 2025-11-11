@@ -7,6 +7,7 @@ export interface ProfileState {
       phoneNumber?: string;
       bio?: string;
       avatarUrl?: string;
+      avatarPublicId?: string;
     }
   ) => Promise<void>;
 }

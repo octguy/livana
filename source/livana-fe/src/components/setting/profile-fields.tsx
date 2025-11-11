@@ -64,6 +64,7 @@ export function ProfileFields() {
         phoneNumber: data.phone,
         bio: data.bio,
         avatarUrl: user?.avatarUrl || "",
+        avatarPublicId: user?.avatarPublicId || "",
       };
       console.log("Cập nhật hồ sơ với dữ liệu:", data);
       await update(user!.id, updatedData);

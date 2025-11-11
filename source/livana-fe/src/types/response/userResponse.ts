@@ -6,4 +6,5 @@ export interface User {
   phoneNumber?: string;
   bio?: string;
   avatarUrl?: string;
+  avatarPublicId?: string;
 }
