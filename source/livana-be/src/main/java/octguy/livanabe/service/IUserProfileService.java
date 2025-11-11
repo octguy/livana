@@ -19,5 +19,7 @@ public interface IUserProfileService {
 
     UserProfileResponse update(UUID id, UpdateUserProfileRequest updateUserProfileRequest);
 
+    void deleteAvatar(UUID id);
+
     void delete(UUID id);
 }

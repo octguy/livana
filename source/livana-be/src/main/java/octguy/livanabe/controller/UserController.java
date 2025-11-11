@@ -69,10 +69,10 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-//    @DeleteMapping("/profiles/{id}")
-//    public ResponseEntity<ApiResponse<Void>> deleteProfile(@PathVariable("id") UUID id) {
-//        userProfileService.delete(id);
-//        ApiResponse<Void> response = new ApiResponse<>(HttpStatus.NO_CONTENT, "Profile deleted", null, null);
-//        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
-//    }
+    @DeleteMapping("/profiles/{id}/avatar")
+    public ResponseEntity<ApiResponse<Void>> deleteAvatar(@PathVariable("id") UUID id) {
+        userProfileService.deleteAvatar(id);
+        ApiResponse<Void> response = new ApiResponse<>(HttpStatus.NO_CONTENT, "Avatar deleted", null, null);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    }
 }

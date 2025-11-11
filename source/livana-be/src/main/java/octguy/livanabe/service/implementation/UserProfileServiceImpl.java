@@ -1,5 +1,7 @@
 package octguy.livanabe.service.implementation;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import octguy.livanabe.dto.request.UpdateUserProfileRequest;
 import octguy.livanabe.dto.response.UserProfileResponse;
 import octguy.livanabe.entity.User;
@@ -21,7 +23,10 @@ public class UserProfileServiceImpl implements IUserProfileService {
 
     private final UserProfileRepository userProfileRepository;
 
-    public UserProfileServiceImpl(UserProfileRepository userProfileRepository) {
+    private final Cloudinary cloudinary;
+
+    public UserProfileServiceImpl(UserProfileRepository userProfileRepository, Cloudinary cloudinary) {
+        this.cloudinary = cloudinary;
         this.userProfileRepository = userProfileRepository;
     }
 
@@ -105,6 +110,29 @@ public class UserProfileServiceImpl implements IUserProfileService {
                 .avatarUrl(current.getAvatarUrl())
                 .avatarPublicId(current.getAvatarPublicId())
                 .build();
+    }
+
+    @Override
+    public void deleteAvatar(UUID id) {
+        Optional<UserProfile> existing = userProfileRepository.findByUserId(id);
+        if (existing.isEmpty()) {
+            throw new UserNotFoundException("User not found when updating profile with user id: " + id);
+        }
+        UserProfile current = existing.get();
+
+        // Delete on cloudinary would be here
+        try {
+            cloudinary.uploader().destroy(current.getAvatarPublicId(), ObjectUtils.emptyMap());
+        } catch (Exception e) {
+            // Log error but continue to delete in database
+            throw new RuntimeException("Failed to delete avatar from Cloudinary: " + e.getMessage());
+        }
+
+        // Delete in database
+        current.setAvatarUrl(null);
+        current.setAvatarPublicId(null);
+        current.setUpdatedAt(LocalDateTime.now());
+        userProfileRepository.save(current);
     }
 
     @Override
