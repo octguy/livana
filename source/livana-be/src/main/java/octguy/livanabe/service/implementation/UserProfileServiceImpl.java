@@ -120,7 +120,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
         }
         UserProfile current = existing.get();
 
-        // Delete on cloudinary would be here
+        // Delete on cloudinary
         try {
             cloudinary.uploader().destroy(current.getAvatarPublicId(), ObjectUtils.emptyMap());
         } catch (Exception e) {
