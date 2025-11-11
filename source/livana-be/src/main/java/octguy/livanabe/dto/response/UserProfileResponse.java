@@ -15,4 +15,5 @@ public class UserProfileResponse {
     private String phoneNumber;
     private String bio;
     private String avatarUrl;
+    private String avatarPublicId;
 }

@@ -88,6 +88,10 @@ public class UserProfileServiceImpl implements IUserProfileService {
             current.setAvatarUrl(updatedProfile.getAvatarUrl());
         }
 
+        if (updatedProfile.getAvatarPublicId() != null) {
+            current.setAvatarPublicId(updatedProfile.getAvatarPublicId());
+        }
+
         current.setUpdatedAt(LocalDateTime.now());
         userProfileRepository.save(current);
 
@@ -99,6 +103,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
                 .phoneNumber(current.getPhoneNumber())
                 .bio(current.getBio())
                 .avatarUrl(current.getAvatarUrl())
+                .avatarPublicId(current.getAvatarPublicId())
                 .build();
     }
 

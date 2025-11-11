@@ -33,4 +33,7 @@ public class UserProfile extends BaseEntity {
 
     @Column(name="avatar_url", length = 200)
     private String avatarUrl;
+
+    @Column(name="avatar_public_id", length = 200)
+    private String avatarPublicId;
 }
