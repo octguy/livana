@@ -68,6 +68,7 @@ export function ProfileFields() {
       };
       console.log("Cập nhật hồ sơ với dữ liệu:", data);
       await update(user!.id, updatedData);
+      await useAuthStore.getState().fetchMe();
     } catch (error) {
       console.error("Lỗi khi cập nhật hồ sơ:", error);
     }

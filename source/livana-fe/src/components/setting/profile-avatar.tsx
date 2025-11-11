@@ -3,11 +3,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera } from "lucide-react";
 import { useRef } from "react";
 import { cloudinaryService } from "@/services/cloudinaryService";
-import { userService } from "@/services/userService";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useProfileStore } from "@/stores/useProfileStore";
 
 export function ProfileAvatar() {
   const user = useAuthStore((s) => s.user);
+  const { update } = useProfileStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatarClick = () => {
@@ -37,7 +38,7 @@ export function ProfileAvatar() {
         avatarUrl: data.secure_url,
         avatarPublicId: data.public_id,
       };
-      await userService.update(user!.id, updatedData);
+      await update(user!.id, updatedData);
     }
   };
 
