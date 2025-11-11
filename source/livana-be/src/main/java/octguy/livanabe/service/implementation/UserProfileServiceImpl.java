@@ -9,6 +9,7 @@ import octguy.livanabe.repository.UserProfileRepository;
 import octguy.livanabe.service.IUserProfileService;
 import octguy.livanabe.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,6 +37,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
         UserProfile userProfile = opt.get();
 
         return UserProfileResponse.builder()
+                .id(currentUser.getId())
                 .username(currentUser.getUsername())
                 .email(currentUser.getEmail())
                 .bio(userProfile.getBio())
@@ -62,6 +64,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
     }
 
     @Override
+    @Transactional
     public UserProfileResponse update(UUID id, UpdateUserProfileRequest updatedProfile) {
         Optional<UserProfile> existing = userProfileRepository.findByUserId(id);
         if (existing.isEmpty()) {
@@ -89,6 +92,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
         userProfileRepository.save(current);
 
         return UserProfileResponse.builder()
+                .id(id)
                 .username(current.getUser().getUsername())
                 .email(current.getUser().getEmail())
                 .fullName(current.getDisplayName())
