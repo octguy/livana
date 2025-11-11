@@ -26,7 +26,7 @@ export function ProfileFields() {
   const {
     register,
     handleSubmit,
-    setValue,
+    reset,
     formState: { errors },
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -45,12 +45,14 @@ export function ProfileFields() {
       const firstName = nameParts.slice(0, -1).join(" ") || "";
       const lastName = nameParts[nameParts.length - 1] || "";
 
-      setValue("firstName", firstName);
-      setValue("lastName", lastName);
-      setValue("phone", user.phoneNumber || "");
-      setValue("bio", user.bio || "");
+      reset({
+        firstName,
+        lastName,
+        phone: user.phoneNumber || "",
+        bio: user.bio || "",
+      });
     }
-  }, [user, setValue]);
+  }, [user, reset]);
 
   const onSubmit = (data: ProfileFormData) => {
     console.log("Updated profile data:", data);

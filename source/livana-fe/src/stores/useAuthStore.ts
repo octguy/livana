@@ -80,7 +80,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ loading: true });
       const user = await authService.fetchMe();
-      // console.log("fetchMe response data:", user);
+      console.log("fetchMe response data:", user);
       set({ user: user.data });
     } catch (error) {
       toast.error("Không thể lấy thông tin người dùng. Vui lòng thử lại.");
