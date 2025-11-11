@@ -3,11 +3,10 @@ import { MainLayout } from "@/components/layout/main-layout";
 import { ProfileAvatar } from "@/components/setting/profile-avatar";
 import { ProfileFields } from "@/components/setting/profile-fields";
 import { ProfileInterests } from "@/components/setting/profile-interests";
-import { useAuthStore } from "@/stores/useAuthStore";
 
 export function ProfilePage() {
-  const user = useAuthStore((s) => s.user);
-  console.log("ProfilePage user:", user);
+  // const user = useAuthStore((s) => s.user);
+  // console.log("ProfilePage user:", user);
 
   return (
     <MainLayout>

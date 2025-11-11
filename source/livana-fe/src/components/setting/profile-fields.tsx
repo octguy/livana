@@ -7,6 +7,7 @@ import * as z from "zod";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useProfileStore } from "@/stores/useProfileStore";
 
 const profileSchema = z.object({
   firstName: z.string().min(1, "Họ là bắt buộc"),
@@ -22,6 +23,7 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 
 export function ProfileFields() {
   const user = useAuthStore((s) => s.user);
+  const { update } = useProfileStore();
 
   const {
     register,
@@ -54,8 +56,20 @@ export function ProfileFields() {
     }
   }, [user, reset]);
 
-  const onSubmit = (data: ProfileFormData) => {
-    console.log("Updated profile data:", data);
+  const onSubmit = async (data: ProfileFormData) => {
+    try {
+      const fullName = `${data.firstName} ${data.lastName}`;
+      const updatedData = {
+        fullName,
+        phoneNumber: data.phone,
+        bio: data.bio,
+        avatarUrl: user?.avatarUrl || "",
+      };
+      console.log("Cập nhật hồ sơ với dữ liệu:", data);
+      await update(user!.id, updatedData);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật hồ sơ:", error);
+    }
   };
 
   return (

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { toast } from "sonner";
 import { authService } from "@/services/authService";
-import type { AuthState } from "@/types/store";
+import type { AuthState } from "@/types/state/authState";
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   accessToken: null,
@@ -80,7 +80,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ loading: true });
       const user = await authService.fetchMe();
-      console.log("fetchMe response data:", user);
+      // console.log("fetchMe response data:", user);
       set({ user: user.data });
     } catch (error) {
       toast.error("Không thể lấy thông tin người dùng. Vui lòng thử lại.");
@@ -108,6 +108,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: false });
     }
   },
+
   verifyEmail: async (email, verificationCode) => {
     try {
       set({ loading: true });
@@ -122,6 +123,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: false });
     }
   },
+
   resendVerificationCode: async (email) => {
     try {
       set({ loading: true });
@@ -136,6 +138,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: false });
     }
   },
+
   forgotPassword: async (email) => {
     try {
       set({ loading: true });
@@ -150,6 +153,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: false });
     }
   },
+
   resetPassword: async (token, newPassword) => {
     try {
       set({ loading: true });

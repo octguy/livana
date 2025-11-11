@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 const DashboardPage = () => {
   const user = useAuthStore((s) => s.user);
-  console.log("Dashboard user:", user);
+  // console.log("Dashboard user:", user);
 
   const handleTest = async () => {
     try {

@@ -1,6 +1,6 @@
-import type { ApiResponse } from "./apiResponse";
-import type { AuthResponse } from "./authResponse";
-import type { User } from "./user";
+import type { ApiResponse } from "../response/apiResponse";
+import type { AuthResponse } from "../response/authResponse";
+import type { User } from "../response/userResponse";
 
 export interface AuthState {
   accessToken: string | null;
