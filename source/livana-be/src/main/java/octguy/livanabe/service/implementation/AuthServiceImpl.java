@@ -12,6 +12,7 @@ import octguy.livanabe.repository.AuthCredentialRepository;
 import octguy.livanabe.repository.RoleRepository;
 import octguy.livanabe.repository.UserRepository;
 import octguy.livanabe.service.*;
+import octguy.livanabe.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -284,7 +285,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public void changePassword(ChangePasswordRequest request) {
-        User currentUser = getCurrentUser();
+        User currentUser = SecurityUtils.getCurrentUser();
         Optional<AuthCredential> authCredential = authCredentialRepository.findByUser(currentUser);
 
         if (authCredential.isEmpty()) {
@@ -306,21 +307,6 @@ public class AuthServiceImpl implements IAuthService {
     @Transactional
     public void logout(String token) {
         refreshTokenService.deleteByToken(token);
-    }
-
-    private User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // the code above always return an object of type UsernamePasswordAuthenticationToken
-        // if not authenticated, the object will be AnonymousAuthenticationToken (if not .authenticated() in SecurityConfig)
-
-//        System.out.println(authentication.isAuthenticated()); // always true
-
-//        System.out.println(authentication.getClass());
-//        System.out.println(authentication.getPrincipal().toString());
-//        System.out.println(authentication.getCredentials());
-
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        return customUserDetails.getUser();
     }
 
     private void sendForgetPasswordEmail(String email, String token) {
