@@ -3,9 +3,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Menu } from "lucide-react";
 import { SettingDropdown } from "../setting/setting-dropdown";
 import { useNavigate } from "react-router";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export function Header() {
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+
   return (
     <header className="border-b border-border sticky top-0 bg-background z-50">
       <div className="container flex h-16 items-center justify-between">
@@ -45,7 +48,7 @@ export function Header() {
             className="h-10 w-10 cursor-pointer"
             onClick={() => navigate("/profile")}
           >
-            <AvatarImage src="" alt="User" />
+            <AvatarImage src={user?.avatarUrl || ""} alt="Avatar" />
             <AvatarFallback>T</AvatarFallback>
           </Avatar>
           <SettingDropdown />

@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { cloudinaryService } from "@/services/cloudinaryService";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useProfileStore } from "@/stores/useProfileStore";
+import { toast } from "sonner";
 
 export function ProfileAvatar() {
   const user = useAuthStore((s) => s.user);
@@ -20,25 +21,32 @@ export function ProfileAvatar() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log("File name:", file.name);
+      const uploadPromise = async () => {
+        console.log("File name:", file.name);
 
-      const response = await cloudinaryService.uploadImage(file);
+        const response = await cloudinaryService.uploadImage(file);
+        console.log("Cloudinary upload response:", response);
 
-      console.log("Cloudinary upload response:", response);
+        const data = await response.json();
+        console.log("Uploaded image URL:", data.secure_url);
+        console.log("Uploaded image public ID:", data.public_id);
 
-      const data = await response.json();
-
-      console.log("Uploaded image URL:", data.secure_url);
-      console.log("Uploaded image public ID:", data.public_id);
-
-      const updatedData = {
-        fullName: user?.fullName,
-        phoneNumber: user?.phoneNumber,
-        bio: user?.bio,
-        avatarUrl: data.secure_url,
-        avatarPublicId: data.public_id,
+        const updatedData = {
+          fullName: user?.fullName,
+          phoneNumber: user?.phoneNumber,
+          bio: user?.bio,
+          avatarUrl: data.secure_url,
+          avatarPublicId: data.public_id,
+        };
+        await update(user!.id, updatedData);
       };
-      await update(user!.id, updatedData);
+
+      toast.promise(uploadPromise(), {
+        loading: "Đang tải ảnh lên...",
+        success: "Cập nhật ảnh đại diện thành công!",
+        error: "Cập nhật ảnh đại diện thất bại. Vui lòng thử lại.",
+        position: "top-center",
+      });
     }
   };
 

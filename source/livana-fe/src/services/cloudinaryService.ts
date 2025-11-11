@@ -19,7 +19,7 @@ export const cloudinaryService = {
         method: "POST",
         body: formData,
       });
-      toast.success("Tải ảnh đại diện thành công!");
+      // toast.success("Tải ảnh đại diện thành công!");
       return response;
     } catch (error) {
       console.error("Lỗi khi tải ảnh lên Cloudinary:", error);
