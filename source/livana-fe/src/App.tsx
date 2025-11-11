@@ -7,7 +7,7 @@ import DashboardPage from "./pages/dashboard/DashboardPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
-import { ProfilePage } from "./pages/setting/profile";
+import { ProfilePage } from "./pages/setting/ProfilePage";
 
 function App() {
   return (
