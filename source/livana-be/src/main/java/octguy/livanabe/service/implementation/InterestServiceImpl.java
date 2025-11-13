@@ -22,10 +22,12 @@ public class InterestServiceImpl implements IInterestService {
     public List<InterestResponse> findAll() {
         return interestRepository.findAll().stream()
                         .map(interest -> InterestResponse.builder()
-                        .name(interest.getName())
-                        .icon(interest.getIcon())
-                        .build())
-                        .toList();
+                                .id(interest.getId())
+                                .key(interest.getKey())
+                                .name(interest.getName())
+                                .icon(interest.getIcon())
+                                .build())
+                                .toList();
     }
 
     @Override
@@ -39,6 +41,8 @@ public class InterestServiceImpl implements IInterestService {
         interestRepository.save(interest);
 
         return InterestResponse.builder().
+                id(interest.getId()).
+                key(interest.getKey()).
                 name(interest.getName()).
                 icon(interest.getIcon()).
                 build();

@@ -4,7 +4,6 @@ import octguy.livanabe.jwt.JwtAuthenticationEntryPoint;
 import octguy.livanabe.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -67,7 +66,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/dummy/**",
                                          "/api/v1/auth/change-password",
                                          "/api/v1/users/me",
-                                            "/api/v1/users/**").hasRole("USER")
+                                         "/api/v1/users/**",
+                                         "/api/v1/interests/**").hasAnyRole("USER", "ADMIN")
 
                         .requestMatchers("/swagger-ui/**",
                                 "/swagger-ui.html",
