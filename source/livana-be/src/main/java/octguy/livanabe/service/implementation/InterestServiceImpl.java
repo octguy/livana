@@ -6,6 +6,7 @@ import octguy.livanabe.dto.response.InterestResponse;
 import octguy.livanabe.dto.response.UserInterestsResponse;
 import octguy.livanabe.entity.Interest;
 import octguy.livanabe.entity.User;
+import octguy.livanabe.entity.UserInterest;
 import octguy.livanabe.repository.InterestRepository;
 import octguy.livanabe.repository.UserRepository;
 import octguy.livanabe.service.IInterestService;
@@ -67,6 +68,28 @@ public class InterestServiceImpl implements IInterestService {
         User user = SecurityUtils.getCurrentUser();
         user.setInterests(new HashSet<>(interests));
         userRepository.save(user);
+
+        return UserInterestsResponse.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .interests(interests.stream()
+                        .map(interest -> InterestResponse.builder()
+                                .id(interest.getId())
+                                .key(interest.getKey())
+                                .name(interest.getName())
+                                .icon(interest.getIcon())
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    @Override
+    public UserInterestsResponse getUserInterests() {
+        User user = SecurityUtils.getCurrentUser();
+
+        List<Interest> interests = user.getUserInterests().stream()
+                .map(UserInterest::getInterest)
+                .toList();
 
         return UserInterestsResponse.builder()
                 .userId(user.getId())

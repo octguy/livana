@@ -14,4 +14,6 @@ public interface IInterestService {
     InterestResponse create(CreateInterestRequest request);
 
     UserInterestsResponse setUserInterests(SetInterestRequest request);
+
+    UserInterestsResponse getUserInterests();
 }

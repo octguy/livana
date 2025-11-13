@@ -75,6 +75,20 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/interests")
+    public ResponseEntity<ApiResponse<UserInterestsResponse>> getUserInterests() {
+        UserInterestsResponse interests = interestService.getUserInterests();
+
+        ApiResponse<UserInterestsResponse> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "User interests fetched",
+                interests,
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @PutMapping("/interests")
     public ResponseEntity<ApiResponse<UserInterestsResponse>> setInterests(@Valid @RequestBody SetInterestRequest setInterestRequest) {
         UserInterestsResponse updatedInterests = interestService.setUserInterests(setInterestRequest);
