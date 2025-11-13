@@ -36,6 +36,12 @@ export function InterestsDialog({
   }, [open, interests.length, getAllInterests]);
 
   useEffect(() => {
+    if (open) {
+      setSelected(initialSelected);
+    }
+  }, [open, initialSelected]);
+
+  useEffect(() => {
     if (!open) {
       setShowAll(false);
       setSearchQuery("");

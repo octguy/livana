@@ -1,16 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Heart } from "lucide-react";
+import { Heart, X } from "lucide-react";
 import { InterestsDialog } from "./interests-dialog";
+import { useInterestStore } from "@/stores/useInterestStore";
+import { Badge } from "@/components/ui/badge";
 
 export function ProfileInterests() {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const {
+    userInterests,
+    getUserInterests,
+    updateUserInterests,
+    interests,
+    getAllInterests,
+  } = useInterestStore();
 
-  const handleSave = (interests: string[]) => {
-    setSelectedInterests(interests);
-    // TODO: Save to backend
+  useEffect(() => {
+    getUserInterests();
+    if (interests.length === 0) {
+      getAllInterests();
+    }
+  }, [getUserInterests, getAllInterests, interests.length]);
+
+  const handleSave = async (interestIds: string[]) => {
+    await updateUserInterests(interestIds);
+    console.log("Selected interests to save:", interestIds);
   };
+
+  const handleRemoveInterest = async (interestId: string) => {
+    const updatedInterestIds =
+      userInterests?.interests
+        .filter((i) => i.id !== interestId)
+        .map((i) => i.id) || [];
+    await updateUserInterests(updatedInterestIds);
+  };
+
+  const selectedInterestIds = userInterests?.interests.map((i) => i.id) || [];
 
   return (
     <>
@@ -21,7 +46,23 @@ export function ProfileInterests() {
           vào hồ sơ của bạn.
         </p>
 
-        <div className="flex gap-3 mb-4">
+        <div className="flex flex-wrap gap-3 mb-4">
+          {userInterests?.interests.map((interest) => (
+            <Badge
+              key={interest.id}
+              variant="secondary"
+              className="rounded-full px-4 py-2 text-base flex items-center gap-2"
+            >
+              <span>{interest.icon}</span>
+              <span>{interest.name}</span>
+              <button
+                onClick={() => handleRemoveInterest(interest.id)}
+                className="ml-1 hover:bg-muted rounded-full p-0.5"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
           <Button
             type="button"
             variant="outline"
@@ -29,7 +70,7 @@ export function ProfileInterests() {
             onClick={() => setDialogOpen(true)}
           >
             <Heart className="h-4 w-4 mr-2" />
-            Thêm sở thích
+            Sửa sở thích
           </Button>
         </div>
       </div>
@@ -37,7 +78,7 @@ export function ProfileInterests() {
       <InterestsDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        selectedInterests={selectedInterests}
+        selectedInterests={selectedInterestIds}
         onSave={handleSave}
       />
     </>
