@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -26,6 +27,21 @@ public class Interest extends BaseEntity {
     @Column(name="name", nullable = false, length = 100)
     private String name;
 
+    @Column(name="icon", nullable = false, length = 1, columnDefinition = "text")
+    private String icon;
+
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserInterest> userInterests = new HashSet<>();
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
+
+        this.setCreatedAt(now);
+        this.setUpdatedAt(now);
+    }
 }
