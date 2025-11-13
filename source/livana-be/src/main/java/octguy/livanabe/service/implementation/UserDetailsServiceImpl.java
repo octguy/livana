@@ -23,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        User user = userRepository.findByUsernameWithRoles(username) // fetch roles eagerly
+        User user = userRepository.findByUsernameWithRolesAndInterests(username) // fetch roles eagerly
                 .orElseThrow(() -> new UserNotFoundException("User with username " + username + " not found"));
 
         AuthCredential authCredential = authCredentialRepository.findByUser(user)

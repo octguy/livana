@@ -52,4 +52,16 @@ public class User extends BaseEntity {
         // not necessary to set roleUserId here, it will be set automatically (thanks to @MapsId)
         // only if it was initialized, otherwise BUMP  :D
     }
+
+    public void setInterests(Set<Interest> interests) {
+        this.userInterests.clear();
+        for (Interest interest : interests) {
+            UserInterest userInterest = new UserInterest();
+            userInterest.setUser(this);
+            userInterest.setInterest(interest);
+            userInterest.setCreatedAt(LocalDateTime.now());
+            userInterest.setUpdatedAt(LocalDateTime.now());
+            this.userInterests.add(userInterest);
+        }
+    }
 }

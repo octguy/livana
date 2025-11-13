@@ -113,6 +113,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
     }
 
     @Override
+    @Transactional
     public void deleteAvatar(UUID id) {
         Optional<UserProfile> existing = userProfileRepository.findByUserId(id);
         if (existing.isEmpty()) {
@@ -136,6 +137,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
     }
 
     @Override
+    @Transactional
     public void delete(UUID id) {
         Optional<UserProfile> existing = userProfileRepository.findById(id);
         if (existing.isPresent()) {

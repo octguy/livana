@@ -1,10 +1,13 @@
 package octguy.livanabe.controller;
 
 import jakarta.validation.Valid;
+import octguy.livanabe.dto.request.SetInterestRequest;
 import octguy.livanabe.dto.request.UpdateUserProfileRequest;
+import octguy.livanabe.dto.response.UserInterestsResponse;
 import octguy.livanabe.dto.response.UserProfileResponse;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.entity.UserProfile;
+import octguy.livanabe.service.IInterestService;
 import octguy.livanabe.service.IUserProfileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +22,10 @@ public class UserController {
 
     private final IUserProfileService userProfileService;
 
-    public UserController(IUserProfileService userProfileService) {
+    private final IInterestService interestService;
+
+    public UserController(IUserProfileService userProfileService, IInterestService interestService) {
+        this.interestService = interestService;
         this.userProfileService = userProfileService;
     }
 
@@ -67,6 +73,20 @@ public class UserController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/interests")
+    public ResponseEntity<ApiResponse<UserInterestsResponse>> setInterests(@Valid @RequestBody SetInterestRequest setInterestRequest) {
+        UserInterestsResponse updatedInterests = interestService.setUserInterests(setInterestRequest);
+
+        ApiResponse<UserInterestsResponse> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Interests updated",
+                updatedInterests,
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/profiles/{id}/avatar")
