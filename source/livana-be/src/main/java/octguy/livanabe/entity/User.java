@@ -8,6 +8,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name="\"user\"")
@@ -54,14 +55,39 @@ public class User extends BaseEntity {
     }
 
     public void setInterests(Set<Interest> interests) {
-        this.userInterests.clear();
+        // Build map of existing interest id -> UserInterest
+        Map<UUID, UserInterest> existing = this.userInterests.stream()
+                .filter(ui -> ui.getInterest() != null && ui.getInterest().getId() != null)
+                .collect(Collectors.toMap(ui -> ui.getInterest().getId(), ui -> ui));
+
+        Set<UUID> newIds = interests.stream()
+                .map(Interest::getId)
+                .collect(Collectors.toSet());
+
+        // Remove entries that are not in the new set
+        Iterator<UserInterest> it = this.userInterests.iterator();
+        while (it.hasNext()) {
+            UserInterest ui = it.next();
+            UUID iid = ui.getInterest() != null ? ui.getInterest().getId() : null;
+            if (iid == null || !newIds.contains(iid)) {
+                it.remove();
+            }
+        }
+
+        // Add only new UserInterest objects for interests that don't already exist
         for (Interest interest : interests) {
-            UserInterest userInterest = new UserInterest();
-            userInterest.setUser(this);
-            userInterest.setInterest(interest);
-            userInterest.setCreatedAt(LocalDateTime.now());
-            userInterest.setUpdatedAt(LocalDateTime.now());
-            this.userInterests.add(userInterest);
+            UUID iid = interest.getId();
+            if (iid == null) {
+                continue;
+            }
+            if (!existing.containsKey(iid)) {
+                UserInterest userInterest = new UserInterest();
+                userInterest.setUser(this);
+                userInterest.setInterest(interest);
+                userInterest.setCreatedAt(LocalDateTime.now());
+                userInterest.setUpdatedAt(LocalDateTime.now());
+                this.userInterests.add(userInterest);
+            }
         }
     }
 }

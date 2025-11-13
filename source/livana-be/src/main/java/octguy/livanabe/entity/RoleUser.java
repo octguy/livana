@@ -12,7 +12,6 @@ import octguy.livanabe.entity.composite_key.RoleUserId;
 @Table(name="role_user")
 @Setter
 @Getter
-@Data
 public class RoleUser extends BaseEntity {
 
     @EmbeddedId
