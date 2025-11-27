@@ -1,6 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Camera, Upload, Trash2 } from "lucide-react";
 import { useRef } from "react";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { toast } from "sonner";
@@ -8,7 +14,7 @@ import { useProfileStore } from "@/stores/useProfileStore";
 
 export function ProfileAvatar() {
   const user = useAuthStore((s) => s.user);
-  const { uploadAvatar } = useProfileStore();
+  const { uploadAvatar, deleteAvatar } = useProfileStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatarClick = () => {
@@ -36,6 +42,21 @@ export function ProfileAvatar() {
     }
   };
 
+  const handleDeleteAvatar = () => {
+    const deletePromise = async () => {
+      const response = await deleteAvatar();
+      console.log("Cloudinary delete response:", response);
+      await useAuthStore.getState().fetchMe();
+    };
+
+    toast.promise(deletePromise(), {
+      loading: "Đang xóa ảnh đại diện...",
+      success: "Xóa ảnh đại diện thành công!",
+      error: "Xóa ảnh đại diện thất bại. Vui lòng thử lại.",
+      position: "top-center",
+    });
+  };
+
   return (
     <div className="flex items-start gap-8 mb-12">
       <div className="relative">
@@ -45,15 +66,28 @@ export function ProfileAvatar() {
             {user?.fullName?.charAt(0).toUpperCase() || "T"}
           </AvatarFallback>
         </Avatar>
-        <Button
-          type="button"
-          size="icon"
-          variant="secondary"
-          className="absolute bottom-0 right-0 rounded-full h-10 w-10 shadow-md cursor-pointer"
-          onClick={handleAvatarClick}
-        >
-          <Camera className="h-5 w-5" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              size="icon"
+              variant="secondary"
+              className="absolute bottom-0 right-0 rounded-full h-10 w-10 shadow-md cursor-pointer"
+            >
+              <Camera className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleAvatarClick}>
+              <Upload className="mr-2 h-4 w-4" />
+              Chọn ảnh mới
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleDeleteAvatar}>
+              <Trash2 className="mr-2 h-4 w-4" />
+              Xóa ảnh đại diện
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <input
           ref={fileInputRef}
           type="file"

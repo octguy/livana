@@ -27,13 +27,29 @@ export const useProfileStore = create<ProfileState>((set) => ({
   uploadAvatar: async (file) => {
     try {
       set({ loading: true });
-      const response = await cloudinaryService.uploadImage(file);
+      const response = await cloudinaryService.uploadAvatar(file);
       console.log("Tải ảnh đại diện response:", response);
       toast.success("Cập nhật ảnh đại diện thành công!");
       return response;
     } catch (error) {
       toast.error("Cập nhật ảnh đại diện không thành công. Vui lòng thử lại.");
       console.error("Cập nhật ảnh đại diện thất bại:", error);
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  deleteAvatar: async () => {
+    try {
+      set({ loading: true });
+      const response = await cloudinaryService.deleteAvatar();
+      console.log("Xóa ảnh đại diện response:", response);
+      toast.success("Xóa ảnh đại diện thành công!");
+      return response;
+    } catch (error) {
+      toast.error("Xóa ảnh đại diện không thành công. Vui lòng thử lại.");
+      console.error("Xóa ảnh đại diện thất bại:", error);
       throw error;
     } finally {
       set({ loading: false });

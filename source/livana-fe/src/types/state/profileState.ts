@@ -7,4 +7,5 @@ export interface ProfileState {
 
   update: (updatedProfile: UpdateProfileRequest) => Promise<ApiResponse<User>>;
   uploadAvatar: (file: File) => Promise<ApiResponse<User>>;
+  deleteAvatar: () => Promise<ApiResponse<User>>;
 }
