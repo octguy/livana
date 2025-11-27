@@ -12,6 +12,7 @@ import octguy.livanabe.service.IUserProfileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -103,10 +104,31 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @DeleteMapping("/profiles/{id}/avatar")
-    public ResponseEntity<ApiResponse<Void>> deleteAvatar(@PathVariable("id") UUID id) {
-        userProfileService.deleteAvatar(id);
-        ApiResponse<Void> response = new ApiResponse<>(HttpStatus.NO_CONTENT, "Avatar deleted", null, null);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    @PostMapping("/profiles/avatar")
+    public ResponseEntity<ApiResponse<UserProfileResponse>> updateUserProfile(@RequestParam("file") MultipartFile file) {
+        UserProfileResponse updatedProfile = userProfileService.uploadAvatar(file);
+
+        ApiResponse<UserProfileResponse> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Avatar uploaded",
+                updatedProfile,
+                null
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/profiles/avatar")
+    public ResponseEntity<ApiResponse<Void>> deleteAvatar() {
+        userProfileService.deleteAvatar();
+
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Avatar deleted",
+                null,
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

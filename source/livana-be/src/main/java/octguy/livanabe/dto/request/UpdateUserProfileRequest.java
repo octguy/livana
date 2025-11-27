@@ -3,6 +3,7 @@ package octguy.livanabe.dto.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -14,9 +15,5 @@ public class UpdateUserProfileRequest {
     private String phoneNumber;
 
     private String bio;
-
-    private String avatarUrl;
-
-    private String avatarPublicId;
 
 }

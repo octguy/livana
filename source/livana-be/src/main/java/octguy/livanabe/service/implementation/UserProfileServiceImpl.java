@@ -10,8 +10,10 @@ import octguy.livanabe.exception.UserNotFoundException;
 import octguy.livanabe.repository.UserProfileRepository;
 import octguy.livanabe.service.IUserProfileService;
 import octguy.livanabe.utils.SecurityUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +26,9 @@ public class UserProfileServiceImpl implements IUserProfileService {
     private final UserProfileRepository userProfileRepository;
 
     private final Cloudinary cloudinary;
+
+    @Value("${spring.cloudinary.folder}")
+    private String folder;
 
     public UserProfileServiceImpl(UserProfileRepository userProfileRepository, Cloudinary cloudinary) {
         this.cloudinary = cloudinary;
@@ -89,13 +94,13 @@ public class UserProfileServiceImpl implements IUserProfileService {
             current.setBio(updatedProfile.getBio());
         }
 
-        if (updatedProfile.getAvatarUrl() != null) {
-            current.setAvatarUrl(updatedProfile.getAvatarUrl());
-        }
+//        if (updatedProfile.getAvatarUrl() != null) {
+//            current.setAvatarUrl(updatedProfile.getAvatarUrl());
+//        }
 
-        if (updatedProfile.getAvatarPublicId() != null) {
-            current.setAvatarPublicId(updatedProfile.getAvatarPublicId());
-        }
+//        if (updatedProfile.getAvatarPublicId() != null) {
+//            current.setAvatarPublicId(updatedProfile.getAvatarPublicId());
+//        }
 
         current.setUpdatedAt(LocalDateTime.now());
         userProfileRepository.save(current);
@@ -114,7 +119,57 @@ public class UserProfileServiceImpl implements IUserProfileService {
 
     @Override
     @Transactional
-    public void deleteAvatar(UUID id) {
+    public UserProfileResponse uploadAvatar(MultipartFile file) {
+        User currentUser = SecurityUtils.getCurrentUser();
+        Optional<UserProfile> existing = userProfileRepository.findByUserId(currentUser.getId());
+        if (existing.isEmpty()) {
+            throw new UserNotFoundException("User not found when updating profile with user id: " + currentUser.getId());
+        }
+        UserProfile current = existing.get();
+
+        // Delete existing avatar on cloudinary if exists
+        if (current.getAvatarPublicId() != null && current.getAvatarUrl() != null) {
+            deleteAvatar();
+        }
+
+        // Upload to cloudinary
+        String avatarUrl;
+        String avatarPublicId;
+        try {
+            var uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                    "folder", folder,
+                    "overwrite", true,
+                    "resource_type", "image"
+            ));
+            avatarUrl = uploadResult.get("secure_url").toString();
+            avatarPublicId = uploadResult.get("public_id").toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to upload avatar to Cloudinary: " + e.getMessage());
+        }
+
+        // Update in database
+        current.setAvatarUrl(avatarUrl);
+        current.setAvatarPublicId(avatarPublicId);
+        current.setUpdatedAt(LocalDateTime.now());
+        userProfileRepository.save(current);
+
+        return UserProfileResponse.builder()
+                .id(currentUser.getId())
+                .username(currentUser.getUsername())
+                .email(currentUser.getEmail())
+                .fullName(current.getDisplayName())
+                .phoneNumber(current.getPhoneNumber())
+                .bio(current.getBio())
+                .avatarUrl(current.getAvatarUrl())
+                .avatarPublicId(current.getAvatarPublicId())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public void deleteAvatar() {
+        User currentUser = SecurityUtils.getCurrentUser();
+        UUID id = currentUser.getId();
         Optional<UserProfile> existing = userProfileRepository.findByUserId(id);
         if (existing.isEmpty()) {
             throw new UserNotFoundException("User not found when updating profile with user id: " + id);
