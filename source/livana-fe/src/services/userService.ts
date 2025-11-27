@@ -2,20 +2,14 @@ import type { User } from "@/types/response/userResponse";
 import type { ApiResponse } from "@/types/response/apiResponse";
 import api from "@/lib/axios";
 import type { UserInterestResponse } from "@/types/response/userInterestResponse";
+import type { UpdateProfileRequest } from "@/types/request/updateProfileRequest";
 
 export const userService = {
   update: async (
-    id: string,
-    updatedProfile: {
-      fullName?: string;
-      phoneNumber?: string;
-      bio?: string;
-      avatarUrl?: string;
-      avatarPublicId?: string;
-    }
+    updatedProfile: UpdateProfileRequest
   ): Promise<ApiResponse<User>> => {
     const response = await api.put<ApiResponse<User>>(
-      `/users/profiles/${id}`,
+      `/users/profiles`,
       updatedProfile,
       {
         withCredentials: true,

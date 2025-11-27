@@ -75,7 +75,10 @@ public class UserProfileServiceImpl implements IUserProfileService {
 
     @Override
     @Transactional
-    public UserProfileResponse update(UUID id, UpdateUserProfileRequest updatedProfile) {
+    public UserProfileResponse update(UpdateUserProfileRequest updatedProfile) {
+        User currentUser = SecurityUtils.getCurrentUser();
+        UUID id = currentUser.getId();
+
         Optional<UserProfile> existing = userProfileRepository.findByUserId(id);
         if (existing.isEmpty()) {
             throw new UserNotFoundException("User not found when updating profile with user id: " + id);
@@ -93,14 +96,6 @@ public class UserProfileServiceImpl implements IUserProfileService {
         if (updatedProfile.getBio() != null) {
             current.setBio(updatedProfile.getBio());
         }
-
-//        if (updatedProfile.getAvatarUrl() != null) {
-//            current.setAvatarUrl(updatedProfile.getAvatarUrl());
-//        }
-
-//        if (updatedProfile.getAvatarPublicId() != null) {
-//            current.setAvatarPublicId(updatedProfile.getAvatarPublicId());
-//        }
 
         current.setUpdatedAt(LocalDateTime.now());
         userProfileRepository.save(current);

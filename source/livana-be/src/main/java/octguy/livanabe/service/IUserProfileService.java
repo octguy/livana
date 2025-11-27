@@ -18,7 +18,7 @@ public interface IUserProfileService {
 
     UserProfile findById(UUID id);
 
-    UserProfileResponse update(UUID id, UpdateUserProfileRequest updateUserProfileRequest);
+    UserProfileResponse update(UpdateUserProfileRequest updateUserProfileRequest);
 
     UserProfileResponse uploadAvatar(MultipartFile file);
 

@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useProfileStore } from "@/stores/useProfileStore";
+import type { UpdateProfileRequest } from "@/types/request/updateProfileRequest";
 
 const profileSchema = z.object({
   firstName: z.string().min(1, "Họ là bắt buộc"),
@@ -59,15 +60,13 @@ export function ProfileFields() {
   const onSubmit = async (data: ProfileFormData) => {
     try {
       const fullName = `${data.firstName} ${data.lastName}`;
-      const updatedData = {
+      const updatedData: UpdateProfileRequest = {
         fullName,
         phoneNumber: data.phone,
         bio: data.bio,
-        avatarUrl: user?.avatarUrl || "",
-        avatarPublicId: user?.avatarPublicId || "",
       };
-      console.log("Cập nhật hồ sơ với dữ liệu:", data);
-      await update(user!.id, updatedData);
+      console.log("Cập nhật hồ sơ với dữ liệu:", updatedData);
+      await update(updatedData);
       await useAuthStore.getState().fetchMe();
     } catch (error) {
       console.error("Lỗi khi cập nhật hồ sơ:", error);

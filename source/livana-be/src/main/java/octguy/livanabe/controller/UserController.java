@@ -61,10 +61,9 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/profiles/{id}")
-    public ResponseEntity<ApiResponse<UserProfileResponse>> updateProfile(@PathVariable("id") UUID id,
-                                                                          @Valid @RequestBody UpdateUserProfileRequest updatedProfile) {
-        UserProfileResponse updated = userProfileService.update(id, updatedProfile);
+    @PutMapping("/profiles")
+    public ResponseEntity<ApiResponse<UserProfileResponse>> updateProfile(@Valid @RequestBody UpdateUserProfileRequest updatedProfile) {
+        UserProfileResponse updated = userProfileService.update(updatedProfile);
 
         ApiResponse<UserProfileResponse> response = new ApiResponse<>(
                 HttpStatus.OK,
@@ -105,7 +104,7 @@ public class UserController {
     }
 
     @PostMapping("/profiles/avatar")
-    public ResponseEntity<ApiResponse<UserProfileResponse>> updateUserProfile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ApiResponse<UserProfileResponse>> updateUserAvatar(@RequestParam("file") MultipartFile file) {
         UserProfileResponse updatedProfile = userProfileService.uploadAvatar(file);
 
         ApiResponse<UserProfileResponse> response = new ApiResponse<>(

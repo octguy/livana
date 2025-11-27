@@ -2,14 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera } from "lucide-react";
 import { useRef } from "react";
-import { cloudinaryService } from "@/services/cloudinaryService";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useProfileStore } from "@/stores/useProfileStore";
 import { toast } from "sonner";
+import { useProfileStore } from "@/stores/useProfileStore";
 
 export function ProfileAvatar() {
   const user = useAuthStore((s) => s.user);
-  const { update } = useProfileStore();
+  const { uploadAvatar } = useProfileStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatarClick = () => {
@@ -23,22 +22,9 @@ export function ProfileAvatar() {
     if (file) {
       const uploadPromise = async () => {
         console.log("File name:", file.name);
-
-        const response = await cloudinaryService.uploadImage(file);
+        const response = await uploadAvatar(file);
         console.log("Cloudinary upload response:", response);
-
-        const data = await response.json();
-        console.log("Uploaded image URL:", data.secure_url);
-        console.log("Uploaded image public ID:", data.public_id);
-
-        const updatedData = {
-          fullName: user?.fullName,
-          phoneNumber: user?.phoneNumber,
-          bio: user?.bio,
-          avatarUrl: data.secure_url,
-          avatarPublicId: data.public_id,
-        };
-        await update(user!.id, updatedData);
+        await useAuthStore.getState().fetchMe();
       };
 
       toast.promise(uploadPromise(), {

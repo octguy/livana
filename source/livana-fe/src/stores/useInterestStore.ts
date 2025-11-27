@@ -21,7 +21,7 @@ export const useInterestStore = create<InterestState>((set, get) => ({
       set({ loading: true });
       const response = await interestService.getAllInterests();
       get().setListInterests(response.data);
-      console.log("Lấy tất cả sở thích response:", response);
+      // console.log("Lấy tất cả sở thích response:", response);
       return response;
     } catch (error) {
       // toast.error("Cập nhật hồ sơ không thành công. Vui lòng thử lại.");
@@ -36,7 +36,7 @@ export const useInterestStore = create<InterestState>((set, get) => ({
     try {
       set({ loading: true });
       const response = await userService.getUserInterests();
-      console.log("Lấy sở thích người dùng response:", response);
+      // console.log("Lấy sở thích người dùng response:", response);
       get().setUserInterests(response.data);
       return response;
     } catch (error) {

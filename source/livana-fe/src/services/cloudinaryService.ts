@@ -1,26 +1,17 @@
+import api from "@/lib/axios";
 import { toast } from "sonner";
+import type { ApiResponse } from "@/types/response/apiResponse";
+import type { User } from "@/types/response/userResponse";
 
 export const cloudinaryService = {
-  uploadImage: async (file: File): Promise<Response> => {
-    const url = `https://api.cloudinary.com/v1_1/${
-      import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
-    }/image/upload`;
-
+  uploadImage: async (file: File): Promise<ApiResponse<User>> => {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append(
-        "upload_preset",
-        import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
-      );
-      formData.append("cloud_name", import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
-
-      const response = await fetch(url, {
-        method: "POST",
-        body: formData,
+      const response = await api.post("users/profiles/avatar", formData, {
+        withCredentials: true,
       });
-      // toast.success("Tải ảnh đại diện thành công!");
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Lỗi khi tải ảnh lên Cloudinary:", error);
       toast.error("Lỗi khi tải ảnh đại diện. Vui lòng thử lại.");
