@@ -4,10 +4,13 @@ import { Menu } from "lucide-react";
 import { SettingDropdown } from "../setting/setting-dropdown";
 import { useNavigate } from "react-router";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { HostingDialog } from "../hosting/hosting-dialog";
+import { useState } from "react";
 
 export function Header() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
+  const [hostingDialogOpen, setHostingDialogOpen] = useState(false);
 
   return (
     <header className="border-b border-border sticky top-0 bg-background z-50">
@@ -38,7 +41,12 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" className="hidden md:inline-flex">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="hidden md:inline-flex"
+            onClick={() => setHostingDialogOpen(true)}
+          >
             Chuyển sang hosting
           </Button>
           <Button variant="ghost" size="icon" className="md:hidden">
@@ -54,6 +62,10 @@ export function Header() {
           <SettingDropdown />
         </div>
       </div>
+      <HostingDialog
+        open={hostingDialogOpen}
+        onOpenChange={setHostingDialogOpen}
+      />
     </header>
   );
 }

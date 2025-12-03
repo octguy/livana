@@ -8,6 +8,8 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import { ProfilePage } from "./pages/setting/ProfilePage";
+import { CreateHomePage } from "@/pages/host/CreateHomePage";
+import { CreateExperiencePage } from "@/pages/host/CreateExperiencePage";
 
 function App() {
   return (
@@ -26,6 +28,11 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/host/homes/create" element={<CreateHomePage />} />
+            <Route
+              path="/host/experiences/create"
+              element={<CreateExperiencePage />}
+            />
           </Route>
         </Routes>
       </BrowserRouter>
