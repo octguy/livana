@@ -23,7 +23,7 @@ export function CreateHomePage() {
       setStep(2);
     } else if (step === 2 && roomType) {
       console.log("Creating home listing:", { homeType, roomType });
-      navigate("/host/homes/details");
+      navigate("/host/homes/location");
     }
   };
 

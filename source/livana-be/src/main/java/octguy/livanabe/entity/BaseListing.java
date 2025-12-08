@@ -35,6 +35,9 @@ public abstract class BaseListing extends BaseEntity {
     @Column(name="address", nullable = false, length = 300)
     private String address;
 
+    @Column(name="capacity", nullable = false)
+    private int capacity;
+
     @Column(name="base_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal basePrice;
 

@@ -10,6 +10,7 @@ import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import { ProfilePage } from "./pages/setting/ProfilePage";
 import { CreateHomePage } from "@/pages/host/CreateHomePage";
 import { CreateExperiencePage } from "@/pages/host/CreateExperiencePage";
+import { HomeLocationPage } from "@/pages/host/HomeLocationPage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/" element={<DashboardPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/host/homes/create" element={<CreateHomePage />} />
+            <Route path="/host/homes/location" element={<HomeLocationPage />} />
             <Route
               path="/host/experiences/create"
               element={<CreateExperiencePage />}

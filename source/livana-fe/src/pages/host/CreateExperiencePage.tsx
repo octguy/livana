@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router";
 import { useExperienceCategoryStore } from "@/stores/useExperienceCategoryStore";
 
@@ -31,7 +30,7 @@ export function CreateExperiencePage() {
     <div className="min-h-screen bg-background flex flex-col">
       <div className="flex-1 flex items-center justify-center py-16 px-6">
         <div className="w-full max-w-5xl">
-          <h1 className="text-5xl font-semibold mb-16 text-center text-primary-foreground">
+          <h1 className="text-5xl font-semibold mb-16 text-center">
             What experience will you offer guests?
           </h1>
 
@@ -44,23 +43,23 @@ export function CreateExperiencePage() {
               {experienceCategories.map((category) => {
                 const isSelected = experienceType === category.id;
                 return (
-                  <Card
+                  <button
                     key={category.id}
                     className={`
-                      relative flex flex-col items-center justify-center gap-4 p-10 cursor-pointer transition-all hover:shadow-lg
+                      relative flex flex-col items-start gap-6 p-6 rounded-xl border-2 transition-all bg-white
                       ${
                         isSelected
-                          ? "border-2 border-foreground bg-muted/50"
-                          : "border-2 border-transparent hover:border-foreground/30"
+                          ? "border-foreground bg-muted/50"
+                          : "border-border hover:border-foreground/50"
                       }
                     `}
                     onClick={() => setExperienceType(category.id)}
                   >
-                    <div className="text-7xl mb-2">{category.icon}</div>
-                    <span className="text-base font-medium text-center">
+                    <span className="text-4xl">{category.icon}</span>
+                    <span className="text-base font-medium">
                       {category.name}
                     </span>
-                  </Card>
+                  </button>
                 );
               })}
             </div>
