@@ -1,5 +1,7 @@
 package octguy.livanabe.controller;
 
+import jakarta.validation.Valid;
+import octguy.livanabe.dto.request.CreatePropertyTypeRequest;
 import octguy.livanabe.dto.response.PropertyTypeResponse;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.service.IPropertyTypeService;
@@ -35,8 +37,8 @@ public class PropertyTypeController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<PropertyTypeResponse>> create(@RequestParam String name) {
-        PropertyTypeResponse createdPropertyType = propertyTypeService.create(name);
+    public ResponseEntity<ApiResponse<PropertyTypeResponse>> create(@Valid @RequestBody CreatePropertyTypeRequest request) {
+        PropertyTypeResponse createdPropertyType = propertyTypeService.create(request.getName(), request.getIcon());
 
         ApiResponse<PropertyTypeResponse> apiResponse = new ApiResponse<>(
                 HttpStatus.OK,
@@ -50,8 +52,8 @@ public class PropertyTypeController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<PropertyTypeResponse>> update(@PathVariable("id") UUID id,
-                                                                    @RequestParam String name) {
-        PropertyTypeResponse updatedPropertyType = propertyTypeService.update(id, name);
+                                                                    @Valid @RequestBody CreatePropertyTypeRequest request) {
+        PropertyTypeResponse updatedPropertyType = propertyTypeService.update(id, request.getName(), request.getIcon());
 
         ApiResponse<PropertyTypeResponse> apiResponse = new ApiResponse<>(
                 HttpStatus.OK,

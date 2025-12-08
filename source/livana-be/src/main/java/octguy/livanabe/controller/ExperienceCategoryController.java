@@ -1,5 +1,7 @@
 package octguy.livanabe.controller;
 
+import jakarta.validation.Valid;
+import octguy.livanabe.dto.request.CreateExperienceCategoryRequest;
 import octguy.livanabe.dto.response.ExperienceCategoryResponse;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.service.IExperienceCategoryService;
@@ -35,8 +37,8 @@ public class ExperienceCategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ExperienceCategoryResponse>> create(@RequestParam String name) {
-        ExperienceCategoryResponse createdExperienceCategory = experienceCategoryService.create(name);
+    public ResponseEntity<ApiResponse<ExperienceCategoryResponse>> create(@Valid @RequestBody CreateExperienceCategoryRequest request) {
+        ExperienceCategoryResponse createdExperienceCategory = experienceCategoryService.create(request.getName(), request.getIcon());
 
         ApiResponse<ExperienceCategoryResponse> apiResponse = new ApiResponse<>(
                 HttpStatus.OK,
@@ -50,8 +52,8 @@ public class ExperienceCategoryController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ExperienceCategoryResponse>> update(@PathVariable("id") UUID id,
-                                                                          @RequestParam String name) {
-        ExperienceCategoryResponse updatedExperienceCategory = experienceCategoryService.update(id, name);
+                                                                          @Valid @RequestBody CreateExperienceCategoryRequest request) {
+        ExperienceCategoryResponse updatedExperienceCategory = experienceCategoryService.update(id, request.getName(), request.getIcon());
 
         ApiResponse<ExperienceCategoryResponse> apiResponse = new ApiResponse<>(
                 HttpStatus.OK,

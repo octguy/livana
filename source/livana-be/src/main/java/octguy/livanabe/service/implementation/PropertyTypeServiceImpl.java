@@ -30,9 +30,10 @@ public class PropertyTypeServiceImpl implements IPropertyTypeService {
 
     @Override
     @Transactional
-    public PropertyTypeResponse create(String name) {
+    public PropertyTypeResponse create(String name, String icon) {
         PropertyType propertyType = new PropertyType();
         propertyType.setName(name);
+        propertyType.setIcon(icon);
         propertyType.setUpdatedAt(LocalDateTime.now());
         propertyTypeRepository.save(propertyType);
 
@@ -40,13 +41,14 @@ public class PropertyTypeServiceImpl implements IPropertyTypeService {
     }
 
     @Override
-    public PropertyTypeResponse update(UUID id,String name) {
+    public PropertyTypeResponse update(UUID id, String name, String icon) {
         Optional<PropertyType> propertyType = propertyTypeRepository.findById(id);
 
         if (propertyType.isEmpty()) return null;
 
         PropertyType updatedPropertyType = propertyType.get();
         updatedPropertyType.setName(name);
+        updatedPropertyType.setIcon(icon);
         propertyTypeRepository.save(updatedPropertyType);
 
         return toResponse(updatedPropertyType);
@@ -56,6 +58,7 @@ public class PropertyTypeServiceImpl implements IPropertyTypeService {
         return PropertyTypeResponse.builder()
                 .id(propertyType.getId())
                 .name(propertyType.getName())
+                .icon(propertyType.getIcon())
                 .build();
     }
 }

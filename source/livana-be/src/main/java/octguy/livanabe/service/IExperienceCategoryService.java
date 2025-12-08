@@ -9,7 +9,7 @@ public interface IExperienceCategoryService {
 
     List<ExperienceCategoryResponse> findAll();
 
-    ExperienceCategoryResponse create(String name);
+    ExperienceCategoryResponse create(String name, String icon);
 
-    ExperienceCategoryResponse update(UUID id, String name);
+    ExperienceCategoryResponse update(UUID id, String name, String icon);
 }

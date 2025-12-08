@@ -30,9 +30,10 @@ public class ExperienceCategoryServiceImpl implements IExperienceCategoryService
 
     @Override
     @Transactional
-    public ExperienceCategoryResponse create(String name) {
+    public ExperienceCategoryResponse create(String name, String icon) {
         ExperienceCategory experienceCategory = new ExperienceCategory();
         experienceCategory.setName(name);
+        experienceCategory.setIcon(icon);
         experienceCategory.setUpdatedAt(LocalDateTime.now());
         experienceCategoryRepository.save(experienceCategory);
 
@@ -40,13 +41,14 @@ public class ExperienceCategoryServiceImpl implements IExperienceCategoryService
     }
 
     @Override
-    public ExperienceCategoryResponse update(UUID id, String name) {
+    public ExperienceCategoryResponse update(UUID id, String name, String icon) {
         Optional<ExperienceCategory> experienceCategory = experienceCategoryRepository.findById(id);
 
         if (experienceCategory.isEmpty()) return null;
 
         ExperienceCategory updatedExperienceCategory = experienceCategory.get();
         updatedExperienceCategory.setName(name);
+        updatedExperienceCategory.setIcon(icon);
         experienceCategoryRepository.save(updatedExperienceCategory);
 
         return toResponse(updatedExperienceCategory);
@@ -56,6 +58,7 @@ public class ExperienceCategoryServiceImpl implements IExperienceCategoryService
         return ExperienceCategoryResponse.builder()
                 .id(experienceCategory.getId())
                 .name(experienceCategory.getName())
+                .icon(experienceCategory.getIcon())
                 .build();
     }
 }

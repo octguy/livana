@@ -23,6 +23,9 @@ public class ExperienceCategory extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(nullable = true)
+    private String icon;
+
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();

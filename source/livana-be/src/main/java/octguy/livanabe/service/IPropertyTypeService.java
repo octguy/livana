@@ -9,9 +9,9 @@ public interface IPropertyTypeService {
 
     List<PropertyTypeResponse> findAll();
 
-    PropertyTypeResponse create(String name);
+    PropertyTypeResponse create(String name, String icon);
 
-    PropertyTypeResponse update(UUID id, String name);
+    PropertyTypeResponse update(UUID id, String name, String icon);
 
 //    UserInterestsResponse setUserInterests(SetInterestRequest request);
 

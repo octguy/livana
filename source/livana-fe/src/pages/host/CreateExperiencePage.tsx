@@ -1,48 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router";
-import { Palette, Pizza, Landmark, TentTree, WavesLadder } from "lucide-react";
+import { useExperienceCategoryStore } from "@/stores/useExperienceCategoryStore";
 
-type ExperienceType =
-  | "art-design"
-  | "fitness-wellness"
-  | "food-drink"
-  | "history-culture"
-  | "nature-outdoors"
-  | null;
-
-const experienceTypes = [
-  {
-    value: "art-design",
-    label: "Art and design",
-    image: <Palette className="h-12 w-12" />,
-  },
-  {
-    value: "fitness-wellness",
-    label: "Fitness and wellness",
-    image: <WavesLadder className="h-12 w-12" />,
-  },
-  {
-    value: "food-drink",
-    label: "Food and drink",
-    image: <Pizza className="h-12 w-12" />,
-  },
-  {
-    value: "history-culture",
-    label: "History and culture",
-    image: <Landmark className="h-12 w-12" />,
-  },
-  {
-    value: "nature-outdoors",
-    label: "Nature and outdoors",
-    image: <TentTree className="h-12 w-12" />,
-  },
-];
+type ExperienceType = string | null;
 
 export function CreateExperiencePage() {
   const navigate = useNavigate();
   const [experienceType, setExperienceType] = useState<ExperienceType>(null);
+  const { experienceCategories, loading, getAllExperienceCategories } =
+    useExperienceCategoryStore();
+
+  useEffect(() => {
+    getAllExperienceCategories();
+  }, [getAllExperienceCategories]);
 
   const handleNext = () => {
     if (experienceType) {
@@ -63,32 +35,36 @@ export function CreateExperiencePage() {
             What experience will you offer guests?
           </h1>
 
-          <div className="grid grid-cols-5 gap-6 mb-16">
-            {experienceTypes.map((type) => {
-              const isSelected = experienceType === type.value;
-              return (
-                <Card
-                  key={type.value}
-                  className={`
-                    relative flex flex-col items-center justify-center gap-4 p-10 cursor-pointer transition-all hover:shadow-lg
-                    ${
-                      isSelected
-                        ? "border-2 border-foreground bg-muted/50"
-                        : "border-2 border-transparent hover:border-foreground/30"
-                    }
-                  `}
-                  onClick={() =>
-                    setExperienceType(type.value as ExperienceType)
-                  }
-                >
-                  <div className="text-7xl mb-2">{type.image}</div>
-                  <span className="text-base font-medium text-center">
-                    {type.label}
-                  </span>
-                </Card>
-              );
-            })}
-          </div>
+          {loading ? (
+            <div className="text-center py-12">
+              Loading experience categories...
+            </div>
+          ) : (
+            <div className="grid grid-cols-5 gap-6 mb-16">
+              {experienceCategories.map((category) => {
+                const isSelected = experienceType === category.id;
+                return (
+                  <Card
+                    key={category.id}
+                    className={`
+                      relative flex flex-col items-center justify-center gap-4 p-10 cursor-pointer transition-all hover:shadow-lg
+                      ${
+                        isSelected
+                          ? "border-2 border-foreground bg-muted/50"
+                          : "border-2 border-transparent hover:border-foreground/30"
+                      }
+                    `}
+                    onClick={() => setExperienceType(category.id)}
+                  >
+                    <div className="text-7xl mb-2">{category.icon}</div>
+                    <span className="text-base font-medium text-center">
+                      {category.name}
+                    </span>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
 
           <div className="flex items-center justify-between">
             <Button variant="ghost" onClick={handleBack} size="lg">

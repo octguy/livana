@@ -12,4 +12,6 @@ public class ExperienceCategoryResponse {
     private UUID id;
 
     private String name;
+
+    private String icon;
 }

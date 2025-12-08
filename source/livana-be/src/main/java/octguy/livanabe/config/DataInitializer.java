@@ -7,9 +7,11 @@ import octguy.livanabe.service.IInterestService;
 import octguy.livanabe.service.IPropertyTypeService;
 import octguy.livanabe.service.IRoleService;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
+@Order(2) // Run after DataMigration
 public class DataInitializer implements CommandLineRunner {
 
     private final IRoleService roleService;
@@ -255,18 +257,18 @@ public class DataInitializer implements CommandLineRunner {
 
     private void initializePropertyType() {
         if (propertyTypeService.findAll().isEmpty()) {
-            propertyTypeService.create("House");
-            propertyTypeService.create("Apartment");
-            propertyTypeService.create("Barn");
-            propertyTypeService.create("Bed & Breakfast");
-            propertyTypeService.create("Boat");
-            propertyTypeService.create("Cabin");
-            propertyTypeService.create("Camper/RV");
-            propertyTypeService.create("Casa particular");
-            propertyTypeService.create("Castle");
-            propertyTypeService.create("Cave");
-            propertyTypeService.create("Container");
-            propertyTypeService.create("Cycladic Home");
+            propertyTypeService.create("House", "🏠");
+            propertyTypeService.create("Apartment", "🏢");
+            propertyTypeService.create("Barn", "🛖");
+            propertyTypeService.create("Bed & Breakfast", "🛏️");
+            propertyTypeService.create("Boat", "⛵");
+            propertyTypeService.create("Cabin", "🏕️");
+            propertyTypeService.create("Camper/RV", "🚐");
+            propertyTypeService.create("Casa particular", "🏘️");
+            propertyTypeService.create("Castle", "🏰");
+            propertyTypeService.create("Cave", "🕳️");
+            propertyTypeService.create("Container", "📦");
+            propertyTypeService.create("Cycladic Home", "🏛️");
             System.out.println("Initialized default property types.");
         }
         else {
@@ -276,11 +278,11 @@ public class DataInitializer implements CommandLineRunner {
 
     private void initializeExperienceCategories() {
         if (experienceCategoryService.findAll().isEmpty()) {
-            experienceCategoryService.create("Art and design");
-            experienceCategoryService.create("Fitness and wellness");
-            experienceCategoryService.create("Food and drink");
-            experienceCategoryService.create("History and culture");
-            experienceCategoryService.create("Nature and outdoors");
+            experienceCategoryService.create("Art and design", "🎨");
+            experienceCategoryService.create("Fitness and wellness", "🧘");
+            experienceCategoryService.create("Food and drink", "🍳");
+            experienceCategoryService.create("History and culture", "🏛️");
+            experienceCategoryService.create("Nature and outdoors", "🌲");
             System.out.println("Initialized default experience categories.");
         }
         else {

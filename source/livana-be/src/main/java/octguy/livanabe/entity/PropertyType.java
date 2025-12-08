@@ -23,6 +23,9 @@ public class PropertyType extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column
+    private String icon;
+
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();
