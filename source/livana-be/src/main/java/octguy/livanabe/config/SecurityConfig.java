@@ -69,7 +69,8 @@ public class SecurityConfig {
                                          "/api/v1/users/me",
                                          "/api/v1/users/**",
                                          "/api/v1/interests/**",
-                                         "/api/v1/property-types/**").hasAnyRole("USER", "ADMIN")
+                                         "/api/v1/property-types/**",
+                                         "/api/v1/experience-categories/**").hasAnyRole("USER", "ADMIN")
 
                         .requestMatchers("/swagger-ui/**",
                                 "/swagger-ui.html",

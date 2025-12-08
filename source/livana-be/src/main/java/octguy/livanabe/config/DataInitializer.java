@@ -2,6 +2,7 @@ package octguy.livanabe.config;
 
 import octguy.livanabe.dto.request.CreateInterestRequest;
 import octguy.livanabe.enums.UserRole;
+import octguy.livanabe.service.IExperienceCategoryService;
 import octguy.livanabe.service.IInterestService;
 import octguy.livanabe.service.IPropertyTypeService;
 import octguy.livanabe.service.IRoleService;
@@ -17,12 +18,16 @@ public class DataInitializer implements CommandLineRunner {
 
     private final IPropertyTypeService propertyTypeService;
 
+    private final IExperienceCategoryService experienceCategoryService;
+
     public DataInitializer(IRoleService roleService,
                            IInterestService interestService,
-                           IPropertyTypeService propertyTypeService) {
+                           IPropertyTypeService propertyTypeService,
+                           IExperienceCategoryService experienceCategoryService) {
         this.propertyTypeService = propertyTypeService;
         this.interestService = interestService;
         this.roleService = roleService;
+        this.experienceCategoryService = experienceCategoryService;
     }
 
     @Override
@@ -37,6 +42,9 @@ public class DataInitializer implements CommandLineRunner {
 
         System.out.println("Checking and initializing property types...");
         initializePropertyType();
+
+        System.out.println("Checking and initializing experience categories...");
+        initializeExperienceCategories();
     }
 
     private void initializeRoles() {
@@ -263,6 +271,20 @@ public class DataInitializer implements CommandLineRunner {
         }
         else {
             System.out.println("Property types already initialized.");
+        }
+    }
+
+    private void initializeExperienceCategories() {
+        if (experienceCategoryService.findAll().isEmpty()) {
+            experienceCategoryService.create("Art and design");
+            experienceCategoryService.create("Fitness and wellness");
+            experienceCategoryService.create("Food and drink");
+            experienceCategoryService.create("History and culture");
+            experienceCategoryService.create("Nature and outdoors");
+            System.out.println("Initialized default experience categories.");
+        }
+        else {
+            System.out.println("Experience categories already initialized.");
         }
     }
 }
