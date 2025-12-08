@@ -3,6 +3,7 @@ package octguy.livanabe.config;
 import octguy.livanabe.dto.request.CreateInterestRequest;
 import octguy.livanabe.enums.UserRole;
 import octguy.livanabe.service.IInterestService;
+import octguy.livanabe.service.IPropertyTypeService;
 import octguy.livanabe.service.IRoleService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,12 @@ public class DataInitializer implements CommandLineRunner {
 
     private final IInterestService interestService;
 
-    public DataInitializer(IRoleService roleService, IInterestService interestService) {
+    private final IPropertyTypeService propertyTypeService;
+
+    public DataInitializer(IRoleService roleService,
+                           IInterestService interestService,
+                           IPropertyTypeService propertyTypeService) {
+        this.propertyTypeService = propertyTypeService;
         this.interestService = interestService;
         this.roleService = roleService;
     }
@@ -22,14 +28,18 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         System.out.println("DataInitializer run method executed.");
+
         System.out.println("Checking and initializing roles...");
         initializeRoles();
+
         System.out.println("Checking and initializing interests...");
         initializeInterests();
+
+        System.out.println("Checking and initializing property types...");
+        initializePropertyType();
     }
 
     private void initializeRoles() {
-        // Add role initialization logic here if needed
         if (roleService.findAll().isEmpty()) {
             roleService.createNewRole(UserRole.ROLE_ADMIN);
             roleService.createNewRole(UserRole.ROLE_USER);
@@ -232,6 +242,27 @@ public class DataInitializer implements CommandLineRunner {
         }
         else {
             System.out.println("Interests already initialized.");
+        }
+    }
+
+    private void initializePropertyType() {
+        if (propertyTypeService.findAll().isEmpty()) {
+            propertyTypeService.create("House");
+            propertyTypeService.create("Apartment");
+            propertyTypeService.create("Barn");
+            propertyTypeService.create("Bed & Breakfast");
+            propertyTypeService.create("Boat");
+            propertyTypeService.create("Cabin");
+            propertyTypeService.create("Camper/RV");
+            propertyTypeService.create("Casa particular");
+            propertyTypeService.create("Castle");
+            propertyTypeService.create("Cave");
+            propertyTypeService.create("Container");
+            propertyTypeService.create("Cycladic Home");
+            System.out.println("Initialized default property types.");
+        }
+        else {
+            System.out.println("Property types already initialized.");
         }
     }
 }
