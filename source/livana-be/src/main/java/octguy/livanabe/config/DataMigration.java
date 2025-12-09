@@ -39,14 +39,14 @@ public class DataMigration implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        System.out.println("Running data migration...");
+//        System.out.println("Running data migration...");
         
         migratePropertyTypeIcons();
         migrateExperienceCategoryIcons();
         migrateFacilityIcons();
         migrateAmenityIcons();
         
-        System.out.println("Data migration completed.");
+//        System.out.println("Data migration completed.");
     }
 
     private void migratePropertyTypeIcons() {
@@ -73,13 +73,13 @@ public class DataMigration implements CommandLineRunner {
                 propertyType.setIcon(icon);
                 propertyTypeRepository.save(propertyType);
                 updated = true;
-                System.out.println("Updated icon for property type: " + propertyType.getName() + " -> " + icon);
+//                System.out.println("Updated icon for property type: " + propertyType.getName() + " -> " + icon);
             }
         }
         
-        if (!updated) {
-            System.out.println("No property types needed icon migration.");
-        }
+//        if (!updated) {
+//            System.out.println("No property types needed icon migration.");
+//        }
     }
 
     private void migrateExperienceCategoryIcons() {
@@ -103,9 +103,9 @@ public class DataMigration implements CommandLineRunner {
             }
         }
         
-        if (!updated) {
-            System.out.println("No experience categories needed icon migration.");
-        }
+//        if (!updated) {
+//            System.out.println("No experience categories needed icon migration.");
+//        }
     }
 
     private void migrateFacilityIcons() {
@@ -128,9 +128,9 @@ public class DataMigration implements CommandLineRunner {
             }
         }
         
-        if (!updated) {
-            System.out.println("No facilities needed icon migration.");
-        }
+//        if (!updated) {
+//            System.out.println("No facilities needed icon migration.");
+//        }
     }
 
     private void migrateAmenityIcons() {
@@ -175,8 +175,8 @@ public class DataMigration implements CommandLineRunner {
             }
         }
         
-        if (!updated) {
-            System.out.println("No amenities needed icon migration.");
-        }
+//        if (!updated) {
+//            System.out.println("No amenities needed icon migration.");
+//        }
     }
 }

@@ -7,8 +7,19 @@ export const useInterestStore = create<InterestState>((set, get) => ({
   loading: false,
   interests: [],
   userInterests: null,
+  currentPage: 0,
+  totalPages: 0,
+  totalElements: 0,
 
-  clearState: () => set({ loading: false, interests: [], userInterests: null }),
+  clearState: () =>
+    set({
+      loading: false,
+      interests: [],
+      userInterests: null,
+      currentPage: 0,
+      totalPages: 0,
+      totalElements: 0,
+    }),
 
   setListInterests: (interests) => {
     set({ interests });
@@ -18,15 +29,28 @@ export const useInterestStore = create<InterestState>((set, get) => ({
     set({ userInterests });
   },
 
-  getAllInterests: async () => {
+  setPage: (page) => {
+    set({ currentPage: page });
+  },
+
+  setPaginationInfo: (totalPages, totalElements) => {
+    set({ totalPages, totalElements });
+  },
+
+  getAllInterests: async (page = 0, size = 20) => {
     try {
       set({ loading: true });
-      const response = await interestService.getAllInterests();
-      get().setListInterests(response.data);
-      // console.log("Lấy tất cả sở thích response:", response);
+      const response = await interestService.getAllInterests(page, size);
+      // Handle paginated response structure
+      const paginatedData = response.data as any;
+      get().setListInterests(paginatedData.content || []);
+      get().setPage(paginatedData.number || page);
+      get().setPaginationInfo(
+        paginatedData.totalPages || 0,
+        paginatedData.totalElements || 0
+      );
       return response;
     } catch (error) {
-      // toast.error("Cập nhật hồ sơ không thành công. Vui lòng thử lại.");
       console.error("Lấy tất cả sở thích thất bại:", error);
       throw error;
     } finally {

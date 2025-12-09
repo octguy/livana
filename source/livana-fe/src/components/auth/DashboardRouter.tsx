@@ -7,9 +7,9 @@ export function DashboardRouter() {
   const loading = useAuthStore((s) => s.loading);
 
   // Debug logging
-  console.log("DashboardRouter - User:", user);
-  console.log("DashboardRouter - Roles:", user?.roles);
-  console.log("DashboardRouter - Loading:", loading);
+  // console.log("DashboardRouter - User:", user);
+  // console.log("DashboardRouter - Roles:", user?.roles);
+  // console.log("DashboardRouter - Loading:", loading);
 
   // Wait for user data to load
   if (!user || loading) {
@@ -23,7 +23,7 @@ export function DashboardRouter() {
   // Check if user has ROLE_ADMIN
   const isAdmin = user.roles?.includes("ROLE_ADMIN");
 
-  console.log("DashboardRouter - Is Admin:", isAdmin);
+  // console.log("DashboardRouter - Is Admin:", isAdmin);
 
   // Route to admin dashboard if user is admin, otherwise user dashboard
   if (isAdmin) {

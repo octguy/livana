@@ -11,6 +11,10 @@ import octguy.livanabe.repository.InterestRepository;
 import octguy.livanabe.repository.UserRepository;
 import octguy.livanabe.service.IInterestService;
 import octguy.livanabe.utils.SecurityUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +32,18 @@ public class InterestServiceImpl implements IInterestService {
     public InterestServiceImpl(InterestRepository interestRepository, UserRepository userRepository) {
         this.userRepository = userRepository;
         this.interestRepository = interestRepository;
+    }
+
+    @Override
+    public Page<InterestResponse> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+        return interestRepository.findAll(pageable)
+                .map(interest -> InterestResponse.builder()
+                        .id(interest.getId())
+                        .key(interest.getKey())
+                        .name(interest.getName())
+                        .icon(interest.getIcon())
+                        .build());
     }
 
     @Override

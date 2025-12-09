@@ -52,16 +52,16 @@ public class DataInitializer implements CommandLineRunner {
 //        System.out.println("Checking and initializing interests...");
         initializeInterests();
 
-        System.out.println("Checking and initializing property types...");
+//        System.out.println("Checking and initializing property types...");
         initializePropertyType();
 
-        System.out.println("Checking and initializing experience categories...");
+//        System.out.println("Checking and initializing experience categories...");
         initializeExperienceCategories();
 
-        System.out.println("Checking and initializing facilities...");
+//        System.out.println("Checking and initializing facilities...");
         initializeFacilities();
 
-        System.out.println("Checking and initializing amenities...");
+//        System.out.println("Checking and initializing amenities...");
         initializeAmenities();
     }
 
@@ -71,9 +71,6 @@ public class DataInitializer implements CommandLineRunner {
             roleService.createNewRole(UserRole.ROLE_USER);
             roleService.createNewRole(UserRole.ROLE_MODERATOR);
 //            System.out.println("Initialized default roles.");
-        }
-        else {
-//            System.out.println("Roles already initialized.");
         }
     }
 
@@ -266,9 +263,6 @@ public class DataInitializer implements CommandLineRunner {
             interestService.create(new CreateInterestRequest("Zen gardening", "🌿"));
 
         }
-        else {
-//            System.out.println("Interests already initialized.");
-        }
     }
 
     private void initializePropertyType() {
@@ -287,9 +281,6 @@ public class DataInitializer implements CommandLineRunner {
             propertyTypeService.create("Cycladic Home", "🏛️");
             System.out.println("Initialized default property types.");
         }
-        else {
-//            System.out.println("Property types already initialized.");
-        }
     }
 
     private void initializeExperienceCategories() {
@@ -301,9 +292,6 @@ public class DataInitializer implements CommandLineRunner {
             experienceCategoryService.create("Nature and outdoors", "🌲");
             System.out.println("Initialized default experience categories.");
         }
-        else {
-            System.out.println("Experience categories already initialized.");
-        }
     }
 
     private void initializeFacilities() {
@@ -313,9 +301,6 @@ public class DataInitializer implements CommandLineRunner {
             facilityService.create("Bathroom", "🛁");
             facilityService.create("Toilet", "🚽");
             System.out.println("Initialized default facilities.");
-        }
-        else {
-            System.out.println("Facilities already initialized.");
         }
     }
 
@@ -348,9 +333,6 @@ public class DataInitializer implements CommandLineRunner {
             amenityService.create("Fire extinguisher", "🧯");
             amenityService.create("Carbon monoxide alarm", "⚠️");
             System.out.println("Initialized default amenities.");
-        }
-        else {
-            System.out.println("Amenities already initialized.");
         }
     }
 }
