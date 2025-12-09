@@ -18,7 +18,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -118,6 +117,16 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     @Transactional
     public AuthResponse register(RegisterRequest request) {
+        return createUserWithRole(request, UserRole.ROLE_USER);
+    }
+
+    @Override
+    @Transactional
+    public AuthResponse createAdmin(RegisterRequest request) {
+        return createUserWithRole(request, UserRole.ROLE_ADMIN);
+    }
+
+    private User createUser(RegisterRequest request, UserRole roleName) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new UserAlreadyExistException("Email already in use");
         }
@@ -126,7 +135,7 @@ public class AuthServiceImpl implements IAuthService {
             throw new UserAlreadyExistException("Username already in use");
         }
 
-        // Create a new record of user
+        // Create user
         User user = new User();
         user.setId(UUID.randomUUID());
         user.setEmail(request.getEmail());
@@ -136,43 +145,51 @@ public class AuthServiceImpl implements IAuthService {
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
-        Role role = roleRepository.findByName(UserRole.ROLE_USER)
+        // Assign role
+        Role role = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
-        // Assign role to user
-        user.addRole(role); // role user will be added (cascade = CascadeType.ALL)
-        userRepository.save(user);
+        user.addRole(role);
 
-        // Create a new record of auth credentials
+        return userRepository.save(user);
+    }
+
+    private AuthCredential createCredential(User user, String password) {
         AuthCredential authCredential = new AuthCredential();
         authCredential.setId(UUID.randomUUID());
         authCredential.setUser(user);
-        authCredential.setPassword(passwordEncoder.encode(request.getPassword()));
+        authCredential.setPassword(passwordEncoder.encode(password));
         String verificationCode = generateVerificationCode();
         authCredential.setVerificationCode(verificationCode);
         authCredential.setVerificationExpiration(LocalDateTime.now().plusMinutes(expiration));
         authCredential.setCreatedAt(LocalDateTime.now());
         authCredential.setUpdatedAt(LocalDateTime.now());
         authCredentialRepository.save(authCredential);
+        return authCredential;
+    }
 
-        // Create user profile
-        String fullName = request.getFirstName() + " " + request.getLastName();
+    private void createUserProfile(User user, RegisterRequest request) {
         UserProfile userProfile = new UserProfile();
         userProfile.setId(UUID.randomUUID());
         userProfile.setUser(user);
-        userProfile.setDisplayName(fullName);
+        userProfile.setDisplayName(request.getFirstName() + " " + request.getLastName());
         userProfile.setCreatedAt(LocalDateTime.now());
         userProfile.setUpdatedAt(LocalDateTime.now());
         userProfileService.create(userProfile);
+    }
 
-        sendVerificationEmail(user.getEmail(), verificationCode);
+    private AuthResponse createUserWithRole(RegisterRequest request, UserRole roleName) {
+        User user = createUser(request, roleName);
+        AuthCredential credential = createCredential(user, request.getPassword());
+
+        createUserProfile(user, request);
+
+        sendVerificationEmail(user.getEmail(), credential.getVerificationCode());
 
         return AuthResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .username(user.getUsername())
-                .accessToken(null)
-                .refreshToken(null)
                 .build();
     }
 

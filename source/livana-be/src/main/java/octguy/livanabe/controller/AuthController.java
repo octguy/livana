@@ -29,7 +29,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @Operation(summary = "Login a user", description = "Authenticate a user and send email verification")
+    @Operation(summary = "Register a user", description = "Authenticate a user and send email verification")
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@RequestBody @Valid RegisterRequest registerRequest) {
         AuthResponse authResponse = authService.register(registerRequest);
@@ -37,6 +37,20 @@ public class AuthController {
         ApiResponse<AuthResponse> apiResponse = new ApiResponse<>(
                 HttpStatus.CREATED,
                 "User registered successfully",
+                authResponse,
+                null
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
+    @Operation(summary = "Register an admin", description = "Authenticate a user and send email verification")
+    @PostMapping("/register-admin")
+    public ResponseEntity<ApiResponse<AuthResponse>> registerAdmin(@RequestBody @Valid RegisterRequest registerRequest) {
+        AuthResponse authResponse = authService.createAdmin(registerRequest);
+
+        ApiResponse<AuthResponse> apiResponse = new ApiResponse<>(
+                HttpStatus.CREATED,
+                "Admin registered successfully",
                 authResponse,
                 null
         );
