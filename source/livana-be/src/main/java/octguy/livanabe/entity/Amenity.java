@@ -23,6 +23,9 @@ public class Amenity extends BaseEntity {
     @Column(name="name", nullable = false, length = 100)
     private String name;
 
+    @Column
+    private String icon;
+
     @PrePersist
     protected void onCreate() {
         this.setCreatedAt(LocalDateTime.now());

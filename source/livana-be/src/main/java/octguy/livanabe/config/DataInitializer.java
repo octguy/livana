@@ -2,7 +2,9 @@ package octguy.livanabe.config;
 
 import octguy.livanabe.dto.request.CreateInterestRequest;
 import octguy.livanabe.enums.UserRole;
+import octguy.livanabe.service.IAmenityService;
 import octguy.livanabe.service.IExperienceCategoryService;
+import octguy.livanabe.service.IFacilityService;
 import octguy.livanabe.service.IInterestService;
 import octguy.livanabe.service.IPropertyTypeService;
 import octguy.livanabe.service.IRoleService;
@@ -22,14 +24,22 @@ public class DataInitializer implements CommandLineRunner {
 
     private final IExperienceCategoryService experienceCategoryService;
 
+    private final IFacilityService facilityService;
+
+    private final IAmenityService amenityService;
+
     public DataInitializer(IRoleService roleService,
                            IInterestService interestService,
                            IPropertyTypeService propertyTypeService,
-                           IExperienceCategoryService experienceCategoryService) {
+                           IExperienceCategoryService experienceCategoryService,
+                           IFacilityService facilityService,
+                           IAmenityService amenityService) {
         this.propertyTypeService = propertyTypeService;
         this.interestService = interestService;
         this.roleService = roleService;
         this.experienceCategoryService = experienceCategoryService;
+        this.facilityService = facilityService;
+        this.amenityService = amenityService;
     }
 
     @Override
@@ -42,11 +52,17 @@ public class DataInitializer implements CommandLineRunner {
 //        System.out.println("Checking and initializing interests...");
         initializeInterests();
 
-//        System.out.println("Checking and initializing property types...");
+        System.out.println("Checking and initializing property types...");
         initializePropertyType();
 
-//        System.out.println("Checking and initializing experience categories...");
+        System.out.println("Checking and initializing experience categories...");
         initializeExperienceCategories();
+
+        System.out.println("Checking and initializing facilities...");
+        initializeFacilities();
+
+        System.out.println("Checking and initializing amenities...");
+        initializeAmenities();
     }
 
     private void initializeRoles() {
@@ -286,7 +302,55 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("Initialized default experience categories.");
         }
         else {
-//            System.out.println("Experience categories already initialized.");
+            System.out.println("Experience categories already initialized.");
+        }
+    }
+
+    private void initializeFacilities() {
+        if (facilityService.findAll().isEmpty()) {
+            facilityService.create("Bedroom", "🛏️");
+            facilityService.create("Bed", "🛌");
+            facilityService.create("Bathroom", "🛁");
+            facilityService.create("Toilet", "🚽");
+            System.out.println("Initialized default facilities.");
+        }
+        else {
+            System.out.println("Facilities already initialized.");
+        }
+    }
+
+    private void initializeAmenities() {
+        if (amenityService.findAll().isEmpty()) {
+            amenityService.create("Wifi", "📶");
+            amenityService.create("TV", "📺");
+            amenityService.create("Kitchen", "🍳");
+            amenityService.create("Washer", "🧺");
+            amenityService.create("Free parking on premises", "🅿️");
+            amenityService.create("Paid parking on premises", "💰");
+            amenityService.create("Air conditioning", "❄️");
+            amenityService.create("Dedicated workspace", "💼");
+            amenityService.create("Pool", "🏊");
+            amenityService.create("Hot tub", "🛁");
+            amenityService.create("Patio", "🪴");
+            amenityService.create("BBQ grill", "🍖");
+            amenityService.create("Outdoor dining area", "🍽️");
+            amenityService.create("Fire pit", "🔥");
+            amenityService.create("Pool table", "🎱");
+            amenityService.create("Indoor fireplace", "🔥");
+            amenityService.create("Piano", "🎹");
+            amenityService.create("Exercise equipment", "🏋️");
+            amenityService.create("Lake access", "🏞️");
+            amenityService.create("Beach access", "🏖️");
+            amenityService.create("Ski-in/Ski-out", "🎿");
+            amenityService.create("Outdoor shower", "🚿");
+            amenityService.create("Smoke alarm", "🚨");
+            amenityService.create("First aid kit", "🩹");
+            amenityService.create("Fire extinguisher", "🧯");
+            amenityService.create("Carbon monoxide alarm", "⚠️");
+            System.out.println("Initialized default amenities.");
+        }
+        else {
+            System.out.println("Amenities already initialized.");
         }
     }
 }
