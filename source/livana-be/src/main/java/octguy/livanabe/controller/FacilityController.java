@@ -5,6 +5,7 @@ import octguy.livanabe.dto.request.CreateFacilityRequest;
 import octguy.livanabe.dto.response.FacilityResponse;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.service.IFacilityService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,24 @@ public class FacilityController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<FacilityResponse>>> getAllFacilities() {
+    public ResponseEntity<ApiResponse<Page<FacilityResponse>>> getAllFacilities(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        Page<FacilityResponse> facilities = facilityService.findAll(page, size);
+
+        ApiResponse<Page<FacilityResponse>> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Facilities fetched successfully",
+                facilities,
+                null
+        );
+
+        return ResponseEntity.ok().body(apiResponse);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<List<FacilityResponse>>> getAllFacilitiesNoPagination() {
         List<FacilityResponse> facilities = facilityService.findAll();
 
         ApiResponse<List<FacilityResponse>> apiResponse = new ApiResponse<>(

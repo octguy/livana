@@ -1,11 +1,14 @@
 package octguy.livanabe.service;
 
 import octguy.livanabe.dto.response.ExperienceCategoryResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface IExperienceCategoryService {
+
+    Page<ExperienceCategoryResponse> findAll(int page, int size);
 
     List<ExperienceCategoryResponse> findAll();
 

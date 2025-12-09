@@ -7,6 +7,7 @@ import octguy.livanabe.dto.response.UserInterestsResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface IInterestService {
 
@@ -15,6 +16,16 @@ public interface IInterestService {
     List<InterestResponse> findAll();
 
     InterestResponse create(CreateInterestRequest request);
+
+    InterestResponse update(UUID id, String name, String icon);
+
+    void softDelete(UUID id);
+
+    void hardDelete(UUID id);
+
+    void softDeleteAll();
+
+    void hardDeleteAll();
 
     UserInterestsResponse setUserInterests(SetInterestRequest request);
 

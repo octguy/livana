@@ -5,6 +5,7 @@ import octguy.livanabe.dto.request.CreatePropertyTypeRequest;
 import octguy.livanabe.dto.response.PropertyTypeResponse;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.service.IPropertyTypeService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,24 @@ public class PropertyTypeController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PropertyTypeResponse>>> getAllPropertyTypes() {
+    public ResponseEntity<ApiResponse<Page<PropertyTypeResponse>>> getAllPropertyTypes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        Page<PropertyTypeResponse> propertyTypes = propertyTypeService.findAll(page, size);
+
+        ApiResponse<Page<PropertyTypeResponse>> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Property types fetched successfully",
+                propertyTypes,
+                null
+        );
+
+        return ResponseEntity.ok().body(apiResponse);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<List<PropertyTypeResponse>>> getAllPropertyTypesNoPagination() {
         List<PropertyTypeResponse> propertyTypes = propertyTypeService.findAll();
 
         ApiResponse<List<PropertyTypeResponse>> apiResponse = new ApiResponse<>(

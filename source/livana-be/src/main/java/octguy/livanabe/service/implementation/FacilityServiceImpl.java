@@ -4,6 +4,9 @@ import octguy.livanabe.dto.response.FacilityResponse;
 import octguy.livanabe.entity.Facility;
 import octguy.livanabe.repository.FacilityRepository;
 import octguy.livanabe.service.IFacilityService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,13 @@ public class FacilityServiceImpl implements IFacilityService {
 
     public FacilityServiceImpl(FacilityRepository facilityRepository) {
         this.facilityRepository = facilityRepository;
+    }
+
+    @Override
+    public Page<FacilityResponse> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return facilityRepository.findAll(pageable)
+                .map(this::toResponse);
     }
 
     @Override

@@ -1,11 +1,14 @@
 package octguy.livanabe.service;
 
 import octguy.livanabe.dto.response.AmenityResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface IAmenityService {
+
+    Page<AmenityResponse> findAll(int page, int size);
 
     List<AmenityResponse> findAll();
 

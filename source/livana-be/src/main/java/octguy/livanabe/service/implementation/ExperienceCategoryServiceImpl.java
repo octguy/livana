@@ -4,6 +4,9 @@ import octguy.livanabe.dto.response.ExperienceCategoryResponse;
 import octguy.livanabe.entity.ExperienceCategory;
 import octguy.livanabe.repository.ExperienceCategoryRepository;
 import octguy.livanabe.service.IExperienceCategoryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,13 @@ public class ExperienceCategoryServiceImpl implements IExperienceCategoryService
 
     public ExperienceCategoryServiceImpl(ExperienceCategoryRepository experienceCategoryRepository) {
         this.experienceCategoryRepository = experienceCategoryRepository;
+    }
+
+    @Override
+    public Page<ExperienceCategoryResponse> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return experienceCategoryRepository.findAll(pageable)
+                .map(this::toResponse);
     }
 
     @Override

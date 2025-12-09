@@ -19,13 +19,18 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useExperienceCategoryStore } from "@/stores/useExperienceCategoryStore";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import type { ExperienceCategoryResponse } from "@/types/response/experienceCategoryResponse";
 
 export function ExperienceCategoryManagement() {
-  const { experienceCategories, loading, getAllExperienceCategories } =
-    useExperienceCategoryStore();
+  const {
+    experienceCategories,
+    loading,
+    currentPage,
+    totalPages,
+    getAllExperienceCategories,
+  } = useExperienceCategoryStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] =
@@ -33,8 +38,12 @@ export function ExperienceCategoryManagement() {
   const [formData, setFormData] = useState({ name: "", icon: "" });
 
   useEffect(() => {
-    getAllExperienceCategories();
+    getAllExperienceCategories(0, 15);
   }, [getAllExperienceCategories]);
+
+  const handlePageChange = (newPage: number) => {
+    getAllExperienceCategories(newPage, 15);
+  };
 
   const handleCreate = async () => {
     try {
@@ -45,7 +54,7 @@ export function ExperienceCategoryManagement() {
       toast.success("Experience category created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
-      getAllExperienceCategories();
+      getAllExperienceCategories(currentPage, 15);
     } catch (error) {
       console.error("Failed to create experience category:", error);
       toast.error("Failed to create experience category");
@@ -62,7 +71,7 @@ export function ExperienceCategoryManagement() {
       toast.success("Experience category updated successfully");
       setIsEditOpen(false);
       setSelectedCategory(null);
-      getAllExperienceCategories();
+      getAllExperienceCategories(currentPage, 15);
     } catch (error) {
       console.error("Failed to update experience category:", error);
       toast.error("Failed to update experience category");
@@ -76,7 +85,7 @@ export function ExperienceCategoryManagement() {
     try {
       console.log("Delete experience category - id:", id);
       toast.success("Experience category deleted successfully");
-      getAllExperienceCategories();
+      getAllExperienceCategories(currentPage, 15);
     } catch (error) {
       console.error("Failed to delete experience category:", error);
       toast.error("Failed to delete experience category");
@@ -193,6 +202,36 @@ export function ExperienceCategoryManagement() {
           </div>
         )}
 
+        {/* Pagination Controls */}
+        {!loading && totalPages > 0 && (
+          <div className="flex items-center justify-between mt-4 pt-4 border-t">
+            <div className="text-sm text-muted-foreground">
+              Page {currentPage + 1} of {totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 0}
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage >= totalPages - 1}
+              >
+                Next
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Dialog */}
         <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
           <DialogContent>
             <DialogHeader>

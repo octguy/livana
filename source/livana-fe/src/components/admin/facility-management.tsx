@@ -19,12 +19,13 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useFacilityStore } from "@/stores/useFacilityStore";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import type { FacilityResponse } from "@/types/response/facilityResponse";
 
 export function FacilityManagement() {
-  const { facilities, loading, getAllFacilities } = useFacilityStore();
+  const { facilities, loading, currentPage, totalPages, getAllFacilities } =
+    useFacilityStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedFacility, setSelectedFacility] =
@@ -32,8 +33,12 @@ export function FacilityManagement() {
   const [formData, setFormData] = useState({ name: "", icon: "" });
 
   useEffect(() => {
-    getAllFacilities();
+    getAllFacilities(0, 15);
   }, [getAllFacilities]);
+
+  const handlePageChange = (newPage: number) => {
+    getAllFacilities(newPage, 15);
+  };
 
   const handleCreate = async () => {
     try {
@@ -44,7 +49,7 @@ export function FacilityManagement() {
       toast.success("Facility created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
-      getAllFacilities();
+      getAllFacilities(currentPage, 15);
     } catch (error) {
       console.error("Failed to create facility:", error);
       toast.error("Failed to create facility");
@@ -61,7 +66,7 @@ export function FacilityManagement() {
       toast.success("Facility updated successfully");
       setIsEditOpen(false);
       setSelectedFacility(null);
-      getAllFacilities();
+      getAllFacilities(currentPage, 15);
     } catch (error) {
       console.error("Failed to update facility:", error);
       toast.error("Failed to update facility");
@@ -75,7 +80,7 @@ export function FacilityManagement() {
       // TODO: Implement delete API call with id
       console.log("Deleting facility:", id);
       toast.success("Facility deleted successfully");
-      getAllFacilities();
+      getAllFacilities(currentPage, 15);
     } catch (error) {
       console.error("Failed to delete facility:", error);
       toast.error("Failed to delete facility");
@@ -191,6 +196,36 @@ export function FacilityManagement() {
           </div>
         )}
 
+        {/* Pagination Controls */}
+        {!loading && totalPages > 0 && (
+          <div className="flex items-center justify-between mt-4 pt-4 border-t">
+            <div className="text-sm text-muted-foreground">
+              Page {currentPage + 1} of {totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 0}
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage >= totalPages - 1}
+              >
+                Next
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Dialog */}
         <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
           <DialogContent>
             <DialogHeader>

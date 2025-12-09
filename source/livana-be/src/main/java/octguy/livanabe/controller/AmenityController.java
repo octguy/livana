@@ -5,6 +5,7 @@ import octguy.livanabe.dto.request.CreateAmenityRequest;
 import octguy.livanabe.dto.response.AmenityResponse;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.service.IAmenityService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,24 @@ public class AmenityController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<AmenityResponse>>> getAllAmenities() {
+    public ResponseEntity<ApiResponse<Page<AmenityResponse>>> getAllAmenities(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        Page<AmenityResponse> amenities = amenityService.findAll(page, size);
+
+        ApiResponse<Page<AmenityResponse>> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Amenities fetched successfully",
+                amenities,
+                null
+        );
+
+        return ResponseEntity.ok().body(apiResponse);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<List<AmenityResponse>>> getAllAmenitiesNoPagination() {
         List<AmenityResponse> amenities = amenityService.findAll();
 
         ApiResponse<List<AmenityResponse>> apiResponse = new ApiResponse<>(

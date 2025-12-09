@@ -6,19 +6,46 @@ export const useExperienceCategoryStore = create<ExperienceCategoryState>(
   (set, get) => ({
     loading: false,
     experienceCategories: [],
+    currentPage: 0,
+    totalPages: 0,
+    totalElements: 0,
 
-    clearState: () => set({ loading: false, experienceCategories: [] }),
+    clearState: () =>
+      set({
+        loading: false,
+        experienceCategories: [],
+        currentPage: 0,
+        totalPages: 0,
+        totalElements: 0,
+      }),
 
     setExperienceCategories: (categories) => {
       set({ experienceCategories: categories });
     },
 
-    getAllExperienceCategories: async () => {
+    setPage: (page) => {
+      set({ currentPage: page });
+    },
+
+    setPaginationInfo: (totalPages, totalElements) => {
+      set({ totalPages, totalElements });
+    },
+
+    getAllExperienceCategories: async (page = 0, size = 15) => {
       try {
         set({ loading: true });
         const response =
-          await experienceCategoryService.getAllExperienceCategories();
-        get().setExperienceCategories(response.data);
+          await experienceCategoryService.getAllExperienceCategories(
+            page,
+            size
+          );
+        const paginatedData = response.data as any;
+        get().setExperienceCategories(paginatedData.content || []);
+        get().setPage(paginatedData.number || page);
+        get().setPaginationInfo(
+          paginatedData.totalPages || 0,
+          paginatedData.totalElements || 0
+        );
         return response;
       } catch (error) {
         console.error("Failed to fetch experience categories:", error);

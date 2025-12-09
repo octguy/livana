@@ -19,12 +19,13 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useAmenityStore } from "@/stores/useAmenityStore";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import type { AmenityResponse } from "@/types/response/amenityResponse";
 
 export function AmenityManagement() {
-  const { amenities, loading, getAllAmenities } = useAmenityStore();
+  const { amenities, loading, currentPage, totalPages, getAllAmenities } =
+    useAmenityStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedAmenity, setSelectedAmenity] =
@@ -32,8 +33,12 @@ export function AmenityManagement() {
   const [formData, setFormData] = useState({ name: "", icon: "" });
 
   useEffect(() => {
-    getAllAmenities();
+    getAllAmenities(0, 15);
   }, [getAllAmenities]);
+
+  const handlePageChange = (newPage: number) => {
+    getAllAmenities(newPage, 15);
+  };
 
   const handleCreate = async () => {
     try {
@@ -44,7 +49,7 @@ export function AmenityManagement() {
       toast.success("Amenity created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
-      getAllAmenities();
+      getAllAmenities(currentPage, 15);
     } catch (error) {
       console.error("Failed to create amenity:", error);
       toast.error("Failed to create amenity");
@@ -61,7 +66,7 @@ export function AmenityManagement() {
       toast.success("Amenity updated successfully");
       setIsEditOpen(false);
       setSelectedAmenity(null);
-      getAllAmenities();
+      getAllAmenities(currentPage, 15);
     } catch (error) {
       console.error("Failed to update amenity:", error);
       toast.error("Failed to update amenity");
@@ -75,7 +80,7 @@ export function AmenityManagement() {
       // TODO: Implement delete API call with id
       console.log("Deleting amenity:", id);
       toast.success("Amenity deleted successfully");
-      getAllAmenities();
+      getAllAmenities(currentPage, 15);
     } catch (error) {
       console.error("Failed to delete amenity:", error);
       toast.error("Failed to delete amenity");
@@ -191,6 +196,36 @@ export function AmenityManagement() {
           </div>
         )}
 
+        {/* Pagination Controls */}
+        {!loading && totalPages > 0 && (
+          <div className="flex items-center justify-between mt-4 pt-4 border-t">
+            <div className="text-sm text-muted-foreground">
+              Page {currentPage + 1} of {totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 0}
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage >= totalPages - 1}
+              >
+                Next
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Dialog */}
         <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
           <DialogContent>
             <DialogHeader>

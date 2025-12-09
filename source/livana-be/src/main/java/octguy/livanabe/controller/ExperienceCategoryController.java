@@ -5,6 +5,7 @@ import octguy.livanabe.dto.request.CreateExperienceCategoryRequest;
 import octguy.livanabe.dto.response.ExperienceCategoryResponse;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.service.IExperienceCategoryService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,24 @@ public class ExperienceCategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<ExperienceCategoryResponse>>> getAllExperienceCategories() {
+    public ResponseEntity<ApiResponse<Page<ExperienceCategoryResponse>>> getAllExperienceCategories(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        Page<ExperienceCategoryResponse> experienceCategories = experienceCategoryService.findAll(page, size);
+
+        ApiResponse<Page<ExperienceCategoryResponse>> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Experience categories fetched successfully",
+                experienceCategories,
+                null
+        );
+
+        return ResponseEntity.ok().body(apiResponse);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<List<ExperienceCategoryResponse>>> getAllExperienceCategoriesNoPagination() {
         List<ExperienceCategoryResponse> experienceCategories = experienceCategoryService.findAll();
 
         ApiResponse<List<ExperienceCategoryResponse>> apiResponse = new ApiResponse<>(

@@ -18,8 +18,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,8 +76,62 @@ public class InterestServiceImpl implements IInterestService {
                 id(interest.getId()).
                 key(interest.getKey()).
                 name(interest.getName()).
-                icon(interest.getIcon()).
-                build();
+                icon(interest.getIcon())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public InterestResponse update(UUID id, String name, String icon) {
+        Optional<Interest> opt = interestRepository.findById(id);
+        
+        if (opt.isEmpty()) return null;
+        
+        Interest interest = opt.get();
+        interest.setName(name);
+        interest.setKey(convertNameToKey(name));
+        interest.setIcon(icon);
+        interest.setUpdatedAt(LocalDateTime.now());
+        interestRepository.save(interest);
+        
+        return InterestResponse.builder()
+                .id(interest.getId())
+                .key(interest.getKey())
+                .name(interest.getName())
+                .icon(interest.getIcon())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public void softDelete(UUID id) {
+        Optional<Interest> opt = interestRepository.findById(id);
+        if (opt.isPresent()) {
+            Interest interest = opt.get();
+            interest.setDeletedAt(LocalDateTime.now());
+            interestRepository.save(interest);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void hardDelete(UUID id) {
+        interestRepository.hardDeleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void softDeleteAll() {
+        List<Interest> interests = interestRepository.findAll();
+        LocalDateTime now = LocalDateTime.now();
+        interests.forEach(interest -> interest.setDeletedAt(now));
+        interestRepository.saveAll(interests);
+    }
+
+    @Override
+    @Transactional
+    public void hardDeleteAll() {
+        interestRepository.hardDeleteAll();
     }
 
     @Override

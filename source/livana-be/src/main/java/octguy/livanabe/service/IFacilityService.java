@@ -1,11 +1,14 @@
 package octguy.livanabe.service;
 
 import octguy.livanabe.dto.response.FacilityResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface IFacilityService {
+
+    Page<FacilityResponse> findAll(int page, int size);
 
     List<FacilityResponse> findAll();
 

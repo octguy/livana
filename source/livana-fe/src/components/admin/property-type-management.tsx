@@ -19,13 +19,18 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { usePropertyTypeStore } from "@/stores/usePropertyTypeStore";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import type { PropertyTypeResponse } from "@/types/response/propertyTypeResponse";
 
 export function PropertyTypeManagement() {
-  const { propertyTypes, loading, getAllPropertyTypes } =
-    usePropertyTypeStore();
+  const {
+    propertyTypes,
+    loading,
+    currentPage,
+    totalPages,
+    getAllPropertyTypes,
+  } = usePropertyTypeStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<PropertyTypeResponse | null>(
@@ -34,8 +39,12 @@ export function PropertyTypeManagement() {
   const [formData, setFormData] = useState({ name: "", icon: "" });
 
   useEffect(() => {
-    getAllPropertyTypes();
+    getAllPropertyTypes(0, 15);
   }, [getAllPropertyTypes]);
+
+  const handlePageChange = (newPage: number) => {
+    getAllPropertyTypes(newPage, 15);
+  };
 
   const handleCreate = async () => {
     try {
@@ -46,7 +55,7 @@ export function PropertyTypeManagement() {
       toast.success("Property type created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
-      getAllPropertyTypes();
+      getAllPropertyTypes(currentPage, 15);
     } catch (error) {
       console.error("Failed to create property type:", error);
       toast.error("Failed to create property type");
@@ -63,7 +72,7 @@ export function PropertyTypeManagement() {
       toast.success("Property type updated successfully");
       setIsEditOpen(false);
       setSelectedType(null);
-      getAllPropertyTypes();
+      getAllPropertyTypes(currentPage, 15);
     } catch (error) {
       console.error("Failed to update property type:", error);
       toast.error("Failed to update property type");
@@ -76,7 +85,7 @@ export function PropertyTypeManagement() {
     try {
       console.log("Delete property type - id:", id);
       toast.success("Property type deleted successfully");
-      getAllPropertyTypes();
+      getAllPropertyTypes(currentPage, 15);
     } catch (error) {
       console.error("Failed to delete property type:", error);
       toast.error("Failed to delete property type");
@@ -193,6 +202,36 @@ export function PropertyTypeManagement() {
           </div>
         )}
 
+        {/* Pagination Controls */}
+        {!loading && totalPages > 0 && (
+          <div className="flex items-center justify-between mt-4 pt-4 border-t">
+            <div className="text-sm text-muted-foreground">
+              Page {currentPage + 1} of {totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 0}
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage >= totalPages - 1}
+              >
+                Next
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Dialog */}
         <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
           <DialogContent>
             <DialogHeader>
