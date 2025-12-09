@@ -5,6 +5,7 @@ export interface AmenityState {
   loading: boolean;
   amenities: AmenityResponse[];
 
+  clearState: () => void;
   setAmenities: (amenities: AmenityResponse[]) => void;
   getAllAmenities: () => Promise<ApiResponse<AmenityResponse[]>>;
 }

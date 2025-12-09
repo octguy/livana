@@ -22,6 +22,18 @@ export const useHomeListingStore = create<HomeListingState>((set) => ({
 
   setAmenities: (amenities) => set({ amenities }),
 
+  clearState: () =>
+    set({
+      propertyTypeId: null,
+      roomType: null,
+      location: null,
+      guests: 1,
+      bedrooms: 1,
+      beds: 1,
+      bathrooms: 1,
+      amenities: [],
+    }),
+
   resetListing: () =>
     set({
       propertyTypeId: null,

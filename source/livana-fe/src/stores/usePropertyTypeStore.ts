@@ -6,6 +6,8 @@ export const usePropertyTypeStore = create<PropertyTypeState>((set, get) => ({
   loading: false,
   propertyTypes: [],
 
+  clearState: () => set({ loading: false, propertyTypes: [] }),
+
   setPropertyTypes: (propertyTypes) => {
     set({ propertyTypes });
   },

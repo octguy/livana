@@ -34,5 +34,6 @@ export interface HomeListingState {
     bathrooms: number
   ) => void;
   setAmenities: (amenities: string[]) => void;
+  clearState: () => void;
   resetListing: () => void;
 }

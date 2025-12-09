@@ -5,6 +5,7 @@ export interface PropertyTypeState {
   loading: boolean;
   propertyTypes: PropertyTypeResponse[];
 
+  clearState: () => void;
   setPropertyTypes: (propertyTypes: PropertyTypeResponse[]) => void;
   getAllPropertyTypes: () => Promise<ApiResponse<PropertyTypeResponse[]>>;
 }

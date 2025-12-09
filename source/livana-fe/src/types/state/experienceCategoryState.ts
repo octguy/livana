@@ -5,6 +5,7 @@ export interface ExperienceCategoryState {
   loading: boolean;
   experienceCategories: ExperienceCategoryResponse[];
 
+  clearState: () => void;
   setExperienceCategories: (categories: ExperienceCategoryResponse[]) => void;
   getAllExperienceCategories: () => Promise<
     ApiResponse<ExperienceCategoryResponse[]>

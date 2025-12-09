@@ -7,6 +7,7 @@ export interface InterestState {
   interests: InterestResponse[];
   userInterests: UserInterestResponse | null;
 
+  clearState: () => void;
   setListInterests: (interests: InterestResponse[]) => void;
   setUserInterests: (userInterests: UserInterestResponse) => void;
   getAllInterests: () => Promise<ApiResponse<InterestResponse[]>>;

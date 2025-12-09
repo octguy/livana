@@ -8,6 +8,8 @@ export const useInterestStore = create<InterestState>((set, get) => ({
   interests: [],
   userInterests: null,
 
+  clearState: () => set({ loading: false, interests: [], userInterests: null }),
+
   setListInterests: (interests) => {
     set({ interests });
   },

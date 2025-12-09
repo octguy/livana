@@ -2,6 +2,13 @@ import { create } from "zustand";
 import { toast } from "sonner";
 import { authService } from "@/services/authService";
 import type { AuthState } from "@/types/state/authState";
+import { useProfileStore } from "./useProfileStore";
+import { useInterestStore } from "./useInterestStore";
+import { useHomeListingStore } from "./useHomeListingStore";
+import { usePropertyTypeStore } from "./usePropertyTypeStore";
+import { useAmenityStore } from "./useAmenityStore";
+import { useFacilityStore } from "./useFacilityStore";
+import { useExperienceCategoryStore } from "./useExperienceCategoryStore";
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   accessToken: null,
@@ -75,12 +82,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logOut: async () => {
     try {
       await authService.logOut();
-      get().clearState();
-      toast.success("Đăng xuất thành công!");
     } catch (error) {
-      // Still show success since we cleared the local state
-      // The API call might fail if token is expired, but that's okay
-      console.log("Logout API call failed (but local state cleared):", error);
+      // API call might fail if token is expired, but that's okay
+      console.log("Logout API call failed (but will clear all state):", error);
+    } finally {
+      // Clear all store states
+      get().clearState();
+      useProfileStore.getState().clearState();
+      useInterestStore.getState().clearState();
+      useHomeListingStore.getState().clearState();
+      usePropertyTypeStore.getState().clearState();
+      useAmenityStore.getState().clearState();
+      useFacilityStore.getState().clearState();
+      useExperienceCategoryStore.getState().clearState();
       toast.success("Đăng xuất thành công!");
     }
   },

@@ -7,6 +7,8 @@ export const useExperienceCategoryStore = create<ExperienceCategoryState>(
     loading: false,
     experienceCategories: [],
 
+    clearState: () => set({ loading: false, experienceCategories: [] }),
+
     setExperienceCategories: (categories) => {
       set({ experienceCategories: categories });
     },

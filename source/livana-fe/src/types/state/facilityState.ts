@@ -5,6 +5,7 @@ export interface FacilityState {
   loading: boolean;
   facilities: FacilityResponse[];
 
+  clearState: () => void;
   setFacilities: (facilities: FacilityResponse[]) => void;
   getAllFacilities: () => Promise<ApiResponse<FacilityResponse[]>>;
 }

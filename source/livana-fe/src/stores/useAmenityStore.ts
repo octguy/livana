@@ -6,6 +6,8 @@ export const useAmenityStore = create<AmenityState>((set, get) => ({
   loading: false,
   amenities: [],
 
+  clearState: () => set({ loading: false, amenities: [] }),
+
   setAmenities: (amenities) => {
     set({ amenities });
   },

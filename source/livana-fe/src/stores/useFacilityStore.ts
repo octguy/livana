@@ -6,6 +6,8 @@ export const useFacilityStore = create<FacilityState>((set, get) => ({
   loading: false,
   facilities: [],
 
+  clearState: () => set({ loading: false, facilities: [] }),
+
   setFacilities: (facilities) => {
     set({ facilities });
   },
