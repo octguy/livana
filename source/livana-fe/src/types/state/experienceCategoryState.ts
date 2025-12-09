@@ -16,4 +16,14 @@ export interface ExperienceCategoryState {
     page?: number,
     size?: number
   ) => Promise<ApiResponse<ExperienceCategoryResponse[]>>;
+  createExperienceCategory: (
+    name: string,
+    icon: string
+  ) => Promise<ApiResponse<ExperienceCategoryResponse>>;
+  updateExperienceCategory: (
+    id: string,
+    name: string,
+    icon: string
+  ) => Promise<ApiResponse<ExperienceCategoryResponse>>;
+  deleteExperienceCategory: (id: string) => Promise<ApiResponse<void>>;
 }

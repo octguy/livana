@@ -49,4 +49,34 @@ export const useAmenityStore = create<AmenityState>((set, get) => ({
       set({ loading: false });
     }
   },
+
+  createAmenity: async (name: string, icon: string) => {
+    try {
+      const response = await amenityService.createAmenity(name, icon);
+      return response;
+    } catch (error) {
+      console.error("Error creating amenity:", error);
+      throw error;
+    }
+  },
+
+  updateAmenity: async (id: string, name: string, icon: string) => {
+    try {
+      const response = await amenityService.updateAmenity(id, name, icon);
+      return response;
+    } catch (error) {
+      console.error("Error updating amenity:", error);
+      throw error;
+    }
+  },
+
+  deleteAmenity: async (id: string) => {
+    try {
+      const response = await amenityService.deleteAmenity(id);
+      return response;
+    } catch (error) {
+      console.error("Error deleting amenity:", error);
+      throw error;
+    }
+  },
 }));

@@ -54,5 +54,46 @@ export const useExperienceCategoryStore = create<ExperienceCategoryState>(
         set({ loading: false });
       }
     },
+
+    createExperienceCategory: async (name: string, icon: string) => {
+      try {
+        const response =
+          await experienceCategoryService.createExperienceCategory(name, icon);
+        return response;
+      } catch (error) {
+        console.error("Error creating experience category:", error);
+        throw error;
+      }
+    },
+
+    updateExperienceCategory: async (
+      id: string,
+      name: string,
+      icon: string
+    ) => {
+      try {
+        const response =
+          await experienceCategoryService.updateExperienceCategory(
+            id,
+            name,
+            icon
+          );
+        return response;
+      } catch (error) {
+        console.error("Error updating experience category:", error);
+        throw error;
+      }
+    },
+
+    deleteExperienceCategory: async (id: string) => {
+      try {
+        const response =
+          await experienceCategoryService.deleteExperienceCategory(id);
+        return response;
+      } catch (error) {
+        console.error("Error deleting experience category:", error);
+        throw error;
+      }
+    },
   })
 );

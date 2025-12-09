@@ -19,8 +19,21 @@ export interface InterestState {
     page?: number,
     size?: number
   ) => Promise<ApiResponse<InterestResponse[]>>;
+  getAllInterestsWithoutPagination: () => Promise<
+    ApiResponse<InterestResponse[]>
+  >;
   getUserInterests: () => Promise<ApiResponse<UserInterestResponse>>;
   updateUserInterests: (
     interestIds: string[]
   ) => Promise<ApiResponse<UserInterestResponse>>;
+  createInterest: (
+    name: string,
+    icon: string
+  ) => Promise<ApiResponse<InterestResponse>>;
+  updateInterest: (
+    id: string,
+    name: string,
+    icon: string
+  ) => Promise<ApiResponse<InterestResponse>>;
+  deleteInterest: (id: string) => Promise<ApiResponse<string>>;
 }

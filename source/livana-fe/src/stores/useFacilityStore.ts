@@ -49,4 +49,34 @@ export const useFacilityStore = create<FacilityState>((set, get) => ({
       set({ loading: false });
     }
   },
+
+  createFacility: async (name: string, icon: string) => {
+    try {
+      const response = await facilityService.createFacility(name, icon);
+      return response;
+    } catch (error) {
+      console.error("Error creating facility:", error);
+      throw error;
+    }
+  },
+
+  updateFacility: async (id: string, name: string, icon: string) => {
+    try {
+      const response = await facilityService.updateFacility(id, name, icon);
+      return response;
+    } catch (error) {
+      console.error("Error updating facility:", error);
+      throw error;
+    }
+  },
+
+  deleteFacility: async (id: string) => {
+    try {
+      const response = await facilityService.deleteFacility(id);
+      return response;
+    } catch (error) {
+      console.error("Error deleting facility:", error);
+      throw error;
+    }
+  },
 }));

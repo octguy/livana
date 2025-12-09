@@ -24,10 +24,20 @@ import { toast } from "sonner";
 import type { AmenityResponse } from "@/types/response/amenityResponse";
 
 export function AmenityManagement() {
-  const { amenities, loading, currentPage, totalPages, getAllAmenities } =
-    useAmenityStore();
+  const {
+    amenities,
+    loading,
+    currentPage,
+    totalPages,
+    getAllAmenities,
+    createAmenity,
+    updateAmenity,
+    deleteAmenity,
+  } = useAmenityStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedAmenity, setSelectedAmenity] =
     useState<AmenityResponse | null>(null);
   const [formData, setFormData] = useState({ name: "", icon: "" });
@@ -42,10 +52,7 @@ export function AmenityManagement() {
 
   const handleCreate = async () => {
     try {
-      console.log("Create amenity:", {
-        name: formData.name,
-        icon: formData.icon,
-      });
+      await createAmenity(formData.name, formData.icon);
       toast.success("Amenity created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
@@ -58,11 +65,8 @@ export function AmenityManagement() {
 
   const handleEdit = async () => {
     try {
-      console.log("Update amenity:", {
-        id: selectedAmenity?.id,
-        name: formData.name,
-        icon: formData.icon,
-      });
+      if (!selectedAmenity) return;
+      await updateAmenity(selectedAmenity.id, formData.name, formData.icon);
       toast.success("Amenity updated successfully");
       setIsEditOpen(false);
       setSelectedAmenity(null);
@@ -73,18 +77,27 @@ export function AmenityManagement() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this amenity?")) return;
+  const handleDelete = async () => {
+    if (!selectedAmenity || isDeleting) return;
 
+    setIsDeleting(true);
     try {
-      // TODO: Implement delete API call with id
-      console.log("Deleting amenity:", id);
+      await deleteAmenity(selectedAmenity.id);
       toast.success("Amenity deleted successfully");
-      getAllAmenities(currentPage, 15);
+      await getAllAmenities(currentPage, 15);
+      setIsDeleteOpen(false);
+      setSelectedAmenity(null);
     } catch (error) {
       console.error("Failed to delete amenity:", error);
       toast.error("Failed to delete amenity");
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const openDeleteDialog = (amenity: AmenityResponse) => {
+    setSelectedAmenity(amenity);
+    setIsDeleteOpen(true);
   };
   const openEditDialog = (amenity: AmenityResponse) => {
     setSelectedAmenity(amenity);
@@ -185,7 +198,7 @@ export function AmenityManagement() {
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => handleDelete(amenity.id)}
+                      onClick={() => openDeleteDialog(amenity)}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -261,6 +274,35 @@ export function AmenityManagement() {
                 Cancel
               </Button>
               <Button onClick={handleEdit}>Update</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Amenity</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete "{selectedAmenity?.name}"? This
+                action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsDeleteOpen(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                variant="destructive"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

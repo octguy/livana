@@ -55,6 +55,20 @@ public class InterestController {
         return ResponseEntity.ok().body(apiResponse);
     }
 
+    @PostMapping
+    public ResponseEntity<ApiResponse<InterestResponse>> create(@Valid @RequestBody CreateInterestRequest request) {
+        InterestResponse createdInterest = interestService.create(request);
+
+        ApiResponse<InterestResponse> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Interest created successfully",
+                createdInterest,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<InterestResponse>> update(
             @PathVariable("id") UUID id,
@@ -72,7 +86,7 @@ public class InterestController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @DeleteMapping("/soft/{id}")
+    @DeleteMapping("/{id}/soft")
     public ResponseEntity<ApiResponse<String>> softDelete(@PathVariable("id") UUID id) {
         interestService.softDelete(id);
 
@@ -86,7 +100,7 @@ public class InterestController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @DeleteMapping("/hard/{id}")
+    @DeleteMapping("/{id}/hard")
     public ResponseEntity<ApiResponse<String>> hardDelete(@PathVariable("id") UUID id) {
         interestService.hardDelete(id);
 

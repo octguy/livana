@@ -24,10 +24,20 @@ import { toast } from "sonner";
 import type { FacilityResponse } from "@/types/response/facilityResponse";
 
 export function FacilityManagement() {
-  const { facilities, loading, currentPage, totalPages, getAllFacilities } =
-    useFacilityStore();
+  const {
+    facilities,
+    loading,
+    currentPage,
+    totalPages,
+    getAllFacilities,
+    createFacility,
+    updateFacility,
+    deleteFacility,
+  } = useFacilityStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedFacility, setSelectedFacility] =
     useState<FacilityResponse | null>(null);
   const [formData, setFormData] = useState({ name: "", icon: "" });
@@ -42,10 +52,7 @@ export function FacilityManagement() {
 
   const handleCreate = async () => {
     try {
-      console.log("Create facility:", {
-        name: formData.name,
-        icon: formData.icon,
-      });
+      await createFacility(formData.name, formData.icon);
       toast.success("Facility created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
@@ -58,11 +65,8 @@ export function FacilityManagement() {
 
   const handleEdit = async () => {
     try {
-      console.log("Update facility:", {
-        id: selectedFacility?.id,
-        name: formData.name,
-        icon: formData.icon,
-      });
+      if (!selectedFacility) return;
+      await updateFacility(selectedFacility.id, formData.name, formData.icon);
       toast.success("Facility updated successfully");
       setIsEditOpen(false);
       setSelectedFacility(null);
@@ -73,18 +77,27 @@ export function FacilityManagement() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this facility?")) return;
+  const handleDelete = async () => {
+    if (!selectedFacility || isDeleting) return;
 
+    setIsDeleting(true);
     try {
-      // TODO: Implement delete API call with id
-      console.log("Deleting facility:", id);
+      await deleteFacility(selectedFacility.id);
       toast.success("Facility deleted successfully");
-      getAllFacilities(currentPage, 15);
+      await getAllFacilities(currentPage, 15);
+      setIsDeleteOpen(false);
+      setSelectedFacility(null);
     } catch (error) {
       console.error("Failed to delete facility:", error);
       toast.error("Failed to delete facility");
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const openDeleteDialog = (facility: FacilityResponse) => {
+    setSelectedFacility(facility);
+    setIsDeleteOpen(true);
   };
   const openEditDialog = (facility: FacilityResponse) => {
     setSelectedFacility(facility);
@@ -185,7 +198,7 @@ export function FacilityManagement() {
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => handleDelete(facility.id)}
+                      onClick={() => openDeleteDialog(facility)}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -261,6 +274,35 @@ export function FacilityManagement() {
                 Cancel
               </Button>
               <Button onClick={handleEdit}>Update</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Facility</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete "{selectedFacility?.name}"? This
+                action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsDeleteOpen(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                variant="destructive"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

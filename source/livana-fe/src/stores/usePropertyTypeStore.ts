@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import type { PropertyTypeState } from "@/types/state/propertyTypeState";
+import type { PaginatedResponse } from "@/types/response/paginatedResponse";
+import type { PropertyTypeResponse } from "@/types/response/propertyTypeResponse";
 import { propertyTypeService } from "@/services/propertyTypeService";
 
 export const usePropertyTypeStore = create<PropertyTypeState>((set, get) => ({
@@ -37,7 +39,8 @@ export const usePropertyTypeStore = create<PropertyTypeState>((set, get) => ({
         page,
         size
       );
-      const paginatedData = response.data as any;
+      const paginatedData =
+        response.data as unknown as PaginatedResponse<PropertyTypeResponse>;
       get().setPropertyTypes(paginatedData.content || []);
       get().setPage(paginatedData.number || page);
       get().setPaginationInfo(
@@ -50,6 +53,40 @@ export const usePropertyTypeStore = create<PropertyTypeState>((set, get) => ({
       throw error;
     } finally {
       set({ loading: false });
+    }
+  },
+
+  createPropertyType: async (name: string, icon: string) => {
+    try {
+      const response = await propertyTypeService.createPropertyType(name, icon);
+      return response;
+    } catch (error) {
+      console.error("Error creating property type:", error);
+      throw error;
+    }
+  },
+
+  updatePropertyType: async (id: string, name: string, icon: string) => {
+    try {
+      const response = await propertyTypeService.updatePropertyType(
+        id,
+        name,
+        icon
+      );
+      return response;
+    } catch (error) {
+      console.error("Error updating property type:", error);
+      throw error;
+    }
+  },
+
+  deletePropertyType: async (id: string) => {
+    try {
+      const response = await propertyTypeService.deletePropertyType(id);
+      return response;
+    } catch (error) {
+      console.error("Error deleting property type:", error);
+      throw error;
     }
   },
 }));

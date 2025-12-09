@@ -7,6 +7,7 @@ import octguy.livanabe.service.IAmenityService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,7 @@ public class AmenityServiceImpl implements IAmenityService {
 
     @Override
     public Page<AmenityResponse> findAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
         return amenityRepository.findAll(pageable)
                 .map(this::toResponse);
     }

@@ -12,15 +12,15 @@ export function ProfileInterests() {
     getUserInterests,
     updateUserInterests,
     interests,
-    getAllInterests,
+    getAllInterestsWithoutPagination,
   } = useInterestStore();
 
   useEffect(() => {
     getUserInterests();
     if (interests.length === 0) {
-      getAllInterests();
+      getAllInterestsWithoutPagination();
     }
-  }, [getUserInterests, getAllInterests, interests.length]);
+  }, [getUserInterests, getAllInterestsWithoutPagination, interests.length]);
 
   const handleSave = async (interestIds: string[]) => {
     await updateUserInterests(interestIds);

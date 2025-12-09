@@ -16,4 +16,14 @@ export interface AmenityState {
     page?: number,
     size?: number
   ) => Promise<ApiResponse<AmenityResponse[]>>;
+  createAmenity: (
+    name: string,
+    icon: string
+  ) => Promise<ApiResponse<AmenityResponse>>;
+  updateAmenity: (
+    id: string,
+    name: string,
+    icon: string
+  ) => Promise<ApiResponse<AmenityResponse>>;
+  deleteAmenity: (id: string) => Promise<ApiResponse<void>>;
 }

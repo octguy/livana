@@ -16,4 +16,39 @@ export const facilityService = {
     );
     return response.data;
   },
+
+  createFacility: async (
+    name: string,
+    icon: string
+  ): Promise<ApiResponse<FacilityResponse>> => {
+    const response = await api.post<ApiResponse<FacilityResponse>>(
+      `/facilities`,
+      { name, icon },
+      { withCredentials: true }
+    );
+    return response.data;
+  },
+
+  updateFacility: async (
+    id: string,
+    name: string,
+    icon: string
+  ): Promise<ApiResponse<FacilityResponse>> => {
+    const response = await api.put<ApiResponse<FacilityResponse>>(
+      `/facilities/${id}`,
+      { name, icon },
+      { withCredentials: true }
+    );
+    return response.data;
+  },
+
+  deleteFacility: async (id: string): Promise<ApiResponse<void>> => {
+    const response = await api.delete<ApiResponse<void>>(
+      `/facilities/${id}/soft`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  },
 };

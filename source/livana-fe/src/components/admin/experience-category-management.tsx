@@ -30,9 +30,14 @@ export function ExperienceCategoryManagement() {
     currentPage,
     totalPages,
     getAllExperienceCategories,
+    createExperienceCategory,
+    updateExperienceCategory,
+    deleteExperienceCategory,
   } = useExperienceCategoryStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedCategory, setSelectedCategory] =
     useState<ExperienceCategoryResponse | null>(null);
   const [formData, setFormData] = useState({ name: "", icon: "" });
@@ -47,10 +52,7 @@ export function ExperienceCategoryManagement() {
 
   const handleCreate = async () => {
     try {
-      console.log("Create experience category:", {
-        name: formData.name,
-        icon: formData.icon,
-      });
+      await createExperienceCategory(formData.name, formData.icon);
       toast.success("Experience category created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
@@ -63,11 +65,12 @@ export function ExperienceCategoryManagement() {
 
   const handleEdit = async () => {
     try {
-      console.log("Update experience category:", {
-        id: selectedCategory?.id,
-        name: formData.name,
-        icon: formData.icon,
-      });
+      if (!selectedCategory) return;
+      await updateExperienceCategory(
+        selectedCategory.id,
+        formData.name,
+        formData.icon
+      );
       toast.success("Experience category updated successfully");
       setIsEditOpen(false);
       setSelectedCategory(null);
@@ -78,18 +81,27 @@ export function ExperienceCategoryManagement() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this experience category?"))
-      return;
+  const handleDelete = async () => {
+    if (!selectedCategory || isDeleting) return;
 
+    setIsDeleting(true);
     try {
-      console.log("Delete experience category - id:", id);
+      await deleteExperienceCategory(selectedCategory.id);
       toast.success("Experience category deleted successfully");
-      getAllExperienceCategories(currentPage, 15);
+      await getAllExperienceCategories(currentPage, 15);
+      setIsDeleteOpen(false);
+      setSelectedCategory(null);
     } catch (error) {
       console.error("Failed to delete experience category:", error);
       toast.error("Failed to delete experience category");
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const openDeleteDialog = (experienceCategory: ExperienceCategoryResponse) => {
+    setSelectedCategory(experienceCategory);
+    setIsDeleteOpen(true);
   };
 
   const openEditDialog = (category: ExperienceCategoryResponse) => {
@@ -191,7 +203,7 @@ export function ExperienceCategoryManagement() {
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => handleDelete(category.id)}
+                      onClick={() => openDeleteDialog(category)}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -267,6 +279,35 @@ export function ExperienceCategoryManagement() {
                 Cancel
               </Button>
               <Button onClick={handleEdit}>Update</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Experience Category</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete "{selectedCategory?.name}"? This
+                action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsDeleteOpen(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                variant="destructive"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

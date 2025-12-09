@@ -7,6 +7,7 @@ import octguy.livanabe.service.IFacilityService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,7 @@ public class FacilityServiceImpl implements IFacilityService {
 
     @Override
     public Page<FacilityResponse> findAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
         return facilityRepository.findAll(pageable)
                 .map(this::toResponse);
     }

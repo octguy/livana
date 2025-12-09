@@ -30,9 +30,14 @@ export function PropertyTypeManagement() {
     currentPage,
     totalPages,
     getAllPropertyTypes,
+    createPropertyType,
+    updatePropertyType,
+    deletePropertyType,
   } = usePropertyTypeStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedType, setSelectedType] = useState<PropertyTypeResponse | null>(
     null
   );
@@ -48,10 +53,7 @@ export function PropertyTypeManagement() {
 
   const handleCreate = async () => {
     try {
-      console.log("Create property type:", {
-        name: formData.name,
-        icon: formData.icon,
-      });
+      await createPropertyType(formData.name, formData.icon);
       toast.success("Property type created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
@@ -64,11 +66,8 @@ export function PropertyTypeManagement() {
 
   const handleEdit = async () => {
     try {
-      console.log("Update property type:", {
-        id: selectedType?.id,
-        name: formData.name,
-        icon: formData.icon,
-      });
+      if (!selectedType) return;
+      await updatePropertyType(selectedType.id, formData.name, formData.icon);
       toast.success("Property type updated successfully");
       setIsEditOpen(false);
       setSelectedType(null);
@@ -79,17 +78,27 @@ export function PropertyTypeManagement() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this property type?")) return;
+  const handleDelete = async () => {
+    if (!selectedType || isDeleting) return;
 
+    setIsDeleting(true);
     try {
-      console.log("Delete property type - id:", id);
+      await deletePropertyType(selectedType.id);
       toast.success("Property type deleted successfully");
-      getAllPropertyTypes(currentPage, 15);
+      await getAllPropertyTypes(currentPage, 15);
+      setIsDeleteOpen(false);
+      setSelectedType(null);
     } catch (error) {
       console.error("Failed to delete property type:", error);
       toast.error("Failed to delete property type");
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const openDeleteDialog = (propertyType: PropertyTypeResponse) => {
+    setSelectedType(propertyType);
+    setIsDeleteOpen(true);
   };
 
   const openEditDialog = (type: PropertyTypeResponse) => {
@@ -191,7 +200,7 @@ export function PropertyTypeManagement() {
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => handleDelete(type.id)}
+                      onClick={() => openDeleteDialog(type)}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -269,6 +278,35 @@ export function PropertyTypeManagement() {
                 Cancel
               </Button>
               <Button onClick={handleEdit}>Update</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Property Type</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete "{selectedType?.name}"? This
+                action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsDeleteOpen(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                variant="destructive"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

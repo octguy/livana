@@ -24,10 +24,20 @@ import { toast } from "sonner";
 import type { InterestResponse } from "@/types/response/interestResponse";
 
 export function InterestManagement() {
-  const { interests, loading, currentPage, totalPages, getAllInterests } =
-    useInterestStore();
+  const {
+    interests,
+    loading,
+    currentPage,
+    totalPages,
+    getAllInterests,
+    createInterest,
+    updateInterest,
+    deleteInterest,
+  } = useInterestStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedInterest, setSelectedInterest] =
     useState<InterestResponse | null>(null);
   const [formData, setFormData] = useState({ name: "", icon: "" });
@@ -42,10 +52,7 @@ export function InterestManagement() {
 
   const handleCreate = async () => {
     try {
-      console.log("Create interest:", {
-        name: formData.name,
-        icon: formData.icon,
-      });
+      await createInterest(formData.name, formData.icon);
       toast.success("Interest created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
@@ -58,11 +65,8 @@ export function InterestManagement() {
 
   const handleEdit = async () => {
     try {
-      console.log("Update interest:", {
-        id: selectedInterest?.id,
-        name: formData.name,
-        icon: formData.icon,
-      });
+      if (!selectedInterest) return;
+      await updateInterest(selectedInterest.id, formData.name, formData.icon);
       toast.success("Interest updated successfully");
       setIsEditOpen(false);
       setSelectedInterest(null);
@@ -73,18 +77,27 @@ export function InterestManagement() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this interest?")) return;
+  const handleDelete = async () => {
+    if (!selectedInterest || isDeleting) return;
 
+    setIsDeleting(true);
     try {
-      // TODO: Implement delete API call with id
-      console.log("Deleting interest:", id);
+      await deleteInterest(selectedInterest.id);
       toast.success("Interest deleted successfully");
-      getAllInterests(currentPage, 20);
+      await getAllInterests(currentPage, 20);
+      setIsDeleteOpen(false);
+      setSelectedInterest(null);
     } catch (error) {
       console.error("Failed to delete interest:", error);
       toast.error("Failed to delete interest");
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const openDeleteDialog = (interest: InterestResponse) => {
+    setSelectedInterest(interest);
+    setIsDeleteOpen(true);
   };
   const openEditDialog = (interest: InterestResponse) => {
     setSelectedInterest(interest);
@@ -185,7 +198,7 @@ export function InterestManagement() {
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => handleDelete(interest.id)}
+                      onClick={() => openDeleteDialog(interest)}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -261,6 +274,35 @@ export function InterestManagement() {
                 Cancel
               </Button>
               <Button onClick={handleEdit}>Update</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Interest</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete "{selectedInterest?.name}"? This
+                action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsDeleteOpen(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                variant="destructive"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

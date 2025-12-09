@@ -16,4 +16,14 @@ export interface FacilityState {
     page?: number,
     size?: number
   ) => Promise<ApiResponse<FacilityResponse[]>>;
+  createFacility: (
+    name: string,
+    icon: string
+  ) => Promise<ApiResponse<FacilityResponse>>;
+  updateFacility: (
+    id: string,
+    name: string,
+    icon: string
+  ) => Promise<ApiResponse<FacilityResponse>>;
+  deleteFacility: (id: string) => Promise<ApiResponse<void>>;
 }

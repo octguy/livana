@@ -16,4 +16,37 @@ export const experienceCategoryService = {
     );
     return response.data;
   },
+
+  createExperienceCategory: async (
+    name: string,
+    icon: string
+  ): Promise<ApiResponse<ExperienceCategoryResponse>> => {
+    const response = await api.post<ApiResponse<ExperienceCategoryResponse>>(
+      `/experience-categories`,
+      { name, icon },
+      { withCredentials: true }
+    );
+    return response.data;
+  },
+
+  updateExperienceCategory: async (
+    id: string,
+    name: string,
+    icon: string
+  ): Promise<ApiResponse<ExperienceCategoryResponse>> => {
+    const response = await api.put<ApiResponse<ExperienceCategoryResponse>>(
+      `/experience-categories/${id}`,
+      { name, icon },
+      { withCredentials: true }
+    );
+    return response.data;
+  },
+
+  deleteExperienceCategory: async (id: string): Promise<ApiResponse<void>> => {
+    const response = await api.delete<ApiResponse<void>>(
+      `/experience-categories/${id}/soft`,
+      { withCredentials: true }
+    );
+    return response.data;
+  },
 };

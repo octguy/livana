@@ -16,4 +16,39 @@ export const amenityService = {
     );
     return response.data;
   },
+
+  createAmenity: async (
+    name: string,
+    icon: string
+  ): Promise<ApiResponse<AmenityResponse>> => {
+    const response = await api.post<ApiResponse<AmenityResponse>>(
+      `/amenities`,
+      { name, icon },
+      { withCredentials: true }
+    );
+    return response.data;
+  },
+
+  updateAmenity: async (
+    id: string,
+    name: string,
+    icon: string
+  ): Promise<ApiResponse<AmenityResponse>> => {
+    const response = await api.put<ApiResponse<AmenityResponse>>(
+      `/amenities/${id}`,
+      { name, icon },
+      { withCredentials: true }
+    );
+    return response.data;
+  },
+
+  deleteAmenity: async (id: string): Promise<ApiResponse<void>> => {
+    const response = await api.delete<ApiResponse<void>>(
+      `/amenities/${id}/soft`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  },
 };

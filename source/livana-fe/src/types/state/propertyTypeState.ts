@@ -16,4 +16,14 @@ export interface PropertyTypeState {
     page?: number,
     size?: number
   ) => Promise<ApiResponse<PropertyTypeResponse[]>>;
+  createPropertyType: (
+    name: string,
+    icon: string
+  ) => Promise<ApiResponse<PropertyTypeResponse>>;
+  updatePropertyType: (
+    id: string,
+    name: string,
+    icon: string
+  ) => Promise<ApiResponse<PropertyTypeResponse>>;
+  deletePropertyType: (id: string) => Promise<ApiResponse<void>>;
 }
