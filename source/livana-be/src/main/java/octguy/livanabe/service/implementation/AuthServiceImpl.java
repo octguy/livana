@@ -24,10 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthServiceImpl implements IAuthService {
@@ -105,12 +103,17 @@ public class AuthServiceImpl implements IAuthService {
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
         String token = refreshToken.getToken();
 
+        List<String> roles = user.getRoleUsers().stream()
+                .map(roleUser -> roleUser.getRole().getName().name())
+                .collect(Collectors.toList());
+
         return AuthResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .accessToken(accessToken)
                 .refreshToken(token)
+                .roles(roles)
                 .build();
     }
 
@@ -186,10 +189,15 @@ public class AuthServiceImpl implements IAuthService {
 
         sendVerificationEmail(user.getEmail(), credential.getVerificationCode());
 
+        List<String> roles = user.getRoleUsers().stream()
+                .map(roleUser -> roleUser.getRole().getName().name())
+                .collect(Collectors.toList());
+
         return AuthResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .username(user.getUsername())
+                .roles(roles)
                 .build();
     }
 
@@ -266,12 +274,17 @@ public class AuthServiceImpl implements IAuthService {
         String accessToken = jwtUtil.generateToken(userDetails);
         String refreshTokenString = refreshToken.getToken();
 
+        List<String> roles = user.getRoleUsers().stream()
+                .map(roleUser -> roleUser.getRole().getName().name())
+                .collect(Collectors.toList());
+
         return AuthResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .accessToken(accessToken)
                 .refreshToken(refreshTokenString)
+                .roles(roles)
                 .build();
     }
 

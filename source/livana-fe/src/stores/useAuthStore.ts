@@ -55,6 +55,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Fetch user info after login
       await get().fetchMe();
 
+      // Add roles from login response to user
+      const currentUser = get().user;
+      if (currentUser && data.data.roles) {
+        set({ user: { ...currentUser, roles: data.data.roles } });
+        console.log("Roles set from login:", data.data.roles);
+      }
+
       return data;
     } catch (error) {
       console.error("Đăng nhập thất bại:", error);
@@ -80,7 +87,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ loading: true });
       const user = await authService.fetchMe();
-      // console.log("fetchMe response data:", user);
+      console.log("fetchMe response data:", user);
+      console.log("fetchMe user roles:", user.data.roles);
       set({ user: user.data });
     } catch (error) {
       toast.error("Không thể lấy thông tin người dùng. Vui lòng thử lại.");

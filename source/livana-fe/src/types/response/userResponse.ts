@@ -7,4 +7,5 @@ export interface User {
   bio?: string;
   avatarUrl?: string;
   avatarPublicId?: string;
+  roles?: string[]; // Optional since it's not in /auth/me response
 }

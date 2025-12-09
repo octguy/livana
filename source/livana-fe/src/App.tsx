@@ -3,8 +3,8 @@ import LogInPage from "./pages/auth/LogInPage";
 import SignUpPage from "./pages/auth/SignUpPage";
 import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
 import { Toaster } from "sonner";
-import DashboardPage from "./pages/dashboard/DashboardPage";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AdminDashboardPage from "./pages/dashboard/AdminDashboardPage";
+import { ProtectedRoute, DashboardRouter } from "@/components/auth";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import { ProfilePage } from "./pages/setting/ProfilePage";
@@ -28,7 +28,8 @@ function App() {
 
           {/* protected route */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<DashboardPage />} />
+            <Route path="/" element={<DashboardRouter />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/host/homes/create" element={<CreateHomePage />} />
             <Route path="/host/homes/location" element={<HomeLocationPage />} />
