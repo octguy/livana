@@ -25,9 +25,18 @@ interface Location {
   address: string;
 }
 
+interface SearchSuggestion {
+  place_id: number;
+  display_name: string;
+  lat: string;
+  lon: string;
+}
+
 export function HomeLocationPage() {
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState("");
+  const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [location, setLocation] = useState<Location>({
     lat: 21.0285,
     lng: 105.8542,
@@ -62,6 +71,49 @@ export function HomeLocationPage() {
       setIsLoadingLocation(false);
     }
   }, []);
+
+  // Fetch autocomplete suggestions
+  const fetchSuggestions = async (query: string) => {
+    if (!query || query.length < 3) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          query
+        )}&limit=5`
+      );
+      const data = await response.json();
+      setSuggestions(data);
+      setShowSuggestions(true);
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+      setSuggestions([]);
+    }
+  };
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchSuggestions(searchInput);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  // Handle suggestion selection
+  const handleSelectSuggestion = (suggestion: SearchSuggestion) => {
+    const lat = parseFloat(suggestion.lat);
+    const lng = parseFloat(suggestion.lon);
+    setSearchInput(suggestion.display_name);
+    setMarkerPosition([lat, lng]);
+    updateLocation(lat, lng);
+    setShowSuggestions(false);
+    setSuggestions([]);
+  };
 
   // Update location and reverse geocode using Nominatim (OpenStreetMap)
   const updateLocation = async (lat: number, lng: number) => {
@@ -147,26 +199,47 @@ export function HomeLocationPage() {
         </p>
 
         {/* Search Input */}
-        <div className="mb-6 flex gap-2">
-          <Input
-            type="text"
-            placeholder="Search for a location..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSearch();
-              }
-            }}
-            className="flex-1"
-          />
-          <Button onClick={handleSearch} variant="outline">
-            Search
-          </Button>
+        <div className="mb-6 relative">
+          <div className="flex gap-2">
+            <div className="flex-1 relative">
+              <Input
+                type="text"
+                placeholder="Search for a location..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                    setShowSuggestions(false);
+                  }
+                }}
+                onFocus={() => {
+                  if (suggestions.length > 0) setShowSuggestions(true);
+                }}
+                className="w-full"
+              />
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute z-50 w-full mt-1 bg-background border-2 border-border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {suggestions.map((suggestion) => (
+                    <button
+                      key={suggestion.place_id}
+                      className="w-full text-left px-4 py-3 hover:bg-muted transition-colors border-b border-border last:border-b-0"
+                      onClick={() => handleSelectSuggestion(suggestion)}
+                    >
+                      <p className="text-sm">{suggestion.display_name}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <Button onClick={handleSearch} variant="outline">
+              Search
+            </Button>
+          </div>
         </div>
 
         {/* Map Container */}
-        <div className="mb-8 rounded-xl overflow-hidden border-2 border-border">
+        <div className="mb-8 rounded-xl overflow-hidden border-2 border-border relative z-0">
           {isLoadingLocation ? (
             <div className="w-full h-[500px] flex items-center justify-center bg-muted">
               <p>Loading your location...</p>
