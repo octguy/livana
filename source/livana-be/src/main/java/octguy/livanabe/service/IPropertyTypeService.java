@@ -13,6 +13,14 @@ public interface IPropertyTypeService {
 
     PropertyTypeResponse update(UUID id, String name, String icon);
 
+    void softDelete(UUID id);
+
+    void hardDelete(UUID id);
+
+    void softDeleteAll();
+
+    void hardDeleteAll();
+
 //    UserInterestsResponse setUserInterests(SetInterestRequest request);
 
 //    UserInterestsResponse getUserInterests();

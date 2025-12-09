@@ -54,6 +54,38 @@ public class AmenityServiceImpl implements IAmenityService {
         return toResponse(updatedAmenity);
     }
 
+    @Override
+    @Transactional
+    public void softDelete(UUID id) {
+        Optional<Amenity> amenity = amenityRepository.findById(id);
+        if (amenity.isPresent()) {
+            Amenity entity = amenity.get();
+            entity.setDeletedAt(LocalDateTime.now());
+            amenityRepository.save(entity);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void hardDelete(UUID id) {
+        amenityRepository.hardDeleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void softDeleteAll() {
+        List<Amenity> amenities = amenityRepository.findAll();
+        LocalDateTime now = LocalDateTime.now();
+        amenities.forEach(amenity -> amenity.setDeletedAt(now));
+        amenityRepository.saveAll(amenities);
+    }
+
+    @Override
+    @Transactional
+    public void hardDeleteAll() {
+        amenityRepository.hardDeleteAll();
+    }
+
     private AmenityResponse toResponse(Amenity amenity) {
         return AmenityResponse.builder()
                 .id(amenity.getId())

@@ -54,6 +54,38 @@ public class ExperienceCategoryServiceImpl implements IExperienceCategoryService
         return toResponse(updatedExperienceCategory);
     }
 
+    @Override
+    @Transactional
+    public void softDelete(UUID id) {
+        Optional<ExperienceCategory> experienceCategory = experienceCategoryRepository.findById(id);
+        if (experienceCategory.isPresent()) {
+            ExperienceCategory entity = experienceCategory.get();
+            entity.setDeletedAt(LocalDateTime.now());
+            experienceCategoryRepository.save(entity);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void hardDelete(UUID id) {
+        experienceCategoryRepository.hardDeleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void softDeleteAll() {
+        List<ExperienceCategory> experienceCategories = experienceCategoryRepository.findAll();
+        LocalDateTime now = LocalDateTime.now();
+        experienceCategories.forEach(category -> category.setDeletedAt(now));
+        experienceCategoryRepository.saveAll(experienceCategories);
+    }
+
+    @Override
+    @Transactional
+    public void hardDeleteAll() {
+        experienceCategoryRepository.hardDeleteAll();
+    }
+
     private ExperienceCategoryResponse toResponse(ExperienceCategory experienceCategory) {
         return ExperienceCategoryResponse.builder()
                 .id(experienceCategory.getId())

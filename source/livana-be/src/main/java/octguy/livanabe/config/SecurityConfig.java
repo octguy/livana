@@ -70,7 +70,9 @@ public class SecurityConfig {
                                          "/api/v1/users/**",
                                          "/api/v1/interests/**",
                                          "/api/v1/property-types/**",
-                                         "/api/v1/experience-categories/**").hasAnyRole("USER", "ADMIN")
+                                         "/api/v1/experience-categories/**",
+                                         "/api/v1/facilities/**",
+                                         "/api/v1/amenities/**").hasAnyRole("USER", "ADMIN")
 
                         .requestMatchers("/swagger-ui/**",
                                 "/swagger-ui.html",

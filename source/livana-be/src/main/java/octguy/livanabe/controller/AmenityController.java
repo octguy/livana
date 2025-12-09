@@ -64,4 +64,62 @@ public class AmenityController {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    @DeleteMapping("/{id}/soft")
+    public ResponseEntity<ApiResponse<Void>> softDelete(@PathVariable("id") UUID id) {
+        amenityService.softDelete(id);
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Amenity soft deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/{id}/hard")
+    public ResponseEntity<ApiResponse<Void>> hardDelete(@PathVariable("id") UUID id) {
+        amenityService.hardDelete(id);
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Amenity hard deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/soft/all")
+    public ResponseEntity<ApiResponse<Void>> softDeleteAll() {
+        amenityService.softDeleteAll();
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "All amenities soft deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/hard/all")
+    public ResponseEntity<ApiResponse<Void>> hardDeleteAll() {
+        amenityService.hardDeleteAll();
+
+        IO.println("Delete all hard in amenity controller");
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "All amenities hard deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
 }

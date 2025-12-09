@@ -11,6 +11,7 @@ import { ProfilePage } from "./pages/setting/ProfilePage";
 import { CreateHomePage } from "@/pages/host/CreateHomePage";
 import { CreateExperiencePage } from "@/pages/host/CreateExperiencePage";
 import { HomeLocationPage } from "@/pages/host/HomeLocationPage";
+import { HomeDetailsPage } from "@/pages/host/HomeDetailsPage";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/host/homes/create" element={<CreateHomePage />} />
             <Route path="/host/homes/location" element={<HomeLocationPage />} />
+            <Route path="/host/homes/details" element={<HomeDetailsPage />} />
             <Route
               path="/host/experiences/create"
               element={<CreateExperiencePage />}

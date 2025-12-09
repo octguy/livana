@@ -12,4 +12,12 @@ public interface IFacilityService {
     FacilityResponse create(String name, String icon);
 
     FacilityResponse update(UUID id, String name, String icon);
+
+    void softDelete(UUID id);
+
+    void hardDelete(UUID id);
+
+    void softDeleteAll();
+
+    void hardDeleteAll();
 }

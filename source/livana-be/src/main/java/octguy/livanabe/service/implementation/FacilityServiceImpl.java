@@ -54,6 +54,38 @@ public class FacilityServiceImpl implements IFacilityService {
         return toResponse(updatedFacility);
     }
 
+    @Override
+    @Transactional
+    public void softDelete(UUID id) {
+        Optional<Facility> facility = facilityRepository.findById(id);
+        if (facility.isPresent()) {
+            Facility entity = facility.get();
+            entity.setDeletedAt(LocalDateTime.now());
+            facilityRepository.save(entity);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void hardDelete(UUID id) {
+        facilityRepository.hardDeleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void softDeleteAll() {
+        List<Facility> facilities = facilityRepository.findAll();
+        LocalDateTime now = LocalDateTime.now();
+        facilities.forEach(facility -> facility.setDeletedAt(now));
+        facilityRepository.saveAll(facilities);
+    }
+
+    @Override
+    @Transactional
+    public void hardDeleteAll() {
+        facilityRepository.hardDeleteAll();
+    }
+
     private FacilityResponse toResponse(Facility facility) {
         return FacilityResponse.builder()
                 .id(facility.getId())

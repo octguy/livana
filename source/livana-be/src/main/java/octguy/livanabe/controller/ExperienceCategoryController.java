@@ -64,4 +64,60 @@ public class ExperienceCategoryController {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    @DeleteMapping("/{id}/soft")
+    public ResponseEntity<ApiResponse<Void>> softDelete(@PathVariable("id") UUID id) {
+        experienceCategoryService.softDelete(id);
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Experience category soft deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/{id}/hard")
+    public ResponseEntity<ApiResponse<Void>> hardDelete(@PathVariable("id") UUID id) {
+        experienceCategoryService.hardDelete(id);
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Experience category hard deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/soft/all")
+    public ResponseEntity<ApiResponse<Void>> softDeleteAll() {
+        experienceCategoryService.softDeleteAll();
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "All experience categories soft deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/hard/all")
+    public ResponseEntity<ApiResponse<Void>> hardDeleteAll() {
+        experienceCategoryService.hardDeleteAll();
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "All experience categories hard deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
 }

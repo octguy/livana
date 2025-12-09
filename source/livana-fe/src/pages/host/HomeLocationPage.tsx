@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { useHomeListingStore } from "@/stores/useHomeListingStore";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import type { LeafletMouseEvent } from "leaflet";
@@ -34,10 +35,11 @@ interface SearchSuggestion {
 
 export function HomeLocationPage() {
   const navigate = useNavigate();
+  const { setLocation } = useHomeListingStore();
   const [searchInput, setSearchInput] = useState("");
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [location, setLocation] = useState<Location>({
+  const [location, setLocationState] = useState<Location>({
     lat: 21.0285,
     lng: 105.8542,
     address: "Loading your location...",
@@ -124,12 +126,12 @@ export function HomeLocationPage() {
       const data = await response.json();
 
       if (data.display_name) {
-        setLocation({ lat, lng, address: data.display_name });
+        setLocationState({ lat, lng, address: data.display_name });
         setSearchInput(data.display_name);
       }
     } catch (error) {
       console.error("Geocoding error:", error);
-      setLocation({
+      setLocationState({
         lat,
         lng,
         address: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
@@ -165,8 +167,14 @@ export function HomeLocationPage() {
 
   const handleNext = () => {
     if (location) {
+      // Save location to store
+      setLocation({
+        latitude: location.lat,
+        longitude: location.lng,
+        address: location.address,
+      });
       console.log("Selected location:", location);
-      navigate("/host/homes/details", { state: { location } });
+      navigate("/host/homes/details");
     }
   };
 

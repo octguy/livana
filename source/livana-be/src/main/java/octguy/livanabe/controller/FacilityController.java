@@ -64,4 +64,60 @@ public class FacilityController {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    @DeleteMapping("/{id}/soft")
+    public ResponseEntity<ApiResponse<Void>> softDelete(@PathVariable("id") UUID id) {
+        facilityService.softDelete(id);
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Facility soft deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/{id}/hard")
+    public ResponseEntity<ApiResponse<Void>> hardDelete(@PathVariable("id") UUID id) {
+        facilityService.hardDelete(id);
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Facility hard deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/soft/all")
+    public ResponseEntity<ApiResponse<Void>> softDeleteAll() {
+        facilityService.softDeleteAll();
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "All facilities soft deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/hard/all")
+    public ResponseEntity<ApiResponse<Void>> hardDeleteAll() {
+        facilityService.hardDeleteAll();
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "All facilities hard deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
 }
