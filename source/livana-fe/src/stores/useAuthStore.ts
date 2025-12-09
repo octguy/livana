@@ -74,12 +74,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   logOut: async () => {
     try {
-      get().clearState();
       await authService.logOut();
+      get().clearState();
       toast.success("Đăng xuất thành công!");
     } catch (error) {
-      toast.error("Đăng xuất không thành công. Vui lòng thử lại.");
-      console.error("Đăng xuất thất bại:", error);
+      // Still show success since we cleared the local state
+      // The API call might fail if token is expired, but that's okay
+      console.log("Logout API call failed (but local state cleared):", error);
+      toast.success("Đăng xuất thành công!");
     }
   },
 

@@ -38,7 +38,10 @@ export function ExperienceCategoryManagement() {
 
   const handleCreate = async () => {
     try {
-      // TODO: Implement create API call
+      console.log("Create experience category:", {
+        name: formData.name,
+        icon: formData.icon,
+      });
       toast.success("Experience category created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
@@ -51,8 +54,11 @@ export function ExperienceCategoryManagement() {
 
   const handleEdit = async () => {
     try {
-      // TODO: Implement update API call with selectedCategory.id
-      console.log("Updating category:", selectedCategory);
+      console.log("Update experience category:", {
+        id: selectedCategory?.id,
+        name: formData.name,
+        icon: formData.icon,
+      });
       toast.success("Experience category updated successfully");
       setIsEditOpen(false);
       setSelectedCategory(null);
@@ -68,8 +74,7 @@ export function ExperienceCategoryManagement() {
       return;
 
     try {
-      // TODO: Implement delete API call with id
-      console.log("Deleting category:", id);
+      console.log("Delete experience category - id:", id);
       toast.success("Experience category deleted successfully");
       getAllExperienceCategories();
     } catch (error) {

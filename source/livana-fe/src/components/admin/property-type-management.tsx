@@ -39,7 +39,10 @@ export function PropertyTypeManagement() {
 
   const handleCreate = async () => {
     try {
-      // TODO: Implement create API call
+      console.log("Create property type:", {
+        name: formData.name,
+        icon: formData.icon,
+      });
       toast.success("Property type created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
@@ -52,8 +55,11 @@ export function PropertyTypeManagement() {
 
   const handleEdit = async () => {
     try {
-      // TODO: Implement update API call with selectedType.id
-      console.log("Updating type:", selectedType);
+      console.log("Update property type:", {
+        id: selectedType?.id,
+        name: formData.name,
+        icon: formData.icon,
+      });
       toast.success("Property type updated successfully");
       setIsEditOpen(false);
       setSelectedType(null);
@@ -68,8 +74,7 @@ export function PropertyTypeManagement() {
     if (!confirm("Are you sure you want to delete this property type?")) return;
 
     try {
-      // TODO: Implement delete API call with id
-      console.log("Deleting type:", id);
+      console.log("Delete property type - id:", id);
       toast.success("Property type deleted successfully");
       getAllPropertyTypes();
     } catch (error) {

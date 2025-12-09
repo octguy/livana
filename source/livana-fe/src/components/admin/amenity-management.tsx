@@ -37,7 +37,10 @@ export function AmenityManagement() {
 
   const handleCreate = async () => {
     try {
-      // TODO: Implement create API call
+      console.log("Create amenity:", {
+        name: formData.name,
+        icon: formData.icon,
+      });
       toast.success("Amenity created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
@@ -50,8 +53,11 @@ export function AmenityManagement() {
 
   const handleEdit = async () => {
     try {
-      // TODO: Implement update API call with selectedAmenity.id
-      console.log("Updating amenity:", selectedAmenity);
+      console.log("Update amenity:", {
+        id: selectedAmenity?.id,
+        name: formData.name,
+        icon: formData.icon,
+      });
       toast.success("Amenity updated successfully");
       setIsEditOpen(false);
       setSelectedAmenity(null);

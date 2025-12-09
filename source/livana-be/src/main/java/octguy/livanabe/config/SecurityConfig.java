@@ -84,14 +84,17 @@ public class SecurityConfig {
                                 "/api/v1/auth/reset-password"
                         ).permitAll()
 
-                        // ===== LOGOUT -> USER + ADMIN =====
+                        // ===== REFRESH (authenticated required) =====
+                        .requestMatchers("/api/v1/auth/refresh-token")
+                        .authenticated()
+
+                        // ===== LOGOUT (authenticated required) =====
                         .requestMatchers("/api/v1/auth/logout")
-                        .hasAnyRole("USER", "ADMIN")
+                        .authenticated()
 
                         // ===== REGISTER ADMIN -> ADMIN only =====
                         .requestMatchers("/api/v1/auth/register-admin")
                         .hasRole("ADMIN")
-
 
                         // ===== Swagger =====
                         .requestMatchers(
@@ -103,9 +106,9 @@ public class SecurityConfig {
                                 "/webjars/**"
                         ).permitAll()
 
-
                         // ===== Catalog GET (both role) =====
-                        .requestMatchers(HttpMethod.GET, CATALOG).hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, CATALOG)
+                        .hasAnyRole("USER", "ADMIN")
 
                         // ===== Modify catalog only ADMIN =====
                         .requestMatchers(HttpMethod.POST, CATALOG).hasRole("ADMIN")
@@ -113,14 +116,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, CATALOG).hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, CATALOG).hasRole("ADMIN")
 
-
                         // ===== Other endpoints for USER + ADMIN =====
                         .requestMatchers(
                                 "/api/v1/dummy/**",
                                 "/api/v1/auth/change-password",
                                 "/api/v1/users/**"
                         ).hasAnyRole("USER", "ADMIN")
-
 
                         // ===== remaining need authentication =====
                         .anyRequest().authenticated()
@@ -132,5 +133,6 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
 }

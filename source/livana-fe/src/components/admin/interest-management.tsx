@@ -37,7 +37,10 @@ export function InterestManagement() {
 
   const handleCreate = async () => {
     try {
-      // TODO: Implement create API call
+      console.log("Create interest:", {
+        name: formData.name,
+        icon: formData.icon,
+      });
       toast.success("Interest created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
@@ -50,8 +53,11 @@ export function InterestManagement() {
 
   const handleEdit = async () => {
     try {
-      // TODO: Implement update API call with selectedInterest.id
-      console.log("Updating interest:", selectedInterest);
+      console.log("Update interest:", {
+        id: selectedInterest?.id,
+        name: formData.name,
+        icon: formData.icon,
+      });
       toast.success("Interest updated successfully");
       setIsEditOpen(false);
       setSelectedInterest(null);

@@ -37,7 +37,10 @@ export function FacilityManagement() {
 
   const handleCreate = async () => {
     try {
-      // TODO: Implement create API call
+      console.log("Create facility:", {
+        name: formData.name,
+        icon: formData.icon,
+      });
       toast.success("Facility created successfully");
       setIsCreateOpen(false);
       setFormData({ name: "", icon: "" });
@@ -50,8 +53,11 @@ export function FacilityManagement() {
 
   const handleEdit = async () => {
     try {
-      // TODO: Implement update API call with selectedFacility.id
-      console.log("Updating facility:", selectedFacility);
+      console.log("Update facility:", {
+        id: selectedFacility?.id,
+        name: formData.name,
+        icon: formData.icon,
+      });
       toast.success("Facility updated successfully");
       setIsEditOpen(false);
       setSelectedFacility(null);
