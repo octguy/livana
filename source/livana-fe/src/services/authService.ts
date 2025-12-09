@@ -58,9 +58,17 @@ export const authService = {
   },
 
   refresh: async () => {
-    const response = await api.post("/auth/refresh-token", {
-      withCredentials: true,
-    });
+    const response = await api.post(
+      "/auth/refresh-token",
+      {},
+      {
+        withCredentials: true,
+        headers: {
+          // Don't send Authorization header for refresh token request
+          Authorization: undefined,
+        },
+      }
+    );
     return response.data.data.accessToken;
   },
 

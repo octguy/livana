@@ -46,6 +46,10 @@ public class UserProfileServiceImpl implements IUserProfileService {
 
         UserProfile userProfile = opt.get();
 
+        List<String> roles = currentUser.getRoleUsers().stream()
+                .map(roleUser -> String.valueOf(roleUser.getRole().getName()))
+                .toList();
+
         return UserProfileResponse.builder()
                 .id(currentUser.getId())
                 .username(currentUser.getUsername())
@@ -54,6 +58,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
                 .phoneNumber(userProfile.getPhoneNumber())
                 .avatarUrl(userProfile.getAvatarUrl())
                 .fullName(userProfile.getDisplayName())
+                .roles(roles)
                 .build();
     }
 
@@ -100,6 +105,10 @@ public class UserProfileServiceImpl implements IUserProfileService {
         current.setUpdatedAt(LocalDateTime.now());
         userProfileRepository.save(current);
 
+        List<String> roles = currentUser.getRoleUsers().stream()
+                .map(roleUser -> String.valueOf(roleUser.getRole().getName()))
+                .toList();
+
         return UserProfileResponse.builder()
                 .id(id)
                 .username(current.getUser().getUsername())
@@ -109,6 +118,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
                 .bio(current.getBio())
                 .avatarUrl(current.getAvatarUrl())
                 .avatarPublicId(current.getAvatarPublicId())
+                .roles(roles)
                 .build();
     }
 
@@ -148,6 +158,10 @@ public class UserProfileServiceImpl implements IUserProfileService {
         current.setUpdatedAt(LocalDateTime.now());
         userProfileRepository.save(current);
 
+        List<String> roles = currentUser.getRoleUsers().stream()
+                .map(roleUser -> String.valueOf(roleUser.getRole().getName()))
+                .toList();
+
         return UserProfileResponse.builder()
                 .id(currentUser.getId())
                 .username(currentUser.getUsername())
@@ -157,6 +171,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
                 .bio(current.getBio())
                 .avatarUrl(current.getAvatarUrl())
                 .avatarPublicId(current.getAvatarPublicId())
+                .roles(roles)
                 .build();
     }
 

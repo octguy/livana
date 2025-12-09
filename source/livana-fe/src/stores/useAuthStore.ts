@@ -59,15 +59,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       get().setAccessToken(data.data.accessToken);
       toast.success("Đăng nhập thành công!");
 
-      // Fetch user info after login
+      // Fetch user info after login (now includes roles)
       await get().fetchMe();
-
-      // Add roles from login response to user
-      const currentUser = get().user;
-      if (currentUser && data.data.roles) {
-        set({ user: { ...currentUser, roles: data.data.roles } });
-        console.log("Roles set from login:", data.data.roles);
-      }
 
       return data;
     } catch (error) {

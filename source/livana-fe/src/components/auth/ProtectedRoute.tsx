@@ -9,10 +9,12 @@ const ProtectedRoute = () => {
 
   const init = async () => {
     if (!accessToken) {
+      console.log("No access token, attempting to refresh...");
       await refresh();
     }
 
     if (accessToken && !user) {
+      console.log("Access token present but no user, fetching user info...");
       await fetchMe();
     }
 

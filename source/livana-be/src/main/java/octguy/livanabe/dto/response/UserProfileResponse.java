@@ -2,6 +2,7 @@ package octguy.livanabe.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -23,4 +24,6 @@ public class UserProfileResponse {
     private String avatarUrl;
 
     private String avatarPublicId;
+
+    private List<String> roles;
 }

@@ -81,12 +81,9 @@ public class SecurityConfig {
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/verify",
                                 "/api/v1/auth/forgot-password",
-                                "/api/v1/auth/reset-password"
+                                "/api/v1/auth/reset-password",
+                                "/api/v1/auth/refresh-token"
                         ).permitAll()
-
-                        // ===== REFRESH (authenticated required) =====
-                        .requestMatchers("/api/v1/auth/refresh-token")
-                        .authenticated()
 
                         // ===== LOGOUT (authenticated required) =====
                         .requestMatchers("/api/v1/auth/logout")
