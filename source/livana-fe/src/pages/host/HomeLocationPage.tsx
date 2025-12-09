@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router";
@@ -31,11 +31,37 @@ export function HomeLocationPage() {
   const [location, setLocation] = useState<Location>({
     lat: 21.0285,
     lng: 105.8542,
-    address: "Hanoi, Vietnam",
+    address: "Loading your location...",
   });
   const [markerPosition, setMarkerPosition] = useState<[number, number]>([
     21.0285, 105.8542,
   ]);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+
+  // Get user's current location on mount
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setMarkerPosition([lat, lng]);
+          updateLocation(lat, lng);
+          setIsLoadingLocation(false);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          // Fall back to default location (Hanoi)
+          updateLocation(21.0285, 105.8542);
+          setIsLoadingLocation(false);
+        }
+      );
+    } else {
+      // Geolocation not supported, use default
+      updateLocation(21.0285, 105.8542);
+      setIsLoadingLocation(false);
+    }
+  }, []);
 
   // Update location and reverse geocode using Nominatim (OpenStreetMap)
   const updateLocation = async (lat: number, lng: number) => {
@@ -141,19 +167,25 @@ export function HomeLocationPage() {
 
         {/* Map Container */}
         <div className="mb-8 rounded-xl overflow-hidden border-2 border-border">
-          <MapContainer
-            center={markerPosition}
-            zoom={13}
-            style={{ height: "500px", width: "100%" }}
-            key={`${markerPosition[0]}-${markerPosition[1]}`}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <Marker position={markerPosition} />
-            <MapClickHandler />
-          </MapContainer>
+          {isLoadingLocation ? (
+            <div className="w-full h-[500px] flex items-center justify-center bg-muted">
+              <p>Loading your location...</p>
+            </div>
+          ) : (
+            <MapContainer
+              center={markerPosition}
+              zoom={13}
+              style={{ height: "500px", width: "100%" }}
+              key={`${markerPosition[0]}-${markerPosition[1]}`}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <Marker position={markerPosition} />
+              <MapClickHandler />
+            </MapContainer>
+          )}
         </div>
 
         {/* Selected Location Display */}

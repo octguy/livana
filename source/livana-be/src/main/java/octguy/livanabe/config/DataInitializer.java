@@ -34,18 +34,18 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("DataInitializer run method executed.");
+//        System.out.println("DataInitializer run method executed.");
 
-        System.out.println("Checking and initializing roles...");
+//        System.out.println("Checking and initializing roles...");
         initializeRoles();
 
-        System.out.println("Checking and initializing interests...");
+//        System.out.println("Checking and initializing interests...");
         initializeInterests();
 
-        System.out.println("Checking and initializing property types...");
+//        System.out.println("Checking and initializing property types...");
         initializePropertyType();
 
-        System.out.println("Checking and initializing experience categories...");
+//        System.out.println("Checking and initializing experience categories...");
         initializeExperienceCategories();
     }
 
@@ -54,10 +54,10 @@ public class DataInitializer implements CommandLineRunner {
             roleService.createNewRole(UserRole.ROLE_ADMIN);
             roleService.createNewRole(UserRole.ROLE_USER);
             roleService.createNewRole(UserRole.ROLE_MODERATOR);
-            System.out.println("Initialized default roles.");
+//            System.out.println("Initialized default roles.");
         }
         else {
-            System.out.println("Roles already initialized.");
+//            System.out.println("Roles already initialized.");
         }
     }
 
@@ -65,7 +65,7 @@ public class DataInitializer implements CommandLineRunner {
         // Add interest initialization logic here if needed
         if (interestService.findAll().isEmpty()) {
             // Initialize interests
-            System.out.println("Initialized default interests.");
+//            System.out.println("Initialized default interests.");
             // A
             interestService.create(new CreateInterestRequest("Acting", "🎭"));
             interestService.create(new CreateInterestRequest("Archery", "🏹"));
@@ -251,7 +251,7 @@ public class DataInitializer implements CommandLineRunner {
 
         }
         else {
-            System.out.println("Interests already initialized.");
+//            System.out.println("Interests already initialized.");
         }
     }
 
@@ -272,7 +272,7 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("Initialized default property types.");
         }
         else {
-            System.out.println("Property types already initialized.");
+//            System.out.println("Property types already initialized.");
         }
     }
 
@@ -286,7 +286,7 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("Initialized default experience categories.");
         }
         else {
-            System.out.println("Experience categories already initialized.");
+//            System.out.println("Experience categories already initialized.");
         }
     }
 }
