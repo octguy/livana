@@ -35,6 +35,12 @@ public abstract class BaseListing extends BaseEntity {
     @Column(name="address", nullable = false, length = 300)
     private String address;
 
+    @Column(name="latitude", nullable = false)
+    private Double latitude;
+
+    @Column(name="longitude", nullable = false)
+    private Double longitude;
+
     @Column(name="capacity", nullable = false)
     private int capacity;
 

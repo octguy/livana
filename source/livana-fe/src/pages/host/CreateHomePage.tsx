@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
 import { usePropertyTypeStore } from "@/stores/usePropertyTypeStore";
+import { useHomeListingStore } from "@/stores/useHomeListingStore";
 
 type HomeType = string | null;
 type RoomType = "entire-place" | "room" | "shared-room" | null;
@@ -13,6 +14,7 @@ export function CreateHomePage() {
   const [roomType, setRoomType] = useState<RoomType>(null);
   const { propertyTypes, loading, getAllPropertyTypes } =
     usePropertyTypeStore();
+  const { setPropertyType, setRoomType: setListingRoomType } = useHomeListingStore();
 
   useEffect(() => {
     getAllPropertyTypes();
@@ -22,6 +24,12 @@ export function CreateHomePage() {
     if (step === 1 && homeType) {
       setStep(2);
     } else if (step === 2 && roomType) {
+      // Save to global store
+      if (homeType) {
+        setPropertyType(homeType);
+      }
+      setListingRoomType(roomType);
+      
       console.log("Creating home listing:", { homeType, roomType });
       navigate("/host/homes/location");
     }

@@ -6,11 +6,12 @@ import { useFacilityStore } from "@/stores/useFacilityStore";
 import { useAmenityStore } from "@/stores/useAmenityStore";
 import { usePropertyTypeStore } from "@/stores/usePropertyTypeStore";
 import { MapPin, X } from "lucide-react";
+import { toast } from "sonner";
 
 export function HomeReviewPage() {
   const navigate = useNavigate();
   const listing = useHomeListingStore();
-  const { facilities } = useFacilityStore();
+  const { facilities: allFacilities } = useFacilityStore();
   const { amenities: amenitiesList } = useAmenityStore();
   const { propertyTypes } = usePropertyTypeStore();
   const [showAllPhotos, setShowAllPhotos] = useState(false);
@@ -19,6 +20,18 @@ export function HomeReviewPage() {
   const selectedAmenities = amenitiesList.filter((a) =>
     listing.amenities.includes(a.id)
   );
+
+  // Get selected facilities with their details
+  const selectedFacilities = listing.facilities
+    .map((storedFacility) => {
+      const facilityInfo = allFacilities.find(
+        (f) => f.id === storedFacility.facilityId
+      );
+      return facilityInfo
+        ? { ...facilityInfo, quantity: storedFacility.quantity }
+        : null;
+    })
+    .filter((f) => f !== null);
 
   // Get property type name
   const propertyType = propertyTypes.find(
@@ -30,44 +43,80 @@ export function HomeReviewPage() {
   };
 
   useEffect(() => {
-    // Console log all collected data
-    const reviewData = {
-      propertyTypeId: listing.propertyTypeId,
-      roomType: listing.roomType,
-      location: listing.location,
-      guests: listing.guests,
-      bedrooms: listing.bedrooms,
-      beds: listing.beds,
-      bathrooms: listing.bathrooms,
-      amenities: listing.amenities,
-      selectedAmenities: selectedAmenities.map((a) => ({
-        id: a.id,
-        name: a.name,
-        icon: a.icon,
-      })),
-      photos: listing.photos.map((photo) => ({
-        name: photo.name,
-        size: photo.size,
-        type: photo.type,
-      })),
-      title: listing.title,
-      description: listing.description,
-      basePrice: listing.basePrice,
-    };
-
-    console.log("========== HOME LISTING REVIEW DATA ==========");
-    console.log(JSON.stringify(reviewData, null, 2));
-    console.log("==============================================");
-  }, [listing, selectedAmenities]);
+    // Console log data structure on component mount
+    console.log("========== LISTING STATE ==========");
+    console.log("Property Type ID:", listing.propertyTypeId);
+    console.log("Guests (capacity):", listing.guests);
+    console.log("Amenities:", listing.amenities);
+    console.log("Facilities with quantities:", listing.facilities);
+    console.log("Photos count:", listing.photos.length);
+    console.log("===================================");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleBack = () => {
     navigate(-1);
   };
 
-  const handlePublish = () => {
-    // Here you would call the backend API to save the listing
-    console.log("Publishing listing...");
-    alert("Listing data logged to console. Ready for backend integration!");
+  const handlePublish = async () => {
+    console.log("========== CHECKING REQUIRED FIELDS ==========");
+    console.log("listing.location:", listing.location);
+    console.log("listing.propertyTypeId:", listing.propertyTypeId);
+    console.log("==============================================");
+
+    if (!listing.location || !listing.propertyTypeId) {
+      toast.error("Missing required information");
+      console.error("MISSING:", {
+        location: listing.location ? "✓" : "✗ MISSING",
+        propertyTypeId: listing.propertyTypeId ? "✓" : "✗ MISSING",
+      });
+      return;
+    }
+
+    // Use the stored facilities with their quantities from the listing state
+    const facilityRequests = listing.facilities.map((facility) => ({
+      facilityId: facility.facilityId,
+      quantity: facility.quantity,
+    }));
+
+    // Map photos to images with order (List<ImageOrderDto>)
+    const images = listing.photos.map((photo, index) => ({
+      image: photo,
+      order: index + 1,
+    }));
+
+    const payload = {
+      title: listing.title,
+      price: listing.basePrice,
+      description: listing.description,
+      capacity: listing.guests,
+      address: listing.location.address,
+      latitude: listing.location.latitude,
+      longitude: listing.location.longitude,
+      propertyTypeId: listing.propertyTypeId,
+      amenityIds: listing.amenities,
+      facilityRequests,
+      images,
+    };
+
+    console.log("========== PAYLOAD TO BACKEND ==========");
+    console.log(payload);
+    console.log("==============================================");
+
+    toast.success("Payload logged to console!");
+
+    // TODO: Uncomment when ready to test API
+    // try {
+    //   const response = await listing.createListing(payload);
+    //   console.log("Listing created successfully:", response.data);
+    //   toast.success("Listing published successfully!");
+    //   listing.clearState();
+    //   navigate("/host/listings");
+    // } catch (error: any) {
+    //   console.error("Error creating listing:", error);
+    //   const errorMessage = error.response?.data?.message || "Failed to publish listing";
+    //   toast.error(errorMessage);
+    // }
   };
 
   return (
@@ -160,11 +209,11 @@ export function HomeReviewPage() {
               </div>
 
               {/* Facilities */}
-              {facilities.length > 0 && (
+              {selectedFacilities.length > 0 && (
                 <div className="pb-8 border-b border-gray-200">
                   <h2 className="text-2xl font-semibold mb-6">Facilities</h2>
                   <div className="grid grid-cols-2 gap-4">
-                    {facilities.slice(0, 6).map((facility) => (
+                    {selectedFacilities.slice(0, 6).map((facility) => (
                       <div
                         key={facility.id}
                         className="flex items-center gap-4"
@@ -175,15 +224,15 @@ export function HomeReviewPage() {
                             {facility.name}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Quantity: 1
+                            Quantity: {facility.quantity}
                           </p>
                         </div>
                       </div>
                     ))}
                   </div>
-                  {facilities.length > 6 && (
+                  {selectedFacilities.length > 6 && (
                     <button className="mt-6 px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
-                      Show all {facilities.length} facilities
+                      Show all {selectedFacilities.length} facilities
                     </button>
                   )}
                 </div>
@@ -292,11 +341,21 @@ export function HomeReviewPage() {
 
         {/* Navigation Buttons */}
         <div className="flex items-center justify-between mt-16 pt-8 border-t border-gray-200">
-          <Button variant="outline" onClick={handleBack} size="lg">
+          <Button
+            variant="outline"
+            onClick={handleBack}
+            size="lg"
+            disabled={listing.loading}
+          >
             Back
           </Button>
-          <Button onClick={handlePublish} size="lg" className="px-8">
-            Publish Listing
+          <Button
+            onClick={handlePublish}
+            size="lg"
+            className="px-8"
+            disabled={listing.loading}
+          >
+            {listing.loading ? "Publishing..." : "Publish Listing"}
           </Button>
         </div>
       </div>

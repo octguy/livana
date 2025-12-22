@@ -8,8 +8,14 @@ import { Minus, Plus } from "lucide-react";
 
 export function HomeDetailsPage() {
   const navigate = useNavigate();
-  const { guests, amenities, setBasicInfo, setAmenities } =
-    useHomeListingStore();
+  const {
+    guests,
+    amenities,
+    facilities: storedFacilities,
+    setBasicInfo,
+    setAmenities,
+    setFacilities,
+  } = useHomeListingStore();
 
   const {
     facilities,
@@ -72,15 +78,18 @@ export function HomeDetailsPage() {
   };
 
   const handleNext = () => {
-    // Collect facility values and store them
-    // facilityValues contains {facilityId: quantity}
-    // This will be used later when saving the listing to the database
+    // Convert facilityValues to array format for storage
+    const facilitiesArray = Object.entries(facilityValues).map(
+      ([facilityId, quantity]) => ({
+        facilityId,
+        quantity,
+      })
+    );
 
     setBasicInfo(guestsCount, 0, 0, 0); // Only guests is set, others come from facilities
     setAmenities(selectedAmenities);
+    setFacilities(facilitiesArray); // Store facilities with quantities
 
-    // You can store facilityValues in the listing store if needed
-    // For now, navigate to next step (e.g., photos, title, description)
     navigate("/host/homes/photos");
   };
 

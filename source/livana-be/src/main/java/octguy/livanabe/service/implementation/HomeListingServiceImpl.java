@@ -1,0 +1,229 @@
+package octguy.livanabe.service.implementation;
+
+import lombok.extern.slf4j.Slf4j;
+import octguy.livanabe.dto.dto.FacilityQuantityDto;
+import octguy.livanabe.dto.dto.ImageOrderDto;
+import octguy.livanabe.dto.dto.ImageOrderResponse;
+import octguy.livanabe.dto.request.CreateHomeListingRequest;
+import octguy.livanabe.dto.request.HomeFacilityRequest;
+import octguy.livanabe.dto.response.CloudinaryResponse;
+import octguy.livanabe.dto.response.HomeListingResponse;
+import octguy.livanabe.entity.*;
+import octguy.livanabe.repository.*;
+import octguy.livanabe.service.ICloudinaryService;
+import octguy.livanabe.service.IHomeListingService;
+import octguy.livanabe.utils.SecurityUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toMap;
+
+@Slf4j
+@Service
+public class HomeListingServiceImpl implements IHomeListingService {
+
+    private final HomeListingRepository homeListingRepository;
+
+    private final PropertyTypeRepository propertyTypeRepository;
+
+    private final FacilityRepository facilityRepository;
+
+    private final AmenityRepository amenityRepository;
+
+    private final HomeFacilityRepository homeFacilityRepository;
+
+    private final HomeAmenityRepository homeAmenityRepository;
+
+    private final ListingImageRepository listingImageRepository;
+
+    private final ICloudinaryService cloudinaryService;
+
+    public HomeListingServiceImpl(HomeListingRepository homeListingRepository,
+                                  PropertyTypeRepository propertyTypeRepository,
+                                  FacilityRepository facilityRepository,
+                                  AmenityRepository amenityRepository,
+                                  HomeFacilityRepository homeFacilityRepository,
+                                  HomeAmenityRepository homeAmenityRepository,
+                                  ListingImageRepository listingImageRepository,
+                                  ICloudinaryService cloudinaryService) {
+        this.homeFacilityRepository = homeFacilityRepository;
+        this.homeAmenityRepository = homeAmenityRepository;
+        this.amenityRepository = amenityRepository;
+        this.facilityRepository = facilityRepository;
+        this.propertyTypeRepository = propertyTypeRepository;
+        this.homeListingRepository = homeListingRepository;
+        this.listingImageRepository = listingImageRepository;
+        this.cloudinaryService = cloudinaryService;
+    }
+
+    @Override
+    @Transactional
+    public HomeListingResponse createHomeListing(CreateHomeListingRequest request) {
+        // Get current user
+        User user = SecurityUtils.getCurrentUser();
+
+        PropertyType propertyType = propertyTypeRepository.findById(request.getPropertyTypeId())
+                .orElseThrow(() -> {
+                    log.error("Property type not found with id {}", request.getPropertyTypeId());
+                    return new RuntimeException("Property type not found");
+                });
+
+        List<Facility> facilities = validateFacilities(request.getFacilityRequests());
+
+        List<Amenity> amenities = validateAmenities(request.getAmenityIds());
+
+        HomeListing homeListing = new HomeListing();
+
+        homeListing.setHost(user);
+        homeListing.setTitle(request.getTitle());
+        homeListing.setDescription(request.getDescription());
+        homeListing.setCapacity(request.getCapacity());
+        homeListing.setAddress(request.getAddress());
+        homeListing.setLatitude(request.getLatitude());
+        homeListing.setLongitude(request.getLongitude());
+        homeListing.setBasePrice(request.getPrice());
+        homeListing.setPropertyType(propertyType);
+        homeListing.setIsAvailable(true);
+
+        HomeListing savedListing = homeListingRepository.save(homeListing);
+
+        createHomeFacilities(savedListing, request.getFacilityRequests(), facilities);
+        createHomeAmenities(savedListing, amenities);
+        List<ListingImage> listingImages = createListingImage(savedListing, request.getImages());
+
+        return buildHomeListingResponse(savedListing, request, listingImages);
+    }
+
+    private void createHomeFacilities(HomeListing homeListing, List<HomeFacilityRequest> requests, List<Facility> facilities) {
+        if (requests.isEmpty()) return;
+
+        Map<UUID, Facility> facilityMap = facilities.stream()
+                .collect(toMap(Facility::getId, Function.identity()));
+
+        List<HomeFacility> homeFacilities = requests.stream().map(
+            request -> {
+                HomeFacility homeFacility = new HomeFacility();
+
+                homeFacility.setListing(homeListing);
+
+                Facility facility = facilityMap.get(request.getFacilityId());
+                homeFacility.setFacility(facility);
+
+                homeFacility.setQuantity(request.getQuantity());
+
+                return homeFacility;
+        }).toList();
+
+        homeFacilityRepository.saveAll(homeFacilities);
+    }
+
+    private void createHomeAmenities(HomeListing homeListing, List<Amenity> amenities) {
+        if (amenities == null || amenities.isEmpty()) return;
+
+        List<HomeAmenity> homeAmenities = amenities.stream().map(amenity -> {
+            HomeAmenity homeAmenity = new HomeAmenity();
+
+            homeAmenity.setListing(homeListing);
+            homeAmenity.setAmenity(amenity);
+
+            return homeAmenity;
+        }).toList();
+
+        homeAmenityRepository.saveAll(homeAmenities);
+    }
+
+    private List<ListingImage> createListingImage(HomeListing homeListing, List<ImageOrderDto> imageOrderDtos) {
+        if (imageOrderDtos == null || imageOrderDtos.isEmpty()) {
+            log.warn("No images provided for listing {}", homeListing.getId());
+            return List.of();
+        }
+
+        List<ListingImage> listingImages = imageOrderDtos.stream().map(imageDto -> {
+            // Upload image to Cloudinary
+            CloudinaryResponse cloudinaryResponse = cloudinaryService.uploadImage(imageDto.getImage());
+
+            // Create ListingImage entity
+            ListingImage listingImage = new ListingImage();
+            listingImage.setListing(homeListing);
+            listingImage.setImageUrl(cloudinaryResponse.getUrl());
+            listingImage.setImagePublicId(cloudinaryResponse.getPublicId());
+            listingImage.setImageOrder(imageDto.getOrder());
+            listingImage.setThumbnail(imageDto.getOrder() == 1); // First image is thumbnail
+
+            return listingImage;
+        }).toList();
+
+        List<ListingImage> savedImages = listingImageRepository.saveAll(listingImages);
+        log.info("Created {} images for listing {}", savedImages.size(), homeListing.getId());
+        return savedImages;
+    }
+
+    private HomeListingResponse buildHomeListingResponse(HomeListing homeListing, CreateHomeListingRequest request, List<ListingImage> listingImages) {
+        // Build facilities list
+        List<FacilityQuantityDto> facilityDtos = request.getFacilityRequests().stream()
+                .map(facilityRequest -> {
+                    FacilityQuantityDto dto = new FacilityQuantityDto();
+                    dto.setFacilityId(facilityRequest.getFacilityId());
+                    dto.setQuantity(facilityRequest.getQuantity());
+                    return dto;
+                })
+                .toList();
+
+        // Build images list
+        List<ImageOrderResponse> imageResponses = listingImages.stream()
+                .map(listingImage -> ImageOrderResponse.builder()
+                        .image(CloudinaryResponse.builder()
+                                .url(listingImage.getImageUrl())
+                                .publicId(listingImage.getImagePublicId())
+                                .build())
+                        .order(listingImage.getImageOrder())
+                        .build())
+                .toList();
+
+        return HomeListingResponse.builder()
+                .listingId(homeListing.getId())
+                .title(homeListing.getTitle())
+                .price(homeListing.getBasePrice())
+                .description(homeListing.getDescription())
+                .capacity(homeListing.getCapacity())
+                .address(homeListing.getAddress())
+                .latitude(homeListing.getLatitude())
+                .longitude(homeListing.getLongitude())
+                .propertyTypeId(homeListing.getPropertyType().getId())
+                .amenityIds(request.getAmenityIds())
+                .facilities(facilityDtos)
+                .images(imageResponses)
+                .build();
+    }
+
+    private List<Facility> validateFacilities(List<HomeFacilityRequest> requests) {
+        List<UUID> facilitiesIds = requests.stream()
+                .map(HomeFacilityRequest::getFacilityId)
+                .toList();
+
+        List<Facility> facilities = facilityRepository.findAllById(facilitiesIds);
+
+        if (facilities.size() != facilitiesIds.size()) {
+            log.error("Not all facilities found with ids {}", facilitiesIds);
+            throw new RuntimeException("Not all facilities found");
+        }
+
+        return facilities;
+    }
+
+    private List<Amenity> validateAmenities(List<UUID> amenityIds) {
+        List<Amenity> amenities = amenityRepository.findAllById(amenityIds);
+
+        if (amenities.size() != amenityIds.size()) {
+            log.error("Not all amenities found with ids {}", amenityIds);
+            throw new RuntimeException("Not all amenities found");
+        }
+
+        return amenities;
+    }
+}

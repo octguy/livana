@@ -1,8 +1,12 @@
 package octguy.livanabe.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name="home_listing")
 public class HomeListing extends BaseListing {
 
