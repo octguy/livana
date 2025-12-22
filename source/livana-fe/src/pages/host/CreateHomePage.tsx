@@ -14,7 +14,8 @@ export function CreateHomePage() {
   const [roomType, setRoomType] = useState<RoomType>(null);
   const { propertyTypes, loading, getAllPropertyTypes } =
     usePropertyTypeStore();
-  const { setPropertyType, setRoomType: setListingRoomType } = useHomeListingStore();
+  const { setPropertyType, setRoomType: setListingRoomType } =
+    useHomeListingStore();
 
   useEffect(() => {
     getAllPropertyTypes();
@@ -29,7 +30,7 @@ export function CreateHomePage() {
         setPropertyType(homeType);
       }
       setListingRoomType(roomType);
-      
+
       console.log("Creating home listing:", { homeType, roomType });
       navigate("/host/homes/location");
     }
