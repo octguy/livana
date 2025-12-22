@@ -16,6 +16,7 @@ export interface AmenityState {
     page?: number,
     size?: number
   ) => Promise<ApiResponse<AmenityResponse[]>>;
+  getAllAmenitiesComplete: () => Promise<AmenityResponse[]>;
   createAmenity: (
     name: string,
     icon: string

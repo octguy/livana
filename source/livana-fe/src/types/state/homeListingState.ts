@@ -19,6 +19,16 @@ export interface HomeListingState {
   // Step 4: Amenities
   amenities: string[];
 
+  // Step 5: Photos
+  photos: File[];
+
+  // Step 6: Title and Description
+  title: string;
+  description: string;
+
+  // Step 7: Pricing
+  basePrice: number;
+
   // Actions
   setPropertyType: (propertyTypeId: string) => void;
   setRoomType: (roomType: "entire-place" | "room" | "shared-room") => void;
@@ -34,6 +44,10 @@ export interface HomeListingState {
     bathrooms: number
   ) => void;
   setAmenities: (amenities: string[]) => void;
+  setPhotos: (photos: File[]) => void;
+  setTitle: (title: string) => void;
+  setDescription: (description: string) => void;
+  setBasePrice: (basePrice: number) => void;
   clearState: () => void;
   resetListing: () => void;
 }

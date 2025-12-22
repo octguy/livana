@@ -16,6 +16,7 @@ export interface FacilityState {
     page?: number,
     size?: number
   ) => Promise<ApiResponse<FacilityResponse[]>>;
+  getAllFacilitiesComplete: () => Promise<FacilityResponse[]>;
   createFacility: (
     name: string,
     icon: string

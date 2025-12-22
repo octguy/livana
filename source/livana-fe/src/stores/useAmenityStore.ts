@@ -1,6 +1,14 @@
 import { create } from "zustand";
 import type { AmenityState } from "@/types/state/amenityState";
 import { amenityService } from "@/services/amenityService";
+import type { AmenityResponse } from "@/types/response/amenityResponse";
+
+interface PaginatedResponse {
+  content: AmenityResponse[];
+  number: number;
+  totalPages: number;
+  totalElements: number;
+}
 
 export const useAmenityStore = create<AmenityState>((set, get) => ({
   loading: false,
@@ -34,7 +42,7 @@ export const useAmenityStore = create<AmenityState>((set, get) => ({
     try {
       set({ loading: true });
       const response = await amenityService.getAllAmenities(page, size);
-      const paginatedData = response.data as any;
+      const paginatedData = response.data as unknown as PaginatedResponse;
       get().setAmenities(paginatedData.content || []);
       get().setPage(paginatedData.number || page);
       get().setPaginationInfo(
@@ -44,6 +52,36 @@ export const useAmenityStore = create<AmenityState>((set, get) => ({
       return response;
     } catch (error) {
       console.error("Failed to fetch amenities:", error);
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  getAllAmenitiesComplete: async () => {
+    try {
+      set({ loading: true });
+      const allAmenities: AmenityResponse[] = [];
+      let currentPage = 0;
+      let totalPages = 1;
+
+      // Fetch all pages
+      while (currentPage < totalPages) {
+        const response = await amenityService.getAllAmenities(currentPage, 100);
+        const paginatedData = response.data as unknown as PaginatedResponse;
+        allAmenities.push(...(paginatedData.content || []));
+        totalPages = paginatedData.totalPages || 1;
+        currentPage++;
+      }
+
+      get().setAmenities(allAmenities);
+      get().setPaginationInfo(totalPages, allAmenities.length);
+      // console.log(
+      //   `Loaded ${allAmenities.length} amenities from ${totalPages} pages`
+      // );
+      return allAmenities;
+    } catch (error) {
+      console.error("Failed to fetch all amenities:", error);
       throw error;
     } finally {
       set({ loading: false });

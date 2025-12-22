@@ -12,6 +12,11 @@ import { CreateHomePage } from "@/pages/host/CreateHomePage";
 import { CreateExperiencePage } from "@/pages/host/CreateExperiencePage";
 import { HomeLocationPage } from "@/pages/host/HomeLocationPage";
 import { HomeDetailsPage } from "@/pages/host/HomeDetailsPage";
+import { HomePhotosPage } from "@/pages/host/HomePhotosPage";
+import { HomeTitlePage } from "@/pages/host/HomeTitlePage";
+import { HomeDescriptionPage } from "@/pages/host/HomeDescriptionPage";
+import { HomePricePage } from "@/pages/host/HomePricePage";
+import { HomeReviewPage } from "@/pages/host/HomeReviewPage";
 
 function App() {
   return (
@@ -34,6 +39,14 @@ function App() {
             <Route path="/host/homes/create" element={<CreateHomePage />} />
             <Route path="/host/homes/location" element={<HomeLocationPage />} />
             <Route path="/host/homes/details" element={<HomeDetailsPage />} />
+            <Route path="/host/homes/photos" element={<HomePhotosPage />} />
+            <Route path="/host/homes/title" element={<HomeTitlePage />} />
+            <Route
+              path="/host/homes/description"
+              element={<HomeDescriptionPage />}
+            />
+            <Route path="/host/homes/price" element={<HomePricePage />} />
+            <Route path="/host/homes/review" element={<HomeReviewPage />} />
             <Route
               path="/host/experiences/create"
               element={<CreateExperiencePage />}

@@ -10,6 +10,10 @@ export const useHomeListingStore = create<HomeListingState>((set) => ({
   beds: 1,
   bathrooms: 1,
   amenities: [],
+  photos: [],
+  title: "",
+  description: "",
+  basePrice: 0,
 
   setPropertyType: (propertyTypeId) => set({ propertyTypeId }),
 
@@ -22,6 +26,14 @@ export const useHomeListingStore = create<HomeListingState>((set) => ({
 
   setAmenities: (amenities) => set({ amenities }),
 
+  setPhotos: (photos) => set({ photos }),
+
+  setTitle: (title) => set({ title }),
+
+  setDescription: (description) => set({ description }),
+
+  setBasePrice: (basePrice) => set({ basePrice }),
+
   clearState: () =>
     set({
       propertyTypeId: null,
@@ -32,6 +44,10 @@ export const useHomeListingStore = create<HomeListingState>((set) => ({
       beds: 1,
       bathrooms: 1,
       amenities: [],
+      photos: [],
+      title: "",
+      description: "",
+      basePrice: 0,
     }),
 
   resetListing: () =>
@@ -44,5 +60,9 @@ export const useHomeListingStore = create<HomeListingState>((set) => ({
       beds: 1,
       bathrooms: 1,
       amenities: [],
+      photos: [],
+      title: "",
+      description: "",
+      basePrice: 0,
     }),
 }));

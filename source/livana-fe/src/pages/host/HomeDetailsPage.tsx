@@ -14,12 +14,12 @@ export function HomeDetailsPage() {
   const {
     facilities,
     loading: facilitiesLoading,
-    getAllFacilities,
+    getAllFacilitiesComplete,
   } = useFacilityStore();
   const {
     amenities: amenitiesList,
     loading: amenitiesLoading,
-    getAllAmenities,
+    getAllAmenitiesComplete,
   } = useAmenityStore();
 
   const [guestsCount, setGuestsCount] = useState(guests);
@@ -30,9 +30,9 @@ export function HomeDetailsPage() {
     useState<string[]>(amenities);
 
   useEffect(() => {
-    getAllFacilities();
-    getAllAmenities();
-  }, [getAllFacilities, getAllAmenities]);
+    getAllFacilitiesComplete();
+    getAllAmenitiesComplete();
+  }, [getAllFacilitiesComplete, getAllAmenitiesComplete]);
 
   // Initialize facility values from store or defaults
   useEffect(() => {
@@ -49,6 +49,14 @@ export function HomeDetailsPage() {
   const guestFavorites = amenitiesList.slice(0, 8);
   const standoutAmenities = amenitiesList.slice(8, 22);
   const safetyItems = amenitiesList.slice(22, 26);
+
+  // Debug logs for safety items
+  // console.log("Total amenities fetched:", amenitiesList.length);
+  // console.log("All amenities:", amenitiesList);
+  // console.log("Guest favorites (0-8):", guestFavorites);
+  // console.log("Standout amenities (8-22):", standoutAmenities);
+  // console.log("Safety items (22-26):", safetyItems);
+  // console.log("Safety items count:", safetyItems.length);
 
   const handleAmenityToggle = (id: string) => {
     setSelectedAmenities((prev) =>
