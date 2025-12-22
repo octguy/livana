@@ -32,16 +32,4 @@ public class Interest extends BaseEntity {
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserInterest> userInterests = new HashSet<>();
-
-    @PrePersist
-    protected void onCreate() {
-        LocalDateTime now = LocalDateTime.now();
-
-        if (this.id == null) {
-            this.id = UUID.randomUUID();
-        }
-
-        this.setCreatedAt(now);
-        this.setUpdatedAt(now);
-    }
 }

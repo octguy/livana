@@ -103,20 +103,18 @@ export function HomeReviewPage() {
     console.log(payload);
     console.log("==============================================");
 
-    toast.success("Payload logged to console!");
-
-    // TODO: Uncomment when ready to test API
-    // try {
-    //   const response = await listing.createListing(payload);
-    //   console.log("Listing created successfully:", response.data);
-    //   toast.success("Listing published successfully!");
-    //   listing.clearState();
-    //   navigate("/host/listings");
-    // } catch (error: any) {
-    //   console.error("Error creating listing:", error);
-    //   const errorMessage = error.response?.data?.message || "Failed to publish listing";
-    //   toast.error(errorMessage);
-    // }
+    try {
+      const response = await listing.createListing(payload);
+      console.log("Listing created successfully:", response.data);
+      toast.success("Listing published successfully!");
+      listing.clearState();
+      navigate("/host/listings");
+    } catch (error: any) {
+      console.error("Error creating listing:", error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to publish listing";
+      toast.error(errorMessage);
+    }
   };
 
   return (

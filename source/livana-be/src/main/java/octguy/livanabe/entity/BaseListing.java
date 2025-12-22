@@ -49,10 +49,4 @@ public abstract class BaseListing extends BaseEntity {
 
     @Column(name="is_available", nullable = false)
     private Boolean isAvailable;
-
-    @PrePersist
-    protected void onCreate() {
-        this.setCreatedAt(LocalDateTime.now());
-        this.setUpdatedAt(LocalDateTime.now());
-    }
 }

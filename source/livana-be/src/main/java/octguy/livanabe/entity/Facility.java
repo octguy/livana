@@ -25,10 +25,4 @@ public class Facility extends BaseEntity {
 
     @Column
     private String icon;
-
-    @PrePersist
-    protected void onCreate() {
-        this.setCreatedAt(LocalDateTime.now());
-        this.setUpdatedAt(LocalDateTime.now());
-    }
 }

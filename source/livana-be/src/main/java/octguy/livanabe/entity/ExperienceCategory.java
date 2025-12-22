@@ -25,11 +25,4 @@ public class ExperienceCategory extends BaseEntity {
 
     @Column(nullable = true)
     private String icon;
-
-    @PrePersist
-    protected void onCreate() {
-        LocalDateTime now = LocalDateTime.now();
-        this.setCreatedAt(now);
-        this.setUpdatedAt(now);
-    }
 }
