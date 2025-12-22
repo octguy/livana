@@ -3,11 +3,13 @@ package octguy.livanabe.service.implementation;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import octguy.livanabe.dto.request.UpdateUserProfileRequest;
+import octguy.livanabe.dto.response.CloudinaryResponse;
 import octguy.livanabe.dto.response.UserProfileResponse;
 import octguy.livanabe.entity.User;
 import octguy.livanabe.entity.UserProfile;
 import octguy.livanabe.exception.UserNotFoundException;
 import octguy.livanabe.repository.UserProfileRepository;
+import octguy.livanabe.service.ICloudinaryService;
 import octguy.livanabe.service.IUserProfileService;
 import octguy.livanabe.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,13 +27,11 @@ public class UserProfileServiceImpl implements IUserProfileService {
 
     private final UserProfileRepository userProfileRepository;
 
-    private final Cloudinary cloudinary;
+    private final ICloudinaryService cloudinaryService;
 
-    @Value("${spring.cloudinary.folder}")
-    private String folder;
-
-    public UserProfileServiceImpl(UserProfileRepository userProfileRepository, Cloudinary cloudinary) {
-        this.cloudinary = cloudinary;
+    public UserProfileServiceImpl(UserProfileRepository userProfileRepository,
+                                  ICloudinaryService cloudinaryService) {
+        this.cloudinaryService = cloudinaryService;
         this.userProfileRepository = userProfileRepository;
     }
 
@@ -138,23 +138,11 @@ public class UserProfileServiceImpl implements IUserProfileService {
         }
 
         // Upload to cloudinary
-        String avatarUrl;
-        String avatarPublicId;
-        try {
-            var uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-                    "folder", folder,
-                    "overwrite", true,
-                    "resource_type", "image"
-            ));
-            avatarUrl = uploadResult.get("secure_url").toString();
-            avatarPublicId = uploadResult.get("public_id").toString();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to upload avatar to Cloudinary: " + e.getMessage());
-        }
+        CloudinaryResponse uploadResponse = cloudinaryService.uploadImage(file);
 
         // Update in database
-        current.setAvatarUrl(avatarUrl);
-        current.setAvatarPublicId(avatarPublicId);
+        current.setAvatarUrl(uploadResponse.getUrl());
+        current.setAvatarPublicId(uploadResponse.getPublicId());
         current.setUpdatedAt(LocalDateTime.now());
         userProfileRepository.save(current);
 
@@ -187,12 +175,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
         UserProfile current = existing.get();
 
         // Delete on cloudinary
-        try {
-            cloudinary.uploader().destroy(current.getAvatarPublicId(), ObjectUtils.emptyMap());
-        } catch (Exception e) {
-            // Log error but continue to delete in database
-            throw new RuntimeException("Failed to delete avatar from Cloudinary: " + e.getMessage());
-        }
+        cloudinaryService.deleteImage(current.getAvatarPublicId());
 
         // Delete in database
         current.setAvatarUrl(null);
