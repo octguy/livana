@@ -17,6 +17,7 @@ import { HomeTitlePage } from "@/pages/host/HomeTitlePage";
 import { HomeDescriptionPage } from "@/pages/host/HomeDescriptionPage";
 import { HomePricePage } from "@/pages/host/HomePricePage";
 import { HomeReviewPage } from "@/pages/host/HomeReviewPage";
+import { HomePage } from "@/pages/HomePage";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* public route */}
+          <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LogInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/verify" element={<VerifyEmailPage />} />
@@ -33,7 +35,7 @@ function App() {
 
           {/* protected route */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<DashboardRouter />} />
+            <Route path="/dashboard" element={<DashboardRouter />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/host/homes/create" element={<CreateHomePage />} />

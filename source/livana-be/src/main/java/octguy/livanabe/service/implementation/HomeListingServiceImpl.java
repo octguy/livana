@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import octguy.livanabe.dto.dto.FacilityQuantityDto;
 import octguy.livanabe.dto.dto.ImageOrderDto;
 import octguy.livanabe.dto.dto.ImageOrderResponse;
+import octguy.livanabe.dto.dto.ListingHostDto;
 import octguy.livanabe.dto.request.CreateHomeListingRequest;
 import octguy.livanabe.dto.request.HomeFacilityRequest;
 import octguy.livanabe.dto.response.CloudinaryResponse;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -28,6 +30,8 @@ import static java.util.stream.Collectors.toMap;
 public class HomeListingServiceImpl implements IHomeListingService {
 
     private final HomeListingRepository homeListingRepository;
+
+    private final UserProfileRepository userProfileRepository;
 
     private final PropertyTypeRepository propertyTypeRepository;
 
@@ -50,7 +54,9 @@ public class HomeListingServiceImpl implements IHomeListingService {
                                   HomeFacilityRepository homeFacilityRepository,
                                   HomeAmenityRepository homeAmenityRepository,
                                   ListingImageRepository listingImageRepository,
-                                  ICloudinaryService cloudinaryService) {
+                                  ICloudinaryService cloudinaryService,
+                                  UserProfileRepository userProfileRepository) {
+        this.userProfileRepository = userProfileRepository;
         this.homeFacilityRepository = homeFacilityRepository;
         this.homeAmenityRepository = homeAmenityRepository;
         this.amenityRepository = amenityRepository;
@@ -96,7 +102,39 @@ public class HomeListingServiceImpl implements IHomeListingService {
         createHomeAmenities(savedListing, amenities);
         List<ListingImage> listingImages = createListingImage(savedListing, request.getImages());
 
-        return buildHomeListingResponse(savedListing, request, listingImages);
+        return buildHomeListingResponse(savedListing, request, listingImages, user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<HomeListingResponse> getAllHomeListings() {
+        log.info("Fetching all home listings");
+        List<HomeListing> homeListings = homeListingRepository.findAll();
+        return homeListings.stream()
+                .map(this::convertToResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public HomeListingResponse getHomeListingById(UUID id) {
+        log.info("Fetching home listing with id {}", id);
+        HomeListing homeListing = homeListingRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Home listing not found with id {}", id);
+                    return new RuntimeException("Home listing not found");
+                });
+        return convertToResponse(homeListing);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<HomeListingResponse> getHomeListingsByHostId(UUID hostId) {
+        log.info("Fetching home listings for host {}", hostId);
+        List<HomeListing> homeListings = homeListingRepository.findByHostId(hostId);
+        return homeListings.stream()
+                .map(this::convertToResponse)
+                .toList();
     }
 
     private void createHomeFacilities(HomeListing homeListing, List<HomeFacilityRequest> requests, List<Facility> facilities) {
@@ -163,7 +201,26 @@ public class HomeListingServiceImpl implements IHomeListingService {
         return savedImages;
     }
 
-    private HomeListingResponse buildHomeListingResponse(HomeListing homeListing, CreateHomeListingRequest request, List<ListingImage> listingImages) {
+    private HomeListingResponse buildHomeListingResponse(HomeListing homeListing,
+                                                         CreateHomeListingRequest request,
+                                                         List<ListingImage> listingImages,
+                                                         User host) {
+        Optional<UserProfile> up = userProfileRepository.findByUserId(host.getId());
+
+        if (up.isEmpty()) {
+            log.error("User profile not found for user {}", host.getId());
+            throw new RuntimeException("User profile not found");
+        }
+
+        UserProfile profile = up.get();
+
+        ListingHostDto hostDto = ListingHostDto.builder()
+                .hostId(host.getId())
+                .hostDisplayName(profile.getDisplayName())
+                .avatarUrl(profile.getAvatarUrl())
+                .phoneNumber(profile.getPhoneNumber())
+                .build();
+
         // Build facilities list
         List<FacilityQuantityDto> facilityDtos = request.getFacilityRequests().stream()
                 .map(facilityRequest -> {
@@ -187,6 +244,7 @@ public class HomeListingServiceImpl implements IHomeListingService {
 
         return HomeListingResponse.builder()
                 .listingId(homeListing.getId())
+                .host(hostDto)
                 .title(homeListing.getTitle())
                 .price(homeListing.getBasePrice())
                 .description(homeListing.getDescription())
@@ -225,5 +283,67 @@ public class HomeListingServiceImpl implements IHomeListingService {
         }
 
         return amenities;
+    }
+
+    private HomeListingResponse convertToResponse(HomeListing homeListing) {
+        // Get host information
+        User host = homeListing.getHost();
+        UserProfile profile = userProfileRepository.findByUserId(host.getId())
+                .orElseThrow(() -> {
+                    log.error("User profile not found for user {}", host.getId());
+                    return new RuntimeException("User profile not found");
+                });
+
+        ListingHostDto hostDto = ListingHostDto.builder()
+                .hostId(host.getId())
+                .hostDisplayName(profile.getDisplayName())
+                .avatarUrl(profile.getAvatarUrl())
+                .phoneNumber(profile.getPhoneNumber())
+                .build();
+
+        // Get facilities
+        List<HomeFacility> homeFacilities = homeFacilityRepository.findByListingId(homeListing.getId());
+        List<FacilityQuantityDto> facilityDtos = homeFacilities.stream()
+                .map(hf -> {
+                    FacilityQuantityDto dto = new FacilityQuantityDto();
+                    dto.setFacilityId(hf.getFacility().getId());
+                    dto.setQuantity(hf.getQuantity());
+                    return dto;
+                })
+                .toList();
+
+        // Get amenities
+        List<HomeAmenity> homeAmenities = homeAmenityRepository.findByListingId(homeListing.getId());
+        List<UUID> amenityIds = homeAmenities.stream()
+                .map(ha -> ha.getAmenity().getId())
+                .toList();
+
+        // Get images
+        List<ListingImage> listingImages = listingImageRepository.findByListingIdOrderByImageOrderAsc(homeListing.getId());
+        List<ImageOrderResponse> imageResponses = listingImages.stream()
+                .map(listingImage -> ImageOrderResponse.builder()
+                        .image(CloudinaryResponse.builder()
+                                .url(listingImage.getImageUrl())
+                                .publicId(listingImage.getImagePublicId())
+                                .build())
+                        .order(listingImage.getImageOrder())
+                        .build())
+                .toList();
+
+        return HomeListingResponse.builder()
+                .listingId(homeListing.getId())
+                .host(hostDto)
+                .title(homeListing.getTitle())
+                .price(homeListing.getBasePrice())
+                .description(homeListing.getDescription())
+                .capacity(homeListing.getCapacity())
+                .address(homeListing.getAddress())
+                .latitude(homeListing.getLatitude())
+                .longitude(homeListing.getLongitude())
+                .propertyTypeId(homeListing.getPropertyType().getId())
+                .amenityIds(amenityIds)
+                .facilities(facilityDtos)
+                .images(imageResponses)
+                .build();
     }
 }

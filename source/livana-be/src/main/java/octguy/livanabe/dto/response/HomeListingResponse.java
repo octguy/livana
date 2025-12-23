@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import octguy.livanabe.dto.dto.FacilityQuantityDto;
 import octguy.livanabe.dto.dto.ImageOrderResponse;
+import octguy.livanabe.dto.dto.ListingHostDto;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,6 +15,8 @@ import java.util.UUID;
 public class HomeListingResponse {
 
     private UUID listingId;
+
+    private ListingHostDto host;
 
     private String title;
 

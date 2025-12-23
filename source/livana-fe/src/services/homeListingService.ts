@@ -70,3 +70,33 @@ export const createHomeListing = async (
 
   return response.data;
 };
+
+export const getAllHomeListings = async (): Promise<
+  ApiResponse<HomeListingResponse[]>
+> => {
+  const response = await api.get<ApiResponse<HomeListingResponse[]>>(
+    "/listings/homes"
+  );
+
+  return response.data;
+};
+
+export const getHomeListingById = async (
+  id: string
+): Promise<ApiResponse<HomeListingResponse>> => {
+  const response = await api.get<ApiResponse<HomeListingResponse>>(
+    `/listings/homes/${id}`
+  );
+
+  return response.data;
+};
+
+export const getHomeListingsByHostId = async (
+  hostId: string
+): Promise<ApiResponse<HomeListingResponse[]>> => {
+  const response = await api.get<ApiResponse<HomeListingResponse[]>>(
+    `/listings/homes/host/${hostId}`
+  );
+
+  return response.data;
+};

@@ -11,8 +11,16 @@ export interface ImageOrderResponse {
   order: number;
 }
 
+export interface ListingHostDto {
+  hostId: string;
+  hostDisplayName: string;
+  avatarUrl: string;
+  phoneNumber: string;
+}
+
 export interface HomeListingResponse {
   listingId: string;
+  host: ListingHostDto;
   title: string;
   price: number;
   description: string;

@@ -100,7 +100,8 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml",
                                 "/swagger-resources/**",
-                                "/webjars/**"
+                                "/webjars/**",
+                                "/api/v1/listings/homes/**"
                         ).permitAll()
 
                         // ===== Catalog GET (both role) =====
