@@ -5,7 +5,7 @@ import api from "@/lib/axios";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { toast } from "sonner";
 
-const DashboardPage = () => {
+const UserDashboardPage = () => {
   const user = useAuthStore((s) => s.user);
   // console.log("Dashboard user:", user);
 
@@ -36,4 +36,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default UserDashboardPage;

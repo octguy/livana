@@ -2,42 +2,75 @@ package octguy.livanabe.config;
 
 import octguy.livanabe.dto.request.CreateInterestRequest;
 import octguy.livanabe.enums.UserRole;
+import octguy.livanabe.service.IAmenityService;
+import octguy.livanabe.service.IExperienceCategoryService;
+import octguy.livanabe.service.IFacilityService;
 import octguy.livanabe.service.IInterestService;
+import octguy.livanabe.service.IPropertyTypeService;
 import octguy.livanabe.service.IRoleService;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
+@Order(2) // Run after DataMigration
 public class DataInitializer implements CommandLineRunner {
 
     private final IRoleService roleService;
 
     private final IInterestService interestService;
 
-    public DataInitializer(IRoleService roleService, IInterestService interestService) {
+    private final IPropertyTypeService propertyTypeService;
+
+    private final IExperienceCategoryService experienceCategoryService;
+
+    private final IFacilityService facilityService;
+
+    private final IAmenityService amenityService;
+
+    public DataInitializer(IRoleService roleService,
+                           IInterestService interestService,
+                           IPropertyTypeService propertyTypeService,
+                           IExperienceCategoryService experienceCategoryService,
+                           IFacilityService facilityService,
+                           IAmenityService amenityService) {
+        this.propertyTypeService = propertyTypeService;
         this.interestService = interestService;
         this.roleService = roleService;
+        this.experienceCategoryService = experienceCategoryService;
+        this.facilityService = facilityService;
+        this.amenityService = amenityService;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("DataInitializer run method executed.");
-        System.out.println("Checking and initializing roles...");
+//        System.out.println("DataInitializer run method executed.");
+
+//        System.out.println("Checking and initializing roles...");
         initializeRoles();
-        System.out.println("Checking and initializing interests...");
+
+//        System.out.println("Checking and initializing interests...");
         initializeInterests();
+
+//        System.out.println("Checking and initializing property types...");
+        initializePropertyType();
+
+//        System.out.println("Checking and initializing experience categories...");
+        initializeExperienceCategories();
+
+//        System.out.println("Checking and initializing facilities...");
+        initializeFacilities();
+
+//        System.out.println("Checking and initializing amenities...");
+        initializeAmenities();
     }
 
     private void initializeRoles() {
-        // Add role initialization logic here if needed
         if (roleService.findAll().isEmpty()) {
             roleService.createNewRole(UserRole.ROLE_ADMIN);
             roleService.createNewRole(UserRole.ROLE_USER);
             roleService.createNewRole(UserRole.ROLE_MODERATOR);
-            System.out.println("Initialized default roles.");
-        }
-        else {
-            System.out.println("Roles already initialized.");
+//            System.out.println("Initialized default roles.");
         }
     }
 
@@ -45,7 +78,7 @@ public class DataInitializer implements CommandLineRunner {
         // Add interest initialization logic here if needed
         if (interestService.findAll().isEmpty()) {
             // Initialize interests
-            System.out.println("Initialized default interests.");
+//            System.out.println("Initialized default interests.");
             // A
             interestService.create(new CreateInterestRequest("Acting", "🎭"));
             interestService.create(new CreateInterestRequest("Archery", "🏹"));
@@ -230,8 +263,76 @@ public class DataInitializer implements CommandLineRunner {
             interestService.create(new CreateInterestRequest("Zen gardening", "🌿"));
 
         }
-        else {
-            System.out.println("Interests already initialized.");
+    }
+
+    private void initializePropertyType() {
+        if (propertyTypeService.findAll().isEmpty()) {
+            propertyTypeService.create("House", "🏠");
+            propertyTypeService.create("Apartment", "🏢");
+            propertyTypeService.create("Barn", "🛖");
+            propertyTypeService.create("Bed & Breakfast", "🛏️");
+            propertyTypeService.create("Boat", "⛵");
+            propertyTypeService.create("Cabin", "🏕️");
+            propertyTypeService.create("Camper/RV", "🚐");
+            propertyTypeService.create("Casa particular", "🏘️");
+            propertyTypeService.create("Castle", "🏰");
+            propertyTypeService.create("Cave", "🕳️");
+            propertyTypeService.create("Container", "📦");
+            propertyTypeService.create("Cycladic Home", "🏛️");
+            System.out.println("Initialized default property types.");
+        }
+    }
+
+    private void initializeExperienceCategories() {
+        if (experienceCategoryService.findAll().isEmpty()) {
+            experienceCategoryService.create("Art and design", "🎨");
+            experienceCategoryService.create("Fitness and wellness", "🧘");
+            experienceCategoryService.create("Food and drink", "🍳");
+            experienceCategoryService.create("History and culture", "🏛️");
+            experienceCategoryService.create("Nature and outdoors", "🌲");
+            System.out.println("Initialized default experience categories.");
+        }
+    }
+
+    private void initializeFacilities() {
+        if (facilityService.findAll().isEmpty()) {
+            facilityService.create("Bedroom", "🛏️");
+            facilityService.create("Bed", "🛌");
+            facilityService.create("Bathroom", "🛁");
+            facilityService.create("Toilet", "🚽");
+            System.out.println("Initialized default facilities.");
+        }
+    }
+
+    private void initializeAmenities() {
+        if (amenityService.findAll().isEmpty()) {
+            amenityService.create("Wifi", "📶");
+            amenityService.create("TV", "📺");
+            amenityService.create("Kitchen", "🍳");
+            amenityService.create("Washer", "🧺");
+            amenityService.create("Free parking on premises", "🅿️");
+            amenityService.create("Paid parking on premises", "💰");
+            amenityService.create("Air conditioning", "❄️");
+            amenityService.create("Dedicated workspace", "💼");
+            amenityService.create("Pool", "🏊");
+            amenityService.create("Hot tub", "🛁");
+            amenityService.create("Patio", "🪴");
+            amenityService.create("BBQ grill", "🍖");
+            amenityService.create("Outdoor dining area", "🍽️");
+            amenityService.create("Fire pit", "🔥");
+            amenityService.create("Pool table", "🎱");
+            amenityService.create("Indoor fireplace", "🔥");
+            amenityService.create("Piano", "🎹");
+            amenityService.create("Exercise equipment", "🏋️");
+            amenityService.create("Lake access", "🏞️");
+            amenityService.create("Beach access", "🏖️");
+            amenityService.create("Ski-in/Ski-out", "🎿");
+            amenityService.create("Outdoor shower", "🚿");
+            amenityService.create("Smoke alarm", "🚨");
+            amenityService.create("First aid kit", "🩹");
+            amenityService.create("Fire extinguisher", "🧯");
+            amenityService.create("Carbon monoxide alarm", "⚠️");
+            System.out.println("Initialized default amenities.");
         }
     }
 }

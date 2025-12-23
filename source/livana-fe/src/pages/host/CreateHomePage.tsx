@@ -1,61 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
-import {
-  Home as HomeIcon,
-  Building2,
-  Castle,
-  Warehouse,
-  Mountain,
-  Ship,
-  Caravan,
-  Church,
-  Container,
-} from "lucide-react";
+import { usePropertyTypeStore } from "@/stores/usePropertyTypeStore";
+import { useHomeListingStore } from "@/stores/useHomeListingStore";
 
-type HomeType =
-  | "house"
-  | "apartment"
-  | "barn"
-  | "bed-breakfast"
-  | "boat"
-  | "cabin"
-  | "camper-rv"
-  | "casa-particular"
-  | "castle"
-  | "cave"
-  | "container"
-  | "cycladic-home"
-  | null;
+type HomeType = string | null;
 type RoomType = "entire-place" | "room" | "shared-room" | null;
-
-const homeTypes = [
-  { value: "house", label: "House", icon: HomeIcon },
-  { value: "apartment", label: "Apartment", icon: Building2 },
-  { value: "barn", label: "Barn", icon: Warehouse },
-  { value: "bed-breakfast", label: "Bed & breakfast", icon: HomeIcon },
-  { value: "boat", label: "Boat", icon: Ship },
-  { value: "cabin", label: "Cabin", icon: Mountain },
-  { value: "camper-rv", label: "Camper/RV", icon: Caravan },
-  { value: "casa-particular", label: "Casa particular", icon: HomeIcon },
-  { value: "castle", label: "Castle", icon: Castle },
-  { value: "cave", label: "Cave", icon: Mountain },
-  { value: "container", label: "Container", icon: Container },
-  { value: "cycladic-home", label: "Cycladic home", icon: Church },
-];
 
 export function CreateHomePage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [homeType, setHomeType] = useState<HomeType>(null);
   const [roomType, setRoomType] = useState<RoomType>(null);
+  const { propertyTypes, loading, getAllPropertyTypes } =
+    usePropertyTypeStore();
+  const { setPropertyType, setRoomType: setListingRoomType } =
+    useHomeListingStore();
+
+  useEffect(() => {
+    getAllPropertyTypes();
+  }, [getAllPropertyTypes]);
 
   const handleNext = () => {
     if (step === 1 && homeType) {
       setStep(2);
     } else if (step === 2 && roomType) {
+      // Save to global store
+      if (homeType) {
+        setPropertyType(homeType);
+      }
+      setListingRoomType(roomType);
+
       console.log("Creating home listing:", { homeType, roomType });
-      navigate("/host/homes/details");
+      navigate("/host/homes/location");
     }
   };
 
@@ -77,29 +54,32 @@ export function CreateHomePage() {
               Which of these best describes your place?
             </h1>
 
-            <div className="grid grid-cols-3 gap-4 mb-16">
-              {homeTypes.map((type) => {
-                const Icon = type.icon;
-                const isSelected = homeType === type.value;
-                return (
-                  <button
-                    key={type.value}
-                    className={`
-                      relative flex flex-col items-start gap-6 p-6 rounded-xl border-2 transition-all
-                      ${
-                        isSelected
-                          ? "border-foreground bg-muted/50"
-                          : "border-border hover:border-foreground/50"
-                      }
-                    `}
-                    onClick={() => setHomeType(type.value as HomeType)}
-                  >
-                    <Icon className="h-8 w-8" />
-                    <span className="text-base font-medium">{type.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+            {loading ? (
+              <div className="text-center py-12">Loading property types...</div>
+            ) : (
+              <div className="grid grid-cols-3 gap-4 mb-16">
+                {propertyTypes.map((type) => {
+                  const isSelected = homeType === type.id;
+                  return (
+                    <button
+                      key={type.id}
+                      className={`
+                        relative flex flex-col items-start gap-6 p-6 rounded-xl border-2 transition-all
+                        ${
+                          isSelected
+                            ? "border-foreground bg-muted/50"
+                            : "border-border hover:border-foreground/50"
+                        }
+                      `}
+                      onClick={() => setHomeType(type.id)}
+                    >
+                      <span className="text-4xl">{type.icon}</span>
+                      <span className="text-base font-medium">{type.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 

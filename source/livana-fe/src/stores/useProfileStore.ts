@@ -7,6 +7,8 @@ import { cloudinaryService } from "@/services/cloudinaryService";
 export const useProfileStore = create<ProfileState>((set) => ({
   loading: false,
 
+  clearState: () => set({ loading: false }),
+
   update: async (updatedProfile) => {
     try {
       set({ loading: true });

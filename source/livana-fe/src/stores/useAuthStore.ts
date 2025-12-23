@@ -2,6 +2,13 @@ import { create } from "zustand";
 import { toast } from "sonner";
 import { authService } from "@/services/authService";
 import type { AuthState } from "@/types/state/authState";
+import { useProfileStore } from "./useProfileStore";
+import { useInterestStore } from "./useInterestStore";
+import { useHomeListingStore } from "./useHomeListingStore";
+import { usePropertyTypeStore } from "./usePropertyTypeStore";
+import { useAmenityStore } from "./useAmenityStore";
+import { useFacilityStore } from "./useFacilityStore";
+import { useExperienceCategoryStore } from "./useExperienceCategoryStore";
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   accessToken: null,
@@ -52,7 +59,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       get().setAccessToken(data.data.accessToken);
       toast.success("Đăng nhập thành công!");
 
-      // Fetch user info after login
+      // Fetch user info after login (now includes roles)
       await get().fetchMe();
 
       return data;
@@ -67,12 +74,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   logOut: async () => {
     try {
-      get().clearState();
       await authService.logOut();
-      toast.success("Đăng xuất thành công!");
     } catch (error) {
-      toast.error("Đăng xuất không thành công. Vui lòng thử lại.");
-      console.error("Đăng xuất thất bại:", error);
+      // API call might fail if token is expired, but that's okay
+      console.log("Logout API call failed (but will clear all state):", error);
+    } finally {
+      // Clear all store states
+      get().clearState();
+      useProfileStore.getState().clearState();
+      useInterestStore.getState().clearState();
+      useHomeListingStore.getState().clearState();
+      usePropertyTypeStore.getState().clearState();
+      useAmenityStore.getState().clearState();
+      useFacilityStore.getState().clearState();
+      useExperienceCategoryStore.getState().clearState();
+      toast.success("Đăng xuất thành công!");
     }
   },
 
@@ -80,7 +96,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ loading: true });
       const user = await authService.fetchMe();
-      // console.log("fetchMe response data:", user);
+      console.log("fetchMe response data:", user);
+      console.log("fetchMe user roles:", user.data.roles);
       set({ user: user.data });
     } catch (error) {
       toast.error("Không thể lấy thông tin người dùng. Vui lòng thử lại.");

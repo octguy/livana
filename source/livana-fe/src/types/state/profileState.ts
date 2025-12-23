@@ -5,6 +5,7 @@ import type { User } from "../response/userResponse";
 export interface ProfileState {
   loading: boolean;
 
+  clearState: () => void;
   update: (updatedProfile: UpdateProfileRequest) => Promise<ApiResponse<User>>;
   uploadAvatar: (file: File) => Promise<ApiResponse<User>>;
   deleteAvatar: () => Promise<ApiResponse<User>>;

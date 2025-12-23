@@ -147,31 +147,10 @@ CREATE TABLE listing_homes (
     location_id         BIGINT REFERENCES locations(id) ON DELETE SET NULL,
     property_type       VARCHAR(100),       -- e.g. apartment, house for homes
     max_guests          INTEGER NOT NULL CHECK (max_guests > 0),
-    num_bedrooms        INTEGER,           
-    num_bathrooms       INTEGER,
     base_price          NUMERIC(10,2) NOT NULL CHECK (base_price >= 0),
-    cleaning_fee        NUMERIC(10,2),
-    security_deposit    NUMERIC(10,2),
-    currency_code       CHAR(3) NOT NULL DEFAULT 'USD',
-    cancellation_policy VARCHAR(50),         -- e.g. flexible, moderate, strict
     is_active           BOOLEAN NOT NULL DEFAULT TRUE,
-    approval_status     VARCHAR(20) NOT NULL DEFAULT 'pending', -- 'pending','approved','rejected'
     created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-create table facilities (
-    id          SERIAL PRIMARY KEY,
-    listing_id  BIGINT NOT NULL REFERENCES listing_home(id) ON DELETE CASCADE,
-    name       VARCHAR(100) NOT NULL,
-    description TEXT,
-    quantity    INT,
-);
-
-CREATE TABLE experience_categories (
-  id          BIGSERIAL PRIMARY KEY,
-  name        TEXT NOT NULL,
-  description TEXT
 );
 
 create table listing_experiences (
@@ -190,6 +169,29 @@ create table listing_experiences (
     updated_at     TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE amenities ( -- just for homes
+    id          SERIAL PRIMARY KEY,
+    listing_id  BIGINT NOT NULL REFERENCES listing_home(id) ON DELETE CASCADE,
+    title       VARCHAR(100) NOT NULL,
+    description TEXT,
+
+);
+
+create table facilities (
+    id          SERIAL PRIMARY KEY,
+    listing_id  BIGINT NOT NULL REFERENCES listing_home(id) ON DELETE CASCADE,
+    name       VARCHAR(100) NOT NULL,
+    description TEXT,
+    quantity    INT,
+);
+
+CREATE TABLE experience_categories (
+  id          BIGSERIAL PRIMARY KEY,
+  name        TEXT NOT NULL,
+  description TEXT
+);
+
+
 -- Photos associated with listings
 CREATE TABLE listing_photos (
     id         BIGSERIAL PRIMARY KEY,
@@ -202,13 +204,7 @@ CREATE TABLE listing_photos (
 );
 
 -- Amenity definitions (Wi‑Fi, parking, etc.)
-CREATE TABLE amenities ( -- just for homes
-    id          SERIAL PRIMARY KEY,
-    listing_id  BIGINT NOT NULL REFERENCES listing_home(id) ON DELETE CASCADE,
-    title       VARCHAR(100) NOT NULL,
-    description TEXT,
 
-);
 
 create table activities (
     id            BIGSERIAL PRIMARY KEY,

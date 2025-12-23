@@ -4,6 +4,7 @@ import octguy.livanabe.jwt.JwtAuthenticationEntryPoint;
 import octguy.livanabe.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -60,23 +61,66 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        String[] CATALOG = {
+                "/api/v1/property-types/**",
+                "/api/v1/experience-categories/**",
+                "/api/v1/facilities/**",
+                "/api/v1/amenities/**",
+                "/api/v1/interests/**"
+        };
+
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/dummy/**",
-                                         "/api/v1/auth/change-password",
-                                         "/api/v1/users/me",
-                                         "/api/v1/users/**",
-                                         "/api/v1/interests/**").hasAnyRole("USER", "ADMIN")
 
-                        .requestMatchers("/swagger-ui/**",
+                        // ===== PUBLIC AUTH =====
+                        .requestMatchers(
+                                "/api/v1/auth/register",
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/verify",
+                                "/api/v1/auth/forgot-password",
+                                "/api/v1/auth/reset-password",
+                                "/api/v1/auth/refresh-token"
+                        ).permitAll()
+
+                        // ===== LOGOUT (authenticated required) =====
+                        .requestMatchers("/api/v1/auth/logout")
+                        .authenticated()
+
+                        // ===== REGISTER ADMIN -> ADMIN only =====
+                        .requestMatchers("/api/v1/auth/register-admin")
+                        .hasRole("ADMIN")
+
+                        // ===== Swagger =====
+                        .requestMatchers(
+                                "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml",
                                 "/swagger-resources/**",
-                                "/webjars/**").permitAll()
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                                "/webjars/**",
+                                "/api/v1/listings/homes/**"
+                        ).permitAll()
+
+                        // ===== Catalog GET (both role) =====
+                        .requestMatchers(HttpMethod.GET, CATALOG).permitAll()
+
+                        // ===== Modify catalog only ADMIN =====
+                        .requestMatchers(HttpMethod.POST, CATALOG).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, CATALOG).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, CATALOG).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, CATALOG).hasRole("ADMIN")
+
+                        // ===== Other endpoints for USER + ADMIN =====
+                        .requestMatchers(
+                                "/api/v1/dummy/**",
+                                "/api/v1/auth/change-password",
+                                "/api/v1/users/**"
+                        ).hasAnyRole("USER", "ADMIN")
+
+                        // ===== remaining need authentication =====
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
@@ -86,4 +130,6 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+
 }

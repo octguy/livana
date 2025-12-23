@@ -3,6 +3,7 @@ package octguy.livanabe.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import java.util.UUID;
 @Table(name="password_reset_token")
 @Getter
 @Setter
+@SQLRestriction("deleted_at IS NULL")
 public class PasswordResetToken extends BaseEntity {
 
     @Id

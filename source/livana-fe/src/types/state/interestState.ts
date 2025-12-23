@@ -6,12 +6,34 @@ export interface InterestState {
   loading: boolean;
   interests: InterestResponse[];
   userInterests: UserInterestResponse | null;
+  currentPage: number;
+  totalPages: number;
+  totalElements: number;
 
+  clearState: () => void;
   setListInterests: (interests: InterestResponse[]) => void;
   setUserInterests: (userInterests: UserInterestResponse) => void;
-  getAllInterests: () => Promise<ApiResponse<InterestResponse[]>>;
+  setPage: (page: number) => void;
+  setPaginationInfo: (totalPages: number, totalElements: number) => void;
+  getAllInterests: (
+    page?: number,
+    size?: number
+  ) => Promise<ApiResponse<InterestResponse[]>>;
+  getAllInterestsWithoutPagination: () => Promise<
+    ApiResponse<InterestResponse[]>
+  >;
   getUserInterests: () => Promise<ApiResponse<UserInterestResponse>>;
   updateUserInterests: (
     interestIds: string[]
   ) => Promise<ApiResponse<UserInterestResponse>>;
+  createInterest: (
+    name: string,
+    icon: string
+  ) => Promise<ApiResponse<InterestResponse>>;
+  updateInterest: (
+    id: string,
+    name: string,
+    icon: string
+  ) => Promise<ApiResponse<InterestResponse>>;
+  deleteInterest: (id: string) => Promise<ApiResponse<string>>;
 }
