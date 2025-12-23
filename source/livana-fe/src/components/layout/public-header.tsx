@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, LogOut, Home } from "lucide-react";
+import { Menu, X, User, LogOut, Home, ListChecks } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
@@ -105,6 +105,10 @@ export function PublicHeader() {
                     <DropdownMenuItem onClick={() => navigate("/profile")}>
                       <User className="mr-2 h-4 w-4" />
                       Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/my-listings")}>
+                      <ListChecks className="mr-2 h-4 w-4" />
+                      My listings
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout}>

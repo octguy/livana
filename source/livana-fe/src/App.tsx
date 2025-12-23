@@ -20,6 +20,7 @@ import { HomeReviewPage } from "@/pages/host/HomeReviewPage";
 import { HomePage } from "@/pages/HomePage";
 import { ListingDetailPage } from "@/pages/ListingDetailPage";
 import { HostListingsPage } from "@/pages/HostListingsPage";
+import { MyListingsPage } from "@/pages/MyListingsPage";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
             <Route path="/dashboard" element={<DashboardRouter />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/my-listings" element={<MyListingsPage />} />
             <Route path="/host/homes/create" element={<CreateHomePage />} />
             <Route path="/host/homes/location" element={<HomeLocationPage />} />
             <Route path="/host/homes/details" element={<HomeDetailsPage />} />
