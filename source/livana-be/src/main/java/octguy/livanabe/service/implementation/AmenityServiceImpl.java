@@ -40,6 +40,13 @@ public class AmenityServiceImpl implements IAmenityService {
     }
 
     @Override
+    public AmenityResponse findById(UUID id) {
+        return amenityRepository.findById(id)
+                .map(this::toResponse)
+                .orElseThrow(() -> new RuntimeException("Amenity not found with id: " + id));
+    }
+
+    @Override
     @Transactional
     public AmenityResponse create(String name, String icon) {
         Amenity amenity = new Amenity();

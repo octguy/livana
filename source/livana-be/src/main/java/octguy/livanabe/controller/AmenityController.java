@@ -54,6 +54,20 @@ public class AmenityController {
         return ResponseEntity.ok().body(apiResponse);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<AmenityResponse>> getAmenityById(@PathVariable UUID id) {
+        AmenityResponse amenity = amenityService.findById(id);
+
+        ApiResponse<AmenityResponse> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Amenity fetched successfully",
+                amenity,
+                null
+        );
+
+        return ResponseEntity.ok().body(apiResponse);
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse<AmenityResponse>> create(@Valid @RequestBody CreateAmenityRequest request) {
         AmenityResponse createdAmenity = amenityService.create(request.getName(), request.getIcon());

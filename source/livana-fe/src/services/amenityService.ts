@@ -17,6 +17,13 @@ export const amenityService = {
     return response.data;
   },
 
+  getAmenityById: async (id: string): Promise<ApiResponse<AmenityResponse>> => {
+    const response = await api.get<ApiResponse<AmenityResponse>>(
+      `/amenities/${id}`
+    );
+    return response.data;
+  },
+
   createAmenity: async (
     name: string,
     icon: string

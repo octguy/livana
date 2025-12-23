@@ -12,6 +12,8 @@ public interface IAmenityService {
 
     List<AmenityResponse> findAll();
 
+    AmenityResponse findById(UUID id);
+
     AmenityResponse create(String name, String icon);
 
     AmenityResponse update(UUID id, String name, String icon);

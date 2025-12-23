@@ -18,6 +18,8 @@ import { HomeDescriptionPage } from "@/pages/host/HomeDescriptionPage";
 import { HomePricePage } from "@/pages/host/HomePricePage";
 import { HomeReviewPage } from "@/pages/host/HomeReviewPage";
 import { HomePage } from "@/pages/HomePage";
+import { ListingDetailPage } from "@/pages/ListingDetailPage";
+import { HostListingsPage } from "@/pages/HostListingsPage";
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
         <Routes>
           {/* public route */}
           <Route path="/" element={<HomePage />} />
+          <Route path="/listings/:id" element={<ListingDetailPage />} />
+          <Route path="/host/:hostId/listings" element={<HostListingsPage />} />
           <Route path="/login" element={<LogInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/verify" element={<VerifyEmailPage />} />

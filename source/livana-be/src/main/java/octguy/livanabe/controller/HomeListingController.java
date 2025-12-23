@@ -54,7 +54,6 @@ public class HomeListingController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<HomeListingResponse>> getHomeListingById(@PathVariable UUID id) {
         HomeListingResponse homeListing = homeListingService.getHomeListingById(id);

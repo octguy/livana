@@ -40,6 +40,13 @@ public class FacilityServiceImpl implements IFacilityService {
     }
 
     @Override
+    public FacilityResponse findById(UUID id) {
+        return facilityRepository.findById(id)
+                .map(this::toResponse)
+                .orElseThrow(() -> new RuntimeException("Facility not found with id: " + id));
+    }
+
+    @Override
     @Transactional
     public FacilityResponse create(String name, String icon) {
         Facility facility = new Facility();

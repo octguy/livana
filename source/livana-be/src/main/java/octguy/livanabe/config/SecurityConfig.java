@@ -105,8 +105,7 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // ===== Catalog GET (both role) =====
-                        .requestMatchers(HttpMethod.GET, CATALOG)
-                        .hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, CATALOG).permitAll()
 
                         // ===== Modify catalog only ADMIN =====
                         .requestMatchers(HttpMethod.POST, CATALOG).hasRole("ADMIN")

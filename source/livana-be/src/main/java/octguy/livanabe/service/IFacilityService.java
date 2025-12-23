@@ -12,6 +12,8 @@ public interface IFacilityService {
 
     List<FacilityResponse> findAll();
 
+    FacilityResponse findById(UUID id);
+
     FacilityResponse create(String name, String icon);
 
     FacilityResponse update(UUID id, String name, String icon);

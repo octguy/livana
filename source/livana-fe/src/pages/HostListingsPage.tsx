@@ -1,25 +1,33 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { PublicHeader } from "@/components/layout/public-header.tsx";
 import { Footer } from "@/components/layout/footer";
-import { getAllHomeListings } from "@/services/homeListingService";
+import { getHomeListingsByHostId } from "@/services/homeListingService";
 import type { HomeListingResponse } from "@/types/response/homeListingResponse";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Users } from "lucide-react";
+import { MapPin, Users, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-export function HomePage() {
+export function HostListingsPage() {
+  const { hostId } = useParams<{ hostId: string }>();
   const navigate = useNavigate();
   const [listings, setListings] = useState<HomeListingResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hostName, setHostName] = useState<string>("");
 
   useEffect(() => {
+    if (!hostId) return;
+
     const fetchListings = async () => {
       try {
-        const response = await getAllHomeListings();
+        const response = await getHomeListingsByHostId(hostId);
         setListings(response.data || []);
+        if (response.data && response.data.length > 0) {
+          setHostName(response.data[0].host.hostDisplayName);
+        }
       } catch (error) {
-        toast.error("Failed to load listings");
+        toast.error("Failed to load host's listings");
         console.error("Error fetching listings:", error);
       } finally {
         setLoading(false);
@@ -27,40 +35,27 @@ export function HomePage() {
     };
 
     fetchListings();
-  }, []);
+  }, [hostId]);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <PublicHeader />
+      <div className="min-h-screen bg-background">
+        <div className="container max-w-7xl mx-auto py-8 px-6">
+          <Button variant="ghost" className="mb-6" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary/10 to-primary/5 py-20">
-        <div className="container">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              Discover Your Next Adventure
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-2">
+              {hostName ? `Listings by ${hostName}` : "Host's Listings"}
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8">
-              Find unique stays and experiences around the world
+            <p className="text-muted-foreground">
+              {listings.length} {listings.length === 1 ? "listing" : "listings"}{" "}
+              available
             </p>
-            <div className="flex gap-4 justify-center">
-              <input
-                type="text"
-                placeholder="Where are you going?"
-                className="px-6 py-3 rounded-lg border border-input bg-background w-full max-w-md"
-              />
-              <button className="px-8 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90">
-                Search
-              </button>
-            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Listings Section */}
-      <section className="py-16 flex-1">
-        <div className="container">
-          <h2 className="text-3xl font-bold mb-8">Featured Stays</h2>
 
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -77,7 +72,7 @@ export function HomePage() {
           ) : listings.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-xl text-muted-foreground">
-                No listings available at the moment
+                This host has no listings available
               </p>
             </div>
           ) : (
@@ -123,25 +118,14 @@ export function HomePage() {
                       <Users className="h-4 w-4" />
                       <span>{listing.capacity} guests</span>
                     </div>
-                    {listing.host && (
-                      <div className="mt-3 pt-3 border-t flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
-                          {listing.host.hostDisplayName.charAt(0).toUpperCase()}
-                        </div>
-                        <span className="text-sm text-muted-foreground">
-                          Hosted by {listing.host.hostDisplayName}
-                        </span>
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
               ))}
             </div>
           )}
         </div>
-      </section>
-
+      </div>
       <Footer />
-    </div>
+    </>
   );
 }

@@ -54,6 +54,20 @@ public class FacilityController {
         return ResponseEntity.ok().body(apiResponse);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<FacilityResponse>> getFacilityById(@PathVariable UUID id) {
+        FacilityResponse facility = facilityService.findById(id);
+
+        ApiResponse<FacilityResponse> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Facility fetched successfully",
+                facility,
+                null
+        );
+
+        return ResponseEntity.ok().body(apiResponse);
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse<FacilityResponse>> create(@Valid @RequestBody CreateFacilityRequest request) {
         FacilityResponse createdFacility = facilityService.create(request.getName(), request.getIcon());

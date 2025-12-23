@@ -17,6 +17,15 @@ export const facilityService = {
     return response.data;
   },
 
+  getFacilityById: async (
+    id: string
+  ): Promise<ApiResponse<FacilityResponse>> => {
+    const response = await api.get<ApiResponse<FacilityResponse>>(
+      `/facilities/${id}`
+    );
+    return response.data;
+  },
+
   createFacility: async (
     name: string,
     icon: string
