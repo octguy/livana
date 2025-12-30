@@ -29,7 +29,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { login } = useAuthStore();
+  const { login, user } = useAuthStore();
   const navigate = useNavigate();
 
   // Add local state to show login error above the username field
@@ -56,7 +56,14 @@ export function LoginForm({
       setLoginError(null);
       const response = await login(username, password);
       console.log("Login response:", response.message);
-      navigate("/");
+
+      // Check if user is admin and redirect accordingly
+      const isAdmin = response.data.roles?.includes("ROLE_ADMIN");
+      if (isAdmin) {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       // Prefer friendly message for 401, otherwise server message or generic

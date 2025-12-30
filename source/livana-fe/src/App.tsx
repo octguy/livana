@@ -4,7 +4,7 @@ import SignUpPage from "./pages/auth/SignUpPage";
 import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
 import { Toaster } from "sonner";
 import AdminDashboardPage from "./pages/dashboard/AdminDashboardPage";
-import { ProtectedRoute, DashboardRouter } from "@/components/auth";
+import { ProtectedRoute, AdminRoute, DashboardRouter } from "@/components/auth";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import { ProfilePage } from "./pages/setting/ProfilePage";
@@ -21,8 +21,38 @@ import { HomePage } from "@/pages/HomePage";
 import { ListingDetailPage } from "@/pages/ListingDetailPage";
 import { HostListingsPage } from "@/pages/HostListingsPage";
 import { MyListingsPage } from "@/pages/MyListingsPage";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useEffect } from "react";
 
 function App() {
+  const { accessToken, user, refresh, fetchMe } = useAuthStore();
+
+  useEffect(() => {
+    const initAuth = async () => {
+      // Try to refresh token if no access token exists
+      if (!accessToken) {
+        try {
+          await refresh();
+        } catch (error) {
+          // Silent fail - user is not logged in
+          console.log("No valid session found", error);
+        }
+      }
+
+      // Fetch user data if we have a token but no user
+      if (accessToken && !user) {
+        try {
+          await fetchMe();
+        } catch (error) {
+          console.log("Failed to fetch user data", error);
+        }
+      }
+    };
+
+    initAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
       <Toaster richColors />
@@ -41,7 +71,6 @@ function App() {
           {/* protected route */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardRouter />} />
-            <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/my-listings" element={<MyListingsPage />} />
             <Route path="/host/homes/create" element={<CreateHomePage />} />
@@ -59,6 +88,11 @@ function App() {
               path="/host/experiences/create"
               element={<CreateExperiencePage />}
             />
+          </Route>
+
+          {/* admin only route */}
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<AdminDashboardPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
