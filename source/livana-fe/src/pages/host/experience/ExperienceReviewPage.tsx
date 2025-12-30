@@ -5,6 +5,7 @@ import { useExperienceListingStore } from "@/stores/useExperienceListingStore";
 import { useExperienceCategoryStore } from "@/stores/useExperienceCategoryStore";
 import { MapPin, Users, X, Pencil } from "lucide-react";
 import { toast } from "sonner";
+import { cloudinaryService } from "@/services/cloudinaryService";
 
 export function ExperienceReviewPage() {
   const navigate = useNavigate();
@@ -54,56 +55,56 @@ export function ExperienceReviewPage() {
       return;
     }
 
-    // Map photos to images with order (List<ImageOrderDto>)
-    const images = listing.photos.map((photo, index) => ({
-      image: photo,
-      order: index + 1,
-    }));
-
-    const payload = {
-      title: listing.title,
-      price: listing.basePrice,
-      description: listing.description,
-      capacity: listing.capacity,
-      address: listing.location.address,
-      latitude: listing.location.latitude,
-      longitude: listing.location.longitude,
-      experienceCategoryId: listing.experienceCategoryId,
-      images,
-    };
-
-    console.log("========== PAYLOAD TO BACKEND ==========");
-    console.log(JSON.stringify(payload, null, 2));
-    console.log("==============================================");
-    console.log("Photos as File objects:", listing.photos);
-    console.log("==============================================");
-    console.log("========== SESSIONS DATA TO CREATE ==========");
-    console.log("Sessions count:", listing.sessions.length);
-    console.log("Sessions data:", JSON.stringify(listing.sessions, null, 2));
-    console.log("==============================================");
-
-    // COMMENTED OUT API CALL - LOGGING DATA INSTEAD
-    /*
     try {
+      // Upload images to Cloudinary first
+      toast.loading("Uploading images...");
+      const uploadResults = await cloudinaryService.uploadImages(
+        listing.photos
+      );
+
+      // Map uploaded results to images with order (List<ImageOrderDto>)
+      const images = uploadResults.map((result, index) => ({
+        image: result.url,
+        publicId: result.publicId,
+        order: index + 1,
+      }));
+
+      const payload = {
+        title: listing.title,
+        price: listing.basePrice,
+        description: listing.description,
+        capacity: listing.capacity,
+        address: listing.location.address,
+        latitude: listing.location.latitude,
+        longitude: listing.location.longitude,
+        experienceCategoryId: listing.experienceCategoryId,
+        images,
+      };
+
+      console.log("========== PAYLOAD TO BACKEND ==========");
+      console.log(JSON.stringify(payload, null, 2));
+      console.log("==============================================");
+      console.log("========== SESSIONS DATA TO CREATE ==========");
+      console.log("Sessions count:", listing.sessions.length);
+      console.log("Sessions data:", JSON.stringify(listing.sessions, null, 2));
+      console.log("==============================================");
+
+      toast.dismiss();
+      toast.loading("Publishing experience...");
       const response = await listing.createListing(payload);
       console.log("Experience listing created successfully:", response.data);
+      toast.dismiss();
       toast.success("Experience published successfully!");
       listing.clearState();
       navigate("/my-listings");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
+      toast.dismiss();
       console.error("Error creating listing:", error);
       const errorMessage =
         error.response?.data?.message || "Failed to publish experience";
       toast.error(errorMessage);
     }
-    */
-
-    // Instead, just show success message for validation
-    toast.success("Payload validated! Check console for data.");
-    console.log("✅ All data validated successfully!");
-    console.log(
-      "📦 Ready to send to API endpoint: POST /api/v1/listings/experiences"
-    );
   };
 
   return (
@@ -163,11 +164,7 @@ export function ExperienceReviewPage() {
               {listing.photos[0] && (
                 <div className="col-span-2 row-span-2 h-[400px]">
                   <img
-                    src={
-                      typeof listing.photos[0] === "string"
-                        ? listing.photos[0]
-                        : URL.createObjectURL(listing.photos[0])
-                    }
+                    src={URL.createObjectURL(listing.photos[0])}
                     alt="Main"
                     className="w-full h-full object-cover hover:brightness-95 transition-all cursor-pointer"
                     onClick={() => setShowAllPhotos(true)}
@@ -177,9 +174,7 @@ export function ExperienceReviewPage() {
               {listing.photos.slice(1, 5).map((photo, index) => (
                 <div key={index} className="h-[196px] relative">
                   <img
-                    src={
-                      typeof photo === "string" ? photo : URL.createObjectURL(photo)
-                    }
+                    src={URL.createObjectURL(photo)}
                     alt={`Photo ${index + 2}`}
                     className="w-full h-full object-cover hover:brightness-95 transition-all cursor-pointer"
                     onClick={() => setShowAllPhotos(true)}
@@ -466,9 +461,7 @@ export function ExperienceReviewPage() {
               {listing.photos.map((photo, index) => (
                 <img
                   key={index}
-                  src={
-                    typeof photo === "string" ? photo : URL.createObjectURL(photo)
-                  }
+                  src={URL.createObjectURL(photo)}
                   alt={`Photo ${index + 1}`}
                   className="w-full rounded-lg"
                 />

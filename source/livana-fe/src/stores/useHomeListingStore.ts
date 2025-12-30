@@ -105,36 +105,25 @@ export const useHomeListingStore = create<HomeListingState>()(
     {
       name: "home-listing-storage",
       storage: createJSONStorage(() => ({
-        getItem: async (name) => {
+        getItem: (name) => {
           const str = localStorage.getItem(name);
           if (!str) return null;
           const parsed = JSON.parse(str);
-          // Convert base64 strings back to data URLs for display
-          if (parsed.state && parsed.state.photoDataUrls) {
-            parsed.state.photos = parsed.state.photoDataUrls;
-            delete parsed.state.photoDataUrls;
-          } else if (parsed.state) {
+          // Reset photos to empty array after loading from storage
+          if (parsed.state) {
             parsed.state.photos = [];
           }
-          return JSON.stringify(parsed);
+          return str;
         },
-        setItem: async (name, value) => {
+        setItem: (name, value) => {
           const parsed = JSON.parse(value);
-          // Convert File objects to base64 data URLs for storage
-          if (parsed.state && parsed.state.photos && parsed.state.photos.length > 0) {
-            const photoPromises = parsed.state.photos.map((photo: File) => {
-              return new Promise<string>((resolve) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result as string);
-                reader.readAsDataURL(photo);
-              });
-            });
-            parsed.state.photoDataUrls = await Promise.all(photoPromises);
+          // Remove photos before saving to storage
+          if (parsed.state) {
             delete parsed.state.photos;
           }
           localStorage.setItem(name, JSON.stringify(parsed));
         },
-        removeItem: async (name) => localStorage.removeItem(name),
+        removeItem: (name) => localStorage.removeItem(name),
       })),
     }
   )

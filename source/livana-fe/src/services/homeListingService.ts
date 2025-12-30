@@ -38,6 +38,7 @@ export const createHomeListing = async (
   // Append images with their order
   payload.images.forEach((imageDto, index) => {
     formData.append(`images[${index}].image`, imageDto.image);
+    formData.append(`images[${index}].publicId`, imageDto.publicId);
     formData.append(`images[${index}].order`, imageDto.order.toString());
   });
 

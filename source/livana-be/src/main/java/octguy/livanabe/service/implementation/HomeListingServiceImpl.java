@@ -45,8 +45,6 @@ public class HomeListingServiceImpl implements IHomeListingService {
 
     private final ListingImageRepository listingImageRepository;
 
-    private final ICloudinaryService cloudinaryService;
-
     public HomeListingServiceImpl(HomeListingRepository homeListingRepository,
                                   PropertyTypeRepository propertyTypeRepository,
                                   FacilityRepository facilityRepository,
@@ -54,7 +52,6 @@ public class HomeListingServiceImpl implements IHomeListingService {
                                   HomeFacilityRepository homeFacilityRepository,
                                   HomeAmenityRepository homeAmenityRepository,
                                   ListingImageRepository listingImageRepository,
-                                  ICloudinaryService cloudinaryService,
                                   UserProfileRepository userProfileRepository) {
         this.userProfileRepository = userProfileRepository;
         this.homeFacilityRepository = homeFacilityRepository;
@@ -64,7 +61,6 @@ public class HomeListingServiceImpl implements IHomeListingService {
         this.propertyTypeRepository = propertyTypeRepository;
         this.homeListingRepository = homeListingRepository;
         this.listingImageRepository = listingImageRepository;
-        this.cloudinaryService = cloudinaryService;
     }
 
     @Override
@@ -181,15 +177,13 @@ public class HomeListingServiceImpl implements IHomeListingService {
             return List.of();
         }
 
-        List<ListingImage> listingImages = imageOrderDtos.stream().map(imageDto -> {
-            // Upload image to Cloudinary
-            CloudinaryResponse cloudinaryResponse = cloudinaryService.uploadImage(imageDto.getImage());
 
-            // Create ListingImage entity
+        List<ListingImage> listingImages = imageOrderDtos.stream().map(imageDto -> {
+            // Image already uploaded to Cloudinary from frontend
             ListingImage listingImage = new ListingImage();
             listingImage.setListing(homeListing);
-            listingImage.setImageUrl(cloudinaryResponse.getUrl());
-            listingImage.setImagePublicId(cloudinaryResponse.getPublicId());
+            listingImage.setImageUrl(imageDto.getImage());
+            listingImage.setImagePublicId(imageDto.getPublicId());
             listingImage.setImageOrder(imageDto.getOrder());
             listingImage.setThumbnail(imageDto.getOrder() == 1); // First image is thumbnail
 

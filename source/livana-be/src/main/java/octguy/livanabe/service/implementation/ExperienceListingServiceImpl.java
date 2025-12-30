@@ -133,12 +133,11 @@ public class ExperienceListingServiceImpl implements IExperienceListingService {
 
         List<ListingImage> listingImages = imageOrderDtos.stream()
                 .map(imageDto -> {
-                    CloudinaryResponse cloudinaryResponse = cloudinaryService.uploadImage(imageDto.getImage());
-
+                    // Image already uploaded to Cloudinary from frontend
                     ListingImage listingImage = new ListingImage();
                     listingImage.setListing(experienceListing);
-                    listingImage.setImageUrl(cloudinaryResponse.getUrl());
-                    listingImage.setImagePublicId(cloudinaryResponse.getPublicId());
+                    listingImage.setImageUrl(imageDto.getImage());
+                    listingImage.setImagePublicId(imageDto.getPublicId());
                     listingImage.setImageOrder(imageDto.getOrder());
                     listingImage.setThumbnail(imageDto.getOrder() == 1);
 

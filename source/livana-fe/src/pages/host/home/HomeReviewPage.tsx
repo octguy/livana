@@ -7,6 +7,7 @@ import { useAmenityStore } from "@/stores/useAmenityStore";
 import { usePropertyTypeStore } from "@/stores/usePropertyTypeStore";
 import { MapPin, X } from "lucide-react";
 import { toast } from "sonner";
+import { cloudinaryService } from "@/services/cloudinaryService";
 
 export function HomeReviewPage() {
   const navigate = useNavigate();
@@ -79,37 +80,52 @@ export function HomeReviewPage() {
       quantity: facility.quantity,
     }));
 
-    // Map photos to images with order (List<ImageOrderDto>)
-    const images = listing.photos.map((photo, index) => ({
-      image: photo,
-      order: index + 1,
-    }));
-
-    const payload = {
-      title: listing.title,
-      price: listing.basePrice,
-      description: listing.description,
-      capacity: listing.guests,
-      address: listing.location.address,
-      latitude: listing.location.latitude,
-      longitude: listing.location.longitude,
-      propertyTypeId: listing.propertyTypeId,
-      amenityIds: listing.amenities,
-      facilityRequests,
-      images,
-    };
-
-    console.log("========== PAYLOAD TO BACKEND ==========");
-    console.log(payload);
-    console.log("==============================================");
-
     try {
+      // Upload images to Cloudinary first
+      toast.loading("Uploading images...");
+      const uploadResults = await cloudinaryService.uploadImages(
+        listing.photos
+      );
+
+      console.log("Upload results:", uploadResults);
+
+      // Map uploaded results to images with order (List<ImageOrderDto>)
+      const images = uploadResults.map((result, index) => ({
+        image: result.url,
+        publicId: result.publicId,
+        order: index + 1,
+      }));
+
+      console.log("Images array to send:", JSON.stringify(images, null, 2));
+
+      const payload = {
+        title: listing.title,
+        price: listing.basePrice,
+        description: listing.description,
+        capacity: listing.guests,
+        address: listing.location.address,
+        latitude: listing.location.latitude,
+        longitude: listing.location.longitude,
+        propertyTypeId: listing.propertyTypeId,
+        amenityIds: listing.amenities,
+        facilityRequests,
+        images,
+      };
+
+      console.log("========== PAYLOAD TO BACKEND ==========");
+      console.log(payload);
+      console.log("==============================================");
+
+      toast.dismiss();
+      toast.loading("Publishing listing...");
       const response = await listing.createListing(payload);
       console.log("Listing created successfully:", response.data);
+      toast.dismiss();
       toast.success("Listing published successfully!");
       listing.clearState();
       navigate("/my-listings");
     } catch (error: any) {
+      toast.dismiss();
       console.error("Error creating listing:", error);
       const errorMessage =
         error.response?.data?.message || "Failed to publish listing";

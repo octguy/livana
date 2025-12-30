@@ -27,9 +27,7 @@ export function ProfileAvatar() {
     const file = event.target.files?.[0];
     if (file) {
       const uploadPromise = async () => {
-        console.log("File name:", file.name);
-        const response = await uploadAvatar(file);
-        console.log("Cloudinary upload response:", response);
+        await uploadAvatar(file);
         await useAuthStore.getState().fetchMe();
       };
 
@@ -44,8 +42,7 @@ export function ProfileAvatar() {
 
   const handleDeleteAvatar = () => {
     const deletePromise = async () => {
-      const response = await deleteAvatar();
-      console.log("Cloudinary delete response:", response);
+      await deleteAvatar();
       await useAuthStore.getState().fetchMe();
     };
 

@@ -1,12 +1,26 @@
 package octguy.livanabe.dto.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class ImageOrderDto {
 
-    private MultipartFile image;
+    @JsonProperty("image")
+    private String image; // Cloudinary URL from frontend
 
+    @JsonProperty("publicId")
+    private String publicId; // Cloudinary public ID from frontend
+
+    @JsonProperty("order")
     private int order;
+
+    // Explicit getter/setter for debugging
+    public String getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
+    }
 }
