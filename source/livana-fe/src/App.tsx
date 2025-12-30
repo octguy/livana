@@ -8,15 +8,23 @@ import { ProtectedRoute, AdminRoute, DashboardRouter } from "@/components/auth";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import { ProfilePage } from "./pages/setting/ProfilePage";
-import { CreateHomePage } from "@/pages/host/CreateHomePage";
-import { CreateExperiencePage } from "@/pages/host/CreateExperiencePage";
-import { HomeLocationPage } from "@/pages/host/HomeLocationPage";
-import { HomeDetailsPage } from "@/pages/host/HomeDetailsPage";
-import { HomePhotosPage } from "@/pages/host/HomePhotosPage";
-import { HomeTitlePage } from "@/pages/host/HomeTitlePage";
-import { HomeDescriptionPage } from "@/pages/host/HomeDescriptionPage";
-import { HomePricePage } from "@/pages/host/HomePricePage";
-import { HomeReviewPage } from "@/pages/host/HomeReviewPage";
+import { CreateHomePage } from "@/pages/host/home/CreateHomePage";
+import { CreateExperiencePage } from "@/pages/host/experience/CreateExperiencePage";
+import { HomeLocationPage } from "@/pages/host/home/HomeLocationPage";
+import { HomeDetailsPage } from "@/pages/host/home/HomeDetailsPage";
+import { HomePhotosPage } from "@/pages/host/home/HomePhotosPage";
+import { HomeTitlePage } from "@/pages/host/home/HomeTitlePage";
+import { HomeDescriptionPage } from "@/pages/host/home/HomeDescriptionPage";
+import { HomePricePage } from "@/pages/host/home/HomePricePage";
+import { HomeReviewPage } from "@/pages/host/home/HomeReviewPage";
+import { ExperienceLocationPage } from "@/pages/host/experience/ExperienceLocationPage";
+import { ExperienceCapacityPage } from "@/pages/host/experience/ExperienceCapacityPage";
+import { ExperiencePhotosPage } from "@/pages/host/experience/ExperiencePhotosPage";
+import { ExperienceTitlePage } from "@/pages/host/experience/ExperienceTitlePage";
+import { ExperienceDescriptionPage } from "@/pages/host/experience/ExperienceDescriptionPage";
+import { ExperiencePricePage } from "@/pages/host/experience/ExperiencePricePage";
+import { ExperienceReviewPage } from "@/pages/host/experience/ExperienceReviewPage";
+import ExperienceSessionsPage from "@/pages/host/experience/ExperienceSessionsPage";
 import { HomePage } from "@/pages/HomePage";
 import { ListingDetailPage } from "@/pages/ListingDetailPage";
 import { HostListingsPage } from "@/pages/HostListingsPage";
@@ -87,6 +95,38 @@ function App() {
             <Route
               path="/host/experiences/create"
               element={<CreateExperiencePage />}
+            />
+            <Route
+              path="/host/experiences/location"
+              element={<ExperienceLocationPage />}
+            />
+            <Route
+              path="/host/experiences/capacity"
+              element={<ExperienceCapacityPage />}
+            />
+            <Route
+              path="/host/experiences/photos"
+              element={<ExperiencePhotosPage />}
+            />
+            <Route
+              path="/host/experiences/title"
+              element={<ExperienceTitlePage />}
+            />
+            <Route
+              path="/host/experiences/description"
+              element={<ExperienceDescriptionPage />}
+            />
+            <Route
+              path="/host/experiences/price"
+              element={<ExperiencePricePage />}
+            />
+            <Route
+              path="/host/experience-listings/sessions"
+              element={<ExperienceSessionsPage />}
+            />
+            <Route
+              path="/host/experiences/review"
+              element={<ExperienceReviewPage />}
             />
           </Route>
 

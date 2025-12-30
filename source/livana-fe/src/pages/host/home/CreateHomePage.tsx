@@ -14,12 +14,17 @@ export function CreateHomePage() {
   const [roomType, setRoomType] = useState<RoomType>(null);
   const { propertyTypes, loading, getAllPropertyTypes } =
     usePropertyTypeStore();
-  const { setPropertyType, setRoomType: setListingRoomType } =
-    useHomeListingStore();
+  const {
+    setPropertyType,
+    setRoomType: setListingRoomType,
+    clearState,
+  } = useHomeListingStore();
 
   useEffect(() => {
+    // Clear any previous listing data when starting a new one
+    clearState();
     getAllPropertyTypes();
-  }, [getAllPropertyTypes]);
+  }, [clearState, getAllPropertyTypes]);
 
   const handleNext = () => {
     if (step === 1 && homeType) {

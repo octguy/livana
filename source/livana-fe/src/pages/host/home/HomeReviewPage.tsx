@@ -108,7 +108,7 @@ export function HomeReviewPage() {
       console.log("Listing created successfully:", response.data);
       toast.success("Listing published successfully!");
       listing.clearState();
-      navigate("/host/listings");
+      navigate("/my-listings");
     } catch (error: any) {
       console.error("Error creating listing:", error);
       const errorMessage =

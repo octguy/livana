@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { PublicHeader } from "@/components/layout/public-header.tsx";
 import { Footer } from "@/components/layout/footer";
+import { HostingDialog } from "@/components/hosting/hosting-dialog";
 import { getHomeListingsByHostId } from "@/services/homeListingService";
 import type { HomeListingResponse } from "@/types/response/homeListingResponse";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +16,7 @@ export function MyListingsPage() {
   const { user } = useAuthStore();
   const [listings, setListings] = useState<HomeListingResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showHostingDialog, setShowHostingDialog] = useState(false);
 
   useEffect(() => {
     if (!user?.id) {
@@ -50,7 +52,7 @@ export function MyListingsPage() {
                 {listings.length === 1 ? "listing" : "listings"}
               </p>
             </div>
-            <Button onClick={() => navigate("/host/homes/create")}>
+            <Button onClick={() => setShowHostingDialog(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Create new listing
             </Button>
@@ -77,10 +79,7 @@ export function MyListingsPage() {
                 <p className="text-muted-foreground mb-6">
                   Start hosting by creating your first listing
                 </p>
-                <Button
-                  onClick={() => navigate("/host/homes/create")}
-                  size="lg"
-                >
+                <Button onClick={() => setShowHostingDialog(true)} size="lg">
                   <Plus className="h-5 w-5 mr-2" />
                   Create your first listing
                 </Button>
@@ -137,6 +136,10 @@ export function MyListingsPage() {
         </div>
       </div>
       <Footer />
+      <HostingDialog
+        open={showHostingDialog}
+        onOpenChange={setShowHostingDialog}
+      />
     </>
   );
 }

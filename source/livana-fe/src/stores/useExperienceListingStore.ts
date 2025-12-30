@@ -1,42 +1,31 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { HomeListingState } from "@/types/state/homeListingState";
-import { createHomeListing } from "@/services/homeListingService";
+import type { ExperienceListingState } from "@/types/state/experienceListingState";
+import { createExperienceListing } from "@/services/experienceListingService";
 
-export const useHomeListingStore = create<HomeListingState>()(
+export const useExperienceListingStore = create<ExperienceListingState>()(
   persist(
     (set) => ({
       // Loading state
       loading: false,
 
       // Form state
-      propertyTypeId: null,
-      roomType: null,
+      experienceCategoryId: null,
       location: null,
-      guests: 1,
-      bedrooms: 1,
-      beds: 1,
-      bathrooms: 1,
-      amenities: [],
-      facilities: [],
+      capacity: 1,
       photos: [],
       title: "",
       description: "",
       basePrice: 0,
+      sessions: [],
 
       // Form setters
-      setPropertyType: (propertyTypeId) => set({ propertyTypeId }),
-
-      setRoomType: (roomType) => set({ roomType }),
+      setExperienceCategory: (experienceCategoryId) =>
+        set({ experienceCategoryId }),
 
       setLocation: (location) => set({ location }),
 
-      setBasicInfo: (guests, bedrooms, beds, bathrooms) =>
-        set({ guests, bedrooms, beds, bathrooms }),
-
-      setAmenities: (amenities) => set({ amenities }),
-
-      setFacilities: (facilities) => set({ facilities }),
+      setCapacity: (capacity) => set({ capacity }),
 
       setPhotos: (photos) => set({ photos }),
 
@@ -46,56 +35,48 @@ export const useHomeListingStore = create<HomeListingState>()(
 
       setBasePrice: (basePrice) => set({ basePrice }),
 
+      setSessions: (sessions) => set({ sessions }),
+
       clearState: () => {
         set({
           loading: false,
-          propertyTypeId: null,
-          roomType: null,
+          experienceCategoryId: null,
           location: null,
-          guests: 1,
-          bedrooms: 1,
-          beds: 1,
-          bathrooms: 1,
-          amenities: [],
-          facilities: [],
+          capacity: 1,
           photos: [],
           title: "",
           description: "",
           basePrice: 0,
+          sessions: [],
         });
         // Also clear from localStorage
-        localStorage.removeItem("home-listing-storage");
+        localStorage.removeItem("experience-listing-storage");
       },
 
       resetListing: () => {
         set({
           loading: false,
-          propertyTypeId: null,
-          roomType: null,
+          experienceCategoryId: null,
           location: null,
-          guests: 1,
-          bedrooms: 1,
-          beds: 1,
-          bathrooms: 1,
-          amenities: [],
-          facilities: [],
+          capacity: 1,
           photos: [],
           title: "",
           description: "",
           basePrice: 0,
+          sessions: [],
         });
         // Also clear from localStorage
-        localStorage.removeItem("home-listing-storage");
+        localStorage.removeItem("experience-listing-storage");
       },
 
       // API action
       createListing: async (payload) => {
         try {
           set({ loading: true });
-          const response = await createHomeListing(payload);
+          const response = await createExperienceListing(payload);
           return response;
         } catch (error) {
-          console.error("Failed to create home listing:", error);
+          console.error("Failed to create experience listing:", error);
           throw error;
         } finally {
           set({ loading: false });
@@ -103,7 +84,7 @@ export const useHomeListingStore = create<HomeListingState>()(
       },
     }),
     {
-      name: "home-listing-storage",
+      name: "experience-listing-storage",
       storage: createJSONStorage(() => ({
         getItem: async (name) => {
           const str = localStorage.getItem(name);
