@@ -30,6 +30,18 @@ export const getSessionExperienceBookings = async (sessionId: string) => {
   );
 };
 
+export const getListingExperienceBookings = async (listingId: string) => {
+  return axios.get<ResponseData<ExperienceBookingResponse[]>>(
+    `/experience-bookings/listing/${listingId}`
+  );
+};
+
+export const getHostExperienceBookings = async () => {
+  return axios.get<ResponseData<ExperienceBookingResponse[]>>(
+    "/experience-bookings/host-bookings"
+  );
+};
+
 export const cancelExperienceBooking = async (bookingId: string) => {
   return axios.put<ResponseData<ExperienceBookingResponse>>(
     `/experience-bookings/${bookingId}/cancel`

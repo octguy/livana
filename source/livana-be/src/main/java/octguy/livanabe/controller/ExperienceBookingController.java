@@ -81,6 +81,35 @@ public class ExperienceBookingController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/listing/{listingId}")
+    public ResponseEntity<ApiResponse<List<ExperienceBookingResponse>>> getListingBookings(@PathVariable UUID listingId) {
+        List<ExperienceBookingResponse> bookings = experienceBookingService.getListingBookings(listingId);
+        
+        ApiResponse<List<ExperienceBookingResponse>> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Listing bookings retrieved successfully",
+                bookings,
+                null
+        );
+        
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/host-bookings")
+    public ResponseEntity<ApiResponse<List<ExperienceBookingResponse>>> getHostBookings() {
+        UUID hostId = SecurityUtils.getCurrentUser().getId();
+        List<ExperienceBookingResponse> bookings = experienceBookingService.getHostBookings(hostId);
+        
+        ApiResponse<List<ExperienceBookingResponse>> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Host bookings retrieved successfully",
+                bookings,
+                null
+        );
+        
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{id}/cancel")
     public ResponseEntity<ApiResponse<ExperienceBookingResponse>> cancelBooking(
         @PathVariable UUID id

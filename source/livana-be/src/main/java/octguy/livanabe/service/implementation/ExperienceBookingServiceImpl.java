@@ -136,6 +136,20 @@ public class ExperienceBookingServiceImpl implements IExperienceBookingService {
     }
 
     @Override
+    public List<ExperienceBookingResponse> getListingBookings(UUID experienceListingId) {
+        return experienceBookingRepository.findByExperienceListingId(experienceListingId).stream()
+            .map(this::convertToResponse)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ExperienceBookingResponse> getHostBookings(UUID hostId) {
+        return experienceBookingRepository.findByHostId(hostId).stream()
+            .map(this::convertToResponse)
+            .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public ExperienceBookingResponse cancelBooking(UUID bookingId, UUID customerId) {
         ExperienceBooking booking = experienceBookingRepository.findById(bookingId)

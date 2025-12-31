@@ -31,6 +31,8 @@ import { ListingDetailPage } from "@/pages/ListingDetailPage";
 import { ExperienceListingDetailPage } from "@/pages/ExperienceListingDetailPage";
 import { HostListingsPage } from "@/pages/HostListingsPage";
 import { MyListingsPage } from "@/pages/MyListingsPage";
+import { MyBookingsPage } from "@/pages/MyBookingsPage";
+import { HostBookingsPage } from "@/pages/HostBookingsPage";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useEffect } from "react";
 
@@ -88,6 +90,8 @@ function App() {
             <Route path="/dashboard" element={<DashboardRouter />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/my-listings" element={<MyListingsPage />} />
+            <Route path="/my-bookings" element={<MyBookingsPage />} />
+            <Route path="/host-bookings" element={<HostBookingsPage />} />
             <Route path="/host/homes/create" element={<CreateHomePage />} />
             <Route path="/host/homes/location" element={<HomeLocationPage />} />
             <Route path="/host/homes/details" element={<HomeDetailsPage />} />

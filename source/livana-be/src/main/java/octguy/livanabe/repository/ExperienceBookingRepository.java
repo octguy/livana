@@ -16,6 +16,12 @@ public interface ExperienceBookingRepository extends JpaRepository<ExperienceBoo
     
     List<ExperienceBooking> findBySessionId(UUID sessionId);
     
+    @Query("SELECT eb FROM ExperienceBooking eb WHERE eb.session.experienceListing.id = :experienceListingId ORDER BY eb.createdAt DESC")
+    List<ExperienceBooking> findByExperienceListingId(@Param("experienceListingId") UUID experienceListingId);
+    
+    @Query("SELECT eb FROM ExperienceBooking eb WHERE eb.session.experienceListing.host.id = :hostId ORDER BY eb.createdAt DESC")
+    List<ExperienceBooking> findByHostId(@Param("hostId") UUID hostId);
+    
     @Query("SELECT COALESCE(SUM(eb.quantity), 0) FROM ExperienceBooking eb " +
            "WHERE eb.session.id = :sessionId AND eb.status != 'CANCELLED'")
     int countBookedParticipants(@Param("sessionId") UUID sessionId);

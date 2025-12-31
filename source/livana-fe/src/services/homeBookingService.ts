@@ -28,6 +28,12 @@ export const getListingHomeBookings = async (listingId: string) => {
   );
 };
 
+export const getHostHomeBookings = async () => {
+  return axios.get<ResponseData<HomeBookingResponse[]>>(
+    "/home-bookings/host-bookings"
+  );
+};
+
 export const cancelHomeBooking = async (bookingId: string) => {
   return axios.put<ResponseData<HomeBookingResponse>>(
     `/home-bookings/${bookingId}/cancel`

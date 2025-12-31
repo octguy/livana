@@ -17,6 +17,9 @@ public interface HomeBookingRepository extends JpaRepository<HomeBooking, UUID> 
     
     List<HomeBooking> findByHomeListingId(UUID homeListingId);
     
+    @Query("SELECT hb FROM HomeBooking hb WHERE hb.homeListing.host.id = :hostId ORDER BY hb.createdAt DESC")
+    List<HomeBooking> findByHostId(@Param("hostId") UUID hostId);
+    
     @Query("SELECT hb FROM HomeBooking hb WHERE hb.homeListing.id = :homeListingId " +
            "AND hb.status != 'CANCELLED' " +
            "AND ((hb.checkInTime < :checkOutTime AND hb.checkOutTime > :checkInTime))")

@@ -139,6 +139,13 @@ public class HomeBookingServiceImpl implements IHomeBookingService {
     }
 
     @Override
+    public List<HomeBookingResponse> getHostBookings(UUID hostId) {
+        return homeBookingRepository.findByHostId(hostId).stream()
+            .map(this::convertToResponse)
+            .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public HomeBookingResponse cancelBooking(UUID bookingId, UUID customerId) {
         HomeBooking booking = homeBookingRepository.findById(bookingId)

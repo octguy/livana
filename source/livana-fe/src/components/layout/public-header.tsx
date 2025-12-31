@@ -1,5 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, LogOut, Home, ListChecks } from "lucide-react";
+import {
+  Menu,
+  X,
+  User,
+  LogOut,
+  Home,
+  ListChecks,
+  CalendarCheck,
+  ClipboardList,
+} from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
@@ -108,6 +117,16 @@ export function PublicHeader() {
                       <ListChecks className="mr-2 h-4 w-4" />
                       Tin đăng của tôi
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/my-bookings")}>
+                      <CalendarCheck className="mr-2 h-4 w-4" />
+                      Đặt chỗ của tôi
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => navigate("/host-bookings")}
+                    >
+                      <ClipboardList className="mr-2 h-4 w-4" />
+                      Đơn đặt chỗ
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
@@ -203,6 +222,39 @@ export function PublicHeader() {
                       >
                         <User className="mr-2 h-4 w-4" />
                         Hồ sơ
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate("/my-listings");
+                        }}
+                      >
+                        <ListChecks className="mr-2 h-4 w-4" />
+                        Tin đăng của tôi
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate("/my-bookings");
+                        }}
+                      >
+                        <CalendarCheck className="mr-2 h-4 w-4" />
+                        Đặt chỗ của tôi
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate("/host-bookings");
+                        }}
+                      >
+                        <ClipboardList className="mr-2 h-4 w-4" />
+                        Đơn đặt chỗ
                       </Button>
                       <Button
                         variant="destructive"

@@ -81,6 +81,21 @@ public class HomeBookingController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/host-bookings")
+    public ResponseEntity<ApiResponse<List<HomeBookingResponse>>> getHostBookings() {
+        UUID hostId = SecurityUtils.getCurrentUser().getId();
+        List<HomeBookingResponse> bookings = homeBookingService.getHostBookings(hostId);
+        
+        ApiResponse<List<HomeBookingResponse>> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Host bookings retrieved successfully",
+                bookings,
+                null
+        );
+        
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{id}/cancel")
     public ResponseEntity<ApiResponse<HomeBookingResponse>> cancelBooking(
         @PathVariable UUID id
