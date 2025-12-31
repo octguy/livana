@@ -102,7 +102,8 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/api/v1/listings/homes/**",
-                                "/api/v1/listings/experiences/**"
+                                "/api/v1/listings/experiences/**",
+                                "/ws/**"
                         ).permitAll()
 
                         // ===== Catalog GET (both role) =====

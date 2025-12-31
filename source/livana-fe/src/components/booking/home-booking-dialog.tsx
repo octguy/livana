@@ -90,9 +90,12 @@ export function HomeBookingDialog({
       toast.success("Đặt phòng thành công!");
       onOpenChange(false);
       if (onBookingSuccess) onBookingSuccess();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+      };
       const errorMessage =
-        error?.response?.data?.message || "Không thể đặt phòng";
+        axiosError?.response?.data?.message || "Không thể đặt phòng";
       toast.error(errorMessage);
     } finally {
       setLoading(false);

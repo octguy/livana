@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HostingDialog } from "@/components/hosting/hosting-dialog";
+import { NotificationDropdown } from "@/components/layout/notification-dropdown";
 
 export function PublicHeader() {
   const navigate = useNavigate();
@@ -74,6 +75,7 @@ export function PublicHeader() {
                   <Home className="mr-2 h-4 w-4" />
                   Trở thành chủ nhà
                 </Button>
+                <NotificationDropdown />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button

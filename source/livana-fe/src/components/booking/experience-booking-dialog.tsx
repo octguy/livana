@@ -72,9 +72,12 @@ export function ExperienceBookingDialog({
       toast.success("Đặt trải nghiệm thành công!");
       onOpenChange(false);
       if (onBookingSuccess) onBookingSuccess();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+      };
       const errorMessage =
-        error?.response?.data?.message || "Không thể đặt trải nghiệm";
+        axiosError?.response?.data?.message || "Không thể đặt trải nghiệm";
       toast.error(errorMessage);
     } finally {
       setLoading(false);

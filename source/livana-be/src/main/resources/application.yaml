@@ -8,12 +8,10 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
 
-
   # JWT configuration
   jwt:
     secret-key: ${SPRING_JWT_SECRET_KEY}
     secret-key-expiration: ${SPRING_JWT_SECRET_KEY_EXPIRATION}
-
 
   # Expiration time of tokens
   refresh-token:
@@ -48,3 +46,10 @@ spring:
     api-key: ${CLOUDINARY_API_KEY}
     api-secret: ${CLOUDINARY_API_SECRET}
     folder: ${CLOUDINARY_FOLDER}
+
+  # RabbitMQ configuration
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}

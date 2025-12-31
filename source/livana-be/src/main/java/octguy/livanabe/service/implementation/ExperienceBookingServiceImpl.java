@@ -3,7 +3,9 @@ package octguy.livanabe.service.implementation;
 import lombok.RequiredArgsConstructor;
 import octguy.livanabe.dto.request.CreateExperienceBookingRequest;
 import octguy.livanabe.dto.response.ExperienceBookingResponse;
+import octguy.livanabe.dto.response.NotificationMessage;
 import octguy.livanabe.entity.ExperienceBooking;
+import octguy.livanabe.entity.ExperienceListing;
 import octguy.livanabe.entity.ExperienceSession;
 import octguy.livanabe.entity.User;
 import octguy.livanabe.entity.UserProfile;
@@ -16,10 +18,12 @@ import octguy.livanabe.repository.ExperienceSessionRepository;
 import octguy.livanabe.repository.UserRepository;
 import octguy.livanabe.repository.UserProfileRepository;
 import octguy.livanabe.service.IExperienceBookingService;
+import octguy.livanabe.service.INotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,6 +36,7 @@ public class ExperienceBookingServiceImpl implements IExperienceBookingService {
     private final ExperienceSessionRepository experienceSessionRepository;
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
+    private final INotificationService notificationService;
 
     @Override
     @Transactional
@@ -82,7 +87,31 @@ public class ExperienceBookingServiceImpl implements IExperienceBookingService {
         }
         experienceSessionRepository.save(session);
 
-        return convertToResponse(savedBooking);
+        // Send notification to host
+        ExperienceBookingResponse bookingResponse = convertToResponse(savedBooking);
+        sendBookingNotificationToHost(session.getExperienceListing(), bookingResponse);
+        
+        return bookingResponse;
+    }
+    
+    private void sendBookingNotificationToHost(ExperienceListing listing, ExperienceBookingResponse booking) {
+        UUID hostId = listing.getHost().getId();
+        
+        NotificationMessage notification = NotificationMessage.builder()
+                .id(UUID.randomUUID())
+                .recipientId(hostId)
+                .type("BOOKING_EXPERIENCE")
+                .title("Đặt trải nghiệm mới!")
+                .message(String.format("%s đã đặt '%s' với %d người tham gia",
+                        booking.getCustomerName(),
+                        listing.getTitle(),
+                        booking.getQuantity()))
+                .data(booking)
+                .read(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+        
+        notificationService.sendBookingNotificationToHost(hostId, notification);
     }
 
     @Override

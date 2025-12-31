@@ -3,6 +3,7 @@ package octguy.livanabe.service.implementation;
 import lombok.RequiredArgsConstructor;
 import octguy.livanabe.dto.request.CreateHomeBookingRequest;
 import octguy.livanabe.dto.response.HomeBookingResponse;
+import octguy.livanabe.dto.response.NotificationMessage;
 import octguy.livanabe.entity.HomeListing;
 import octguy.livanabe.entity.HomeBooking;
 import octguy.livanabe.entity.User;
@@ -15,10 +16,12 @@ import octguy.livanabe.repository.HomeListingRepository;
 import octguy.livanabe.repository.UserRepository;
 import octguy.livanabe.repository.UserProfileRepository;
 import octguy.livanabe.service.IHomeBookingService;
+import octguy.livanabe.service.INotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +35,7 @@ public class HomeBookingServiceImpl implements IHomeBookingService {
     private final HomeListingRepository homeListingRepository;
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
+    private final INotificationService notificationService;
 
     @Override
     @Transactional
@@ -84,7 +88,33 @@ public class HomeBookingServiceImpl implements IHomeBookingService {
         booking.setIsPaid(false);
 
         HomeBooking savedBooking = homeBookingRepository.save(booking);
-        return convertToResponse(savedBooking);
+        
+        // Send notification to host
+        HomeBookingResponse bookingResponse = convertToResponse(savedBooking);
+        sendBookingNotificationToHost(homeListing, bookingResponse);
+        
+        return bookingResponse;
+    }
+    
+    private void sendBookingNotificationToHost(HomeListing listing, HomeBookingResponse booking) {
+        UUID hostId = listing.getHost().getId();
+        
+        NotificationMessage notification = NotificationMessage.builder()
+                .id(UUID.randomUUID())
+                .recipientId(hostId)
+                .type("BOOKING_HOME")
+                .title("Đặt phòng mới!")
+                .message(String.format("%s đã đặt '%s' từ %s đến %s",
+                        booking.getCustomerName(),
+                        listing.getTitle(),
+                        booking.getCheckInTime().toLocalDate(),
+                        booking.getCheckOutTime().toLocalDate()))
+                .data(booking)
+                .read(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+        
+        notificationService.sendBookingNotificationToHost(hostId, notification);
     }
 
     @Override
