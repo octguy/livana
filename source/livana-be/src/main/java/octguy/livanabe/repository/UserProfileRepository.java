@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 public interface UserProfileRepository extends JpaRepository<UserProfile, UUID> {
 
     Optional<UserProfile> findByUserId(UUID userId);
+    
+    List<UserProfile> findByUserIdIn(java.util.Set<UUID> userIds);
 
     @Query(value = "select * from user_profile", nativeQuery = true)
     List<UserProfile> findAll();

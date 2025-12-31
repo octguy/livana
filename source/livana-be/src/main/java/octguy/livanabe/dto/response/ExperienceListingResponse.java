@@ -34,4 +34,6 @@ public class ExperienceListingResponse {
     private ExperienceCategoryResponse experienceCategory;
 
     private List<ImageOrderResponse> images;
+    
+    private List<SessionResponse> sessions;
 }

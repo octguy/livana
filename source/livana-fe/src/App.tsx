@@ -27,6 +27,7 @@ import { ExperienceReviewPage } from "@/pages/host/experience/ExperienceReviewPa
 import ExperienceSessionsPage from "@/pages/host/experience/ExperienceSessionsPage";
 import { HomePage } from "@/pages/HomePage";
 import { ListingDetailPage } from "@/pages/ListingDetailPage";
+import { ExperienceListingDetailPage } from "@/pages/ExperienceListingDetailPage";
 import { HostListingsPage } from "@/pages/HostListingsPage";
 import { MyListingsPage } from "@/pages/MyListingsPage";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -69,6 +70,10 @@ function App() {
           {/* public route */}
           <Route path="/" element={<HomePage />} />
           <Route path="/listings/:id" element={<ListingDetailPage />} />
+          <Route
+            path="/experience-listings/:id"
+            element={<ExperienceListingDetailPage />}
+          />
           <Route path="/host/:hostId/listings" element={<HostListingsPage />} />
           <Route path="/login" element={<LogInPage />} />
           <Route path="/signup" element={<SignUpPage />} />

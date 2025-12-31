@@ -9,10 +9,12 @@ import octguy.livanabe.dto.request.CreateExperienceListingRequest;
 import octguy.livanabe.dto.response.CloudinaryResponse;
 import octguy.livanabe.dto.response.ExperienceCategoryResponse;
 import octguy.livanabe.dto.response.ExperienceListingResponse;
+import octguy.livanabe.dto.response.SessionResponse;
 import octguy.livanabe.entity.*;
 import octguy.livanabe.exception.ResourceNotFoundException;
 import octguy.livanabe.repository.ExperienceCategoryRepository;
 import octguy.livanabe.repository.ExperienceListingRepository;
+import octguy.livanabe.repository.ExperienceSessionRepository;
 import octguy.livanabe.repository.ListingImageRepository;
 import octguy.livanabe.repository.UserProfileRepository;
 import octguy.livanabe.service.ICloudinaryService;
@@ -26,14 +28,25 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class ExperienceListingServiceImpl implements IExperienceListingService {
 
     private final ExperienceListingRepository experienceListingRepository;
     private final ExperienceCategoryRepository experienceCategoryRepository;
     private final ListingImageRepository listingImageRepository;
+    private final ExperienceSessionRepository experienceSessionRepository;
     private final UserProfileRepository userProfileRepository;
-    private final ICloudinaryService cloudinaryService;
+
+    public ExperienceListingServiceImpl(ExperienceListingRepository experienceListingRepository,
+                                        ExperienceCategoryRepository experienceCategoryRepository,
+                                        ListingImageRepository listingImageRepository,
+                                        ExperienceSessionRepository experienceSessionRepository,
+                                        UserProfileRepository userProfileRepository) {
+        this.experienceListingRepository = experienceListingRepository;
+        this.experienceCategoryRepository = experienceCategoryRepository;
+        this.listingImageRepository = listingImageRepository;
+        this.experienceSessionRepository = experienceSessionRepository;
+        this.userProfileRepository = userProfileRepository;
+    }
 
     @Override
     @Transactional
@@ -50,6 +63,42 @@ public class ExperienceListingServiceImpl implements IExperienceListingService {
         List<ListingImage> listingImages = createListingImages(savedListing, request.getImages());
 
         return buildResponse(savedListing, user, category, listingImages);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ExperienceListingResponse> getAllExperienceListings() {
+        log.info("Fetching all experience listings");
+        List<ExperienceListing> listings = experienceListingRepository.findAll();
+
+        if (listings.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return convertToResponsesBatch(listings);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ExperienceListingResponse getExperienceListingById(UUID id) {
+        log.info("Fetching experience listing with id {}", id);
+        ExperienceListing listing = experienceListingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Experience listing not found: " + id));
+
+        return convertToResponse(listing);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ExperienceListingResponse> getExperienceListingsByHostId(UUID hostId) {
+        log.info("Fetching experience listings for host {}", hostId);
+        List<ExperienceListing> listings = experienceListingRepository.findByHostId(hostId);
+
+        if (listings.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return convertToResponsesBatch(listings);
     }
 
 //    @Override
@@ -152,77 +201,88 @@ public class ExperienceListingServiceImpl implements IExperienceListingService {
 
     // ==================== Response Building (Optimized for Batch) ====================
 
-//    private List<ExperienceListingResponse> convertToResponsesBatch(List<ExperienceListing> listings) {
-//        if (listings.isEmpty()) {
-//            return Collections.emptyList();
-//        }
-//
-//        // Extract all IDs
-//        Set<UUID> listingIds = listings.stream()
-//                .map(ExperienceListing::getId)
-//                .collect(Collectors.toSet());
-//
-//        Set<UUID> hostIds = listings.stream()
-//                .map(l -> l.getHost().getId())
-//                .collect(Collectors.toSet());
-//
-//        Set<UUID> categoryIds = listings.stream()
-//                .map(l -> l.getExperienceCategory().getId())
-//                .collect(Collectors.toSet());
-//
-//        // Batch fetch all related data in 3 queries
-//        Map<UUID, UserProfile> profileMap = userProfileRepository.findByUserIdIn(hostIds).stream()
-//                .collect(Collectors.toMap(UserProfile::getUserId, p -> p));
-//
-//        Map<UUID, ExperienceCategory> categoryMap = experienceCategoryRepository.findAllById(categoryIds).stream()
-//                .collect(Collectors.toMap(ExperienceCategory::getId, c -> c));
-//
-//        Map<UUID, List<ListingImage>> imagesMap = listingImageRepository
-//                .findByListingIdInOrderByImageOrderAsc(listingIds).stream()
-//                .collect(Collectors.groupingBy(img -> img.getListing().getId()));
-//
-//        // Build responses
-//        return listings.stream()
-//                .map(listing -> {
-//                    UserProfile profile = profileMap.get(listing.getHost().getId());
-//                    ExperienceCategory category = categoryMap.get(listing.getExperienceCategory().getId());
-//                    List<ListingImage> images = imagesMap.getOrDefault(listing.getId(), Collections.emptyList());
-//
-//                    if (profile == null) {
-//                        log.error("User profile not found for user {}", listing.getHost().getId());
-//                        throw new ResourceNotFoundException("User profile not found for user: " + listing.getHost().getId());
-//                    }
-//
-//                    return buildResponseFromData(listing, listing.getHost(), profile, category, images);
-//                })
-//                .toList();
-//    }
+    private List<ExperienceListingResponse> convertToResponsesBatch(List<ExperienceListing> listings) {
+        if (listings.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-//    private ExperienceListingResponse convertToResponse(ExperienceListing listing) {
-//        User host = listing.getHost();
-//
-//        UserProfile profile = userProfileRepository.findByUserId(host.getId())
-//                .orElseThrow(() -> new ResourceNotFoundException("User profile not found for user: " + host.getId()));
-//
-//        ExperienceCategory category = listing.getExperienceCategory();
-//
-//        List<ListingImage> images = listingImageRepository
-//                .findByListingIdOrderByImageOrderAsc(listing.getId());
-//
-//        return buildResponseFromData(listing, host, profile, category, images);
-//    }
+        // Extract all IDs
+        Set<UUID> listingIds = listings.stream()
+                .map(ExperienceListing::getId)
+                .collect(Collectors.toSet());
+
+        Set<UUID> hostIds = listings.stream()
+                .map(l -> l.getHost().getId())
+                .collect(Collectors.toSet());
+
+        Set<UUID> categoryIds = listings.stream()
+                .map(l -> l.getExperienceCategory().getId())
+                .collect(Collectors.toSet());
+
+        // Batch fetch all related data in 4 queries
+        Map<UUID, UserProfile> profileMap = userProfileRepository.findByUserIdIn(hostIds).stream()
+                .collect(Collectors.toMap(p -> p.getUser().getId(), p -> p));
+
+        Map<UUID, ExperienceCategory> categoryMap = experienceCategoryRepository.findAllById(categoryIds).stream()
+                .collect(Collectors.toMap(ExperienceCategory::getId, c -> c));
+
+        Map<UUID, List<ListingImage>> imagesMap = listingImageRepository
+                .findByListingIdInOrderByImageOrderAsc(listingIds).stream()
+                .collect(Collectors.groupingBy(img -> img.getListing().getId()));
+
+        Map<UUID, List<ExperienceSession>> sessionsMap = experienceSessionRepository
+                .findByExperienceListingIdIn(listingIds).stream()
+                .collect(Collectors.groupingBy(session -> session.getExperienceListing().getId()));
+
+        // Build responses
+        return listings.stream()
+                .map(listing -> {
+                    UserProfile profile = profileMap.get(listing.getHost().getId());
+                    ExperienceCategory category = categoryMap.get(listing.getExperienceCategory().getId());
+                    List<ListingImage> images = imagesMap.getOrDefault(listing.getId(), Collections.emptyList());
+                    List<ExperienceSession> sessions = sessionsMap.getOrDefault(listing.getId(), Collections.emptyList());
+
+                    if (profile == null) {
+                        log.error("User profile not found for user {}", listing.getHost().getId());
+                        throw new ResourceNotFoundException("User profile not found for user: " + listing.getHost().getId());
+                    }
+
+                    return buildResponseFromData(listing, listing.getHost(), profile, category, images, sessions);
+                })
+                .toList();
+    }
+
+    private ExperienceListingResponse convertToResponse(ExperienceListing listing) {
+        User host = listing.getHost();
+
+        UserProfile profile = userProfileRepository.findByUserId(host.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User profile not found for user: " + host.getId()));
+
+        ExperienceCategory category = listing.getExperienceCategory();
+
+        List<ListingImage> images = listingImageRepository
+                .findByListingIdOrderByImageOrderAsc(listing.getId());
+
+        List<ExperienceSession> sessions = experienceSessionRepository
+                .findByExperienceListingIdOrderByStartTimeAsc(listing.getId());
+
+        return buildResponseFromData(listing, host, profile, category, images, sessions);
+    }
 
     private ExperienceListingResponse buildResponse(ExperienceListing listing, User host,
                                                     ExperienceCategory category, List<ListingImage> images) {
         UserProfile profile = userProfileRepository.findByUserId(host.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("User profile not found for user: " + host.getId()));
 
-        return buildResponseFromData(listing, host, profile, category, images);
+        List<ExperienceSession> sessions = experienceSessionRepository
+                .findByExperienceListingIdOrderByStartTimeAsc(listing.getId());
+
+        return buildResponseFromData(listing, host, profile, category, images, sessions);
     }
 
     private ExperienceListingResponse buildResponseFromData(ExperienceListing listing, User host,
                                                             UserProfile profile, ExperienceCategory category,
-                                                            List<ListingImage> images) {
+                                                            List<ListingImage> images, List<ExperienceSession> sessions) {
         ListingHostDto hostDto = ListingHostDto.builder()
                 .hostId(host.getId())
                 .hostDisplayName(profile.getDisplayName())
@@ -246,6 +306,10 @@ public class ExperienceListingServiceImpl implements IExperienceListingService {
                 .icon(category.getIcon())
                 .build();
 
+        List<SessionResponse> sessionResponses = sessions.stream()
+                .map(this::buildSessionResponse)
+                .toList();
+
         return ExperienceListingResponse.builder()
                 .listingId(listing.getId())
                 .host(hostDto)
@@ -258,6 +322,24 @@ public class ExperienceListingServiceImpl implements IExperienceListingService {
                 .longitude(listing.getLongitude())
                 .experienceCategory(categoryResponse)
                 .images(imageResponses)
+                .sessions(sessionResponses)
+                .build();
+    }
+
+    private SessionResponse buildSessionResponse(ExperienceSession session) {
+        int capacity = session.getExperienceListing().getCapacity();
+        int bookedCount = session.getBookedParticipants();
+        
+        return SessionResponse.builder()
+                .id(session.getId())
+                .startTime(session.getStartTime())
+                .endTime(session.getEndTime())
+                .capacity(capacity)
+                .bookedCount(bookedCount)
+                .availableSlots(capacity - bookedCount)
+                .price(session.getExperienceListing().getBasePrice())
+                .status(session.getSessionStatus().name())
+                .createdAt(session.getCreatedAt())
                 .build();
     }
 }

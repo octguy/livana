@@ -1,4 +1,5 @@
 import type { ExperienceCategoryResponse } from "./experienceCategoryResponse";
+import type { SessionResponse } from "./sessionResponse";
 
 export interface ImageOrderResponse {
   image: {
@@ -27,4 +28,5 @@ export interface ExperienceListingResponse {
   longitude: number;
   experienceCategory: ExperienceCategoryResponse;
   images: ImageOrderResponse[];
+  sessions: SessionResponse[];
 }

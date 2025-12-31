@@ -4,19 +4,28 @@ import { PublicHeader } from "@/components/layout/public-header.tsx";
 import { Footer } from "@/components/layout/footer";
 import { HostingDialog } from "@/components/hosting/hosting-dialog";
 import { getHomeListingsByHostId } from "@/services/homeListingService";
+import { getExperienceListingsByHostId } from "@/services/experienceListingService";
 import type { HomeListingResponse } from "@/types/response/homeListingResponse";
+import type { ExperienceListingResponse } from "@/types/response/experienceListingResponse";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Users, Plus } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MapPin, Users, Plus, Home, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/useAuthStore";
 
+type ListingType = "home" | "experience";
+
 export function MyListingsPage() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const [listings, setListings] = useState<HomeListingResponse[]>([]);
+  const [homeListings, setHomeListings] = useState<HomeListingResponse[]>([]);
+  const [experienceListings, setExperienceListings] = useState<
+    ExperienceListingResponse[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [showHostingDialog, setShowHostingDialog] = useState(false);
+  const [activeTab, setActiveTab] = useState<ListingType>("home");
 
   useEffect(() => {
     if (!user?.id) {
@@ -26,8 +35,12 @@ export function MyListingsPage() {
 
     const fetchListings = async () => {
       try {
-        const response = await getHomeListingsByHostId(user.id);
-        setListings(response.data || []);
+        const [homeResponse, experienceResponse] = await Promise.all([
+          getHomeListingsByHostId(user.id),
+          getExperienceListingsByHostId(user.id),
+        ]);
+        setHomeListings(homeResponse.data || []);
+        setExperienceListings(experienceResponse.data || []);
       } catch (error) {
         toast.error("Failed to load your listings");
         console.error("Error fetching listings:", error);
@@ -39,6 +52,12 @@ export function MyListingsPage() {
     fetchListings();
   }, [user, navigate]);
 
+  const formatPrice = (value: number) => {
+    return new Intl.NumberFormat("vi-VN").format(value);
+  };
+
+  const totalListings = homeListings.length + experienceListings.length;
+
   return (
     <>
       <PublicHeader />
@@ -48,8 +67,13 @@ export function MyListingsPage() {
             <div>
               <h1 className="text-4xl font-bold mb-2">My Listings</h1>
               <p className="text-muted-foreground">
-                {listings.length}{" "}
-                {listings.length === 1 ? "listing" : "listings"}
+                {totalListings} total{" "}
+                {totalListings === 1 ? "listing" : "listings"}
+                {" • "}
+                {homeListings.length} home{homeListings.length !== 1 && "s"}
+                {" • "}
+                {experienceListings.length} experience
+                {experienceListings.length !== 1 && "s"}
               </p>
             </div>
             <Button onClick={() => setShowHostingDialog(true)}>
@@ -58,81 +82,208 @@ export function MyListingsPage() {
             </Button>
           </div>
 
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {[...Array(8)].map((_, i) => (
-                <Card key={i} className="overflow-hidden animate-pulse">
-                  <div className="aspect-[4/3] bg-muted" />
-                  <CardContent className="p-4">
-                    <div className="h-4 bg-muted rounded mb-2" />
-                    <div className="h-3 bg-muted rounded w-2/3" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : listings.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="max-w-md mx-auto">
-                <h2 className="text-2xl font-semibold mb-4">
-                  You don't have any listings yet
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Start hosting by creating your first listing
-                </p>
-                <Button onClick={() => setShowHostingDialog(true)} size="lg">
-                  <Plus className="h-5 w-5 mr-2" />
-                  Create your first listing
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {listings.map((listing) => (
-                <Card
-                  key={listing.listingId}
-                  className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => navigate(`/listings/${listing.listingId}`)}
-                >
-                  <div className="aspect-[4/3] relative overflow-hidden">
-                    {listing.images && listing.images.length > 0 ? (
-                      <img
-                        src={listing.images[0].image.url}
-                        alt={listing.title}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-muted flex items-center justify-center">
-                        <span className="text-muted-foreground">No image</span>
-                      </div>
-                    )}
+          <Tabs
+            value={activeTab}
+            onValueChange={(v) => setActiveTab(v as ListingType)}
+          >
+            <TabsList className="mb-6">
+              <TabsTrigger value="home" className="flex items-center gap-2">
+                <Home className="h-4 w-4" />
+                Home Listings ({homeListings.length})
+              </TabsTrigger>
+              <TabsTrigger
+                value="experience"
+                className="flex items-center gap-2"
+              >
+                <Sparkles className="h-4 w-4" />
+                Experience Listings ({experienceListings.length})
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="home">
+              {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {[...Array(8)].map((_, i) => (
+                    <Card key={i} className="overflow-hidden animate-pulse">
+                      <div className="aspect-[4/3] bg-muted" />
+                      <CardContent className="p-4">
+                        <div className="h-4 bg-muted rounded mb-2" />
+                        <div className="h-3 bg-muted rounded w-2/3" />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : homeListings.length === 0 ? (
+                <div className="text-center py-20">
+                  <div className="max-w-md mx-auto">
+                    <h2 className="text-2xl font-semibold mb-4">
+                      You don't have any home listings yet
+                    </h2>
+                    <p className="text-muted-foreground mb-6">
+                      Start hosting by creating your first home listing
+                    </p>
+                    <Button
+                      onClick={() => setShowHostingDialog(true)}
+                      size="lg"
+                    >
+                      <Plus className="h-5 w-5 mr-2" />
+                      Create your first home listing
+                    </Button>
                   </div>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-lg line-clamp-1">
-                        {listing.title}
-                      </h3>
-                      <span className="text-lg font-bold whitespace-nowrap ml-2">
-                        ${listing.price}
-                        <span className="text-sm text-muted-foreground font-normal">
-                          /night
-                        </span>
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        <span className="line-clamp-1">{listing.address}</span>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {homeListings.map((listing) => (
+                    <Card
+                      key={listing.listingId}
+                      className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                      onClick={() => navigate(`/listings/${listing.listingId}`)}
+                    >
+                      <div className="aspect-[4/3] relative overflow-hidden">
+                        {listing.images && listing.images.length > 0 ? (
+                          <img
+                            src={listing.images[0].image.url}
+                            alt={listing.title}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-muted flex items-center justify-center">
+                            <span className="text-muted-foreground">
+                              No image
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                      <Users className="h-4 w-4" />
-                      <span>{listing.capacity} guests</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <h3 className="font-semibold text-lg line-clamp-1">
+                            {listing.title}
+                          </h3>
+                          <span className="text-lg font-bold whitespace-nowrap ml-2">
+                            ₫{formatPrice(listing.price)}
+                            <span className="text-sm text-muted-foreground font-normal">
+                              /night
+                            </span>
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            <span className="line-clamp-1">
+                              {listing.address}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                          <Users className="h-4 w-4" />
+                          <span>{listing.capacity} guests</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="experience">
+              {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {[...Array(8)].map((_, i) => (
+                    <Card key={i} className="overflow-hidden animate-pulse">
+                      <div className="aspect-[4/3] bg-muted" />
+                      <CardContent className="p-4">
+                        <div className="h-4 bg-muted rounded mb-2" />
+                        <div className="h-3 bg-muted rounded w-2/3" />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : experienceListings.length === 0 ? (
+                <div className="text-center py-20">
+                  <div className="max-w-md mx-auto">
+                    <h2 className="text-2xl font-semibold mb-4">
+                      You don't have any experience listings yet
+                    </h2>
+                    <p className="text-muted-foreground mb-6">
+                      Start hosting by creating your first experience listing
+                    </p>
+                    <Button
+                      onClick={() => setShowHostingDialog(true)}
+                      size="lg"
+                    >
+                      <Plus className="h-5 w-5 mr-2" />
+                      Create your first experience listing
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {experienceListings.map((listing) => (
+                    <Card
+                      key={listing.listingId}
+                      className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                      onClick={() =>
+                        navigate(`/experience-listings/${listing.listingId}`)
+                      }
+                    >
+                      <div className="aspect-[4/3] relative overflow-hidden">
+                        {listing.images && listing.images.length > 0 ? (
+                          <img
+                            src={listing.images[0].image.url}
+                            alt={listing.title}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-muted flex items-center justify-center">
+                            <span className="text-muted-foreground">
+                              No image
+                            </span>
+                          </div>
+                        )}
+                        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
+                          <span className="text-xs font-semibold flex items-center gap-1">
+                            <span>{listing.experienceCategory.icon}</span>
+                            {listing.experienceCategory.name}
+                          </span>
+                        </div>
+                      </div>
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <h3 className="font-semibold text-lg line-clamp-1">
+                            {listing.title}
+                          </h3>
+                          <span className="text-lg font-bold whitespace-nowrap ml-2">
+                            ₫{formatPrice(listing.price)}
+                            <span className="text-sm text-muted-foreground font-normal">
+                              /person
+                            </span>
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            <span className="line-clamp-1">
+                              {listing.address}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                          <Users className="h-4 w-4" />
+                          <span>Up to {listing.capacity} guests</span>
+                        </div>
+                        {listing.sessions && listing.sessions.length > 0 && (
+                          <div className="mt-2 text-xs text-muted-foreground">
+                            {listing.sessions.length} session
+                            {listing.sessions.length !== 1 && "s"} available
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
       <Footer />

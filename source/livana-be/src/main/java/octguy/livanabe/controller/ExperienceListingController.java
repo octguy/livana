@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/listings/experiences")
 public class ExperienceListingController {
@@ -35,5 +38,51 @@ public class ExperienceListingController {
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ExperienceListingResponse>>> getAllExperienceListings() {
+        List<ExperienceListingResponse> listings = experienceListingService.getAllExperienceListings();
+
+        ApiResponse<List<ExperienceListingResponse>> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Experience listings retrieved successfully",
+                listings,
+                null
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<ExperienceListingResponse>> getExperienceListingById(
+            @PathVariable UUID id
+    ) {
+        ExperienceListingResponse listing = experienceListingService.getExperienceListingById(id);
+
+        ApiResponse<ExperienceListingResponse> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Experience listing retrieved successfully",
+                listing,
+                null
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/host/{hostId}")
+    public ResponseEntity<ApiResponse<List<ExperienceListingResponse>>> getExperienceListingsByHostId(
+            @PathVariable UUID hostId
+    ) {
+        List<ExperienceListingResponse> listings = experienceListingService.getExperienceListingsByHostId(hostId);
+
+        ApiResponse<List<ExperienceListingResponse>> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Experience listings for host retrieved successfully",
+                listings,
+                null
+        );
+
+        return ResponseEntity.ok(response);
     }
 }
