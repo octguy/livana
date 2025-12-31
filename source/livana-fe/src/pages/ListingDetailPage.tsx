@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { PublicHeader } from "@/components/layout/public-header.tsx";
 import { Footer } from "@/components/layout/footer";
+import { HomeBookingDialog } from "@/components/booking/home-booking-dialog";
 import { getHomeListingById } from "@/services/homeListingService";
 import { facilityService } from "@/services/facilityService";
 import { amenityService } from "@/services/amenityService";
@@ -11,13 +12,16 @@ import type { AmenityResponse } from "@/types/response/amenityResponse";
 import { MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   const [listing, setListing] = useState<HomeListingResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAllPhotos, setShowAllPhotos] = useState(false);
+  const [showBookingDialog, setShowBookingDialog] = useState(false);
   const [facilities, setFacilities] = useState<Map<string, FacilityResponse>>(
     new Map()
   );
@@ -343,7 +347,18 @@ export function ListingDetailPage() {
                   </div>
 
                   <div className="space-y-4 mb-6">
-                    <Button className="w-full" size="lg">
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      onClick={() => {
+                        if (!user) {
+                          toast.error("Vui lòng đăng nhập để đặt phòng");
+                          navigate("/login");
+                          return;
+                        }
+                        setShowBookingDialog(true);
+                      }}
+                    >
                       Đặt chỗ
                     </Button>
                     <p className="text-sm text-center text-muted-foreground">
@@ -377,6 +392,21 @@ export function ListingDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Booking Dialog */}
+      {listing && (
+        <HomeBookingDialog
+          open={showBookingDialog}
+          onOpenChange={setShowBookingDialog}
+          listingId={listing.listingId}
+          listingTitle={listing.title}
+          pricePerNight={listing.price}
+          maxGuests={listing.capacity}
+          onBookingSuccess={() => {
+            toast.success("Đặt phòng thành công!");
+          }}
+        />
+      )}
 
       {/* All Photos Modal */}
       {showAllPhotos && listing.images && listing.images.length > 0 && (

@@ -2,21 +2,28 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { PublicHeader } from "@/components/layout/public-header.tsx";
 import { Footer } from "@/components/layout/footer";
+import { ExperienceBookingDialog } from "@/components/booking/experience-booking-dialog";
 import { getExperienceListingById } from "@/services/experienceListingService";
 import type { ExperienceListingResponse } from "@/types/response/experienceListingResponse";
+import type { SessionResponse } from "@/types/response/sessionResponse";
 import { MapPin, X, Users, Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export function ExperienceListingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   const [listing, setListing] = useState<ExperienceListingResponse | null>(
     null
   );
   const [loading, setLoading] = useState(true);
   const [showAllPhotos, setShowAllPhotos] = useState(false);
+  const [showBookingDialog, setShowBookingDialog] = useState(false);
+  const [selectedSession, setSelectedSession] =
+    useState<SessionResponse | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -219,7 +226,21 @@ export function ExperienceListingDetailPage() {
                               </div>
                             </div>
                             {session.availableSlots > 0 && (
-                              <Button className="w-full mt-4" size="sm">
+                              <Button
+                                className="w-full mt-4"
+                                size="sm"
+                                onClick={() => {
+                                  if (!user) {
+                                    toast.error(
+                                      "Vui lòng đăng nhập để đặt trải nghiệm"
+                                    );
+                                    navigate("/login");
+                                    return;
+                                  }
+                                  setSelectedSession(session);
+                                  setShowBookingDialog(true);
+                                }}
+                              >
                                 Đặt buổi này
                               </Button>
                             )}
@@ -363,6 +384,29 @@ export function ExperienceListingDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Booking Dialog */}
+      {listing && selectedSession && (
+        <ExperienceBookingDialog
+          open={showBookingDialog}
+          onOpenChange={setShowBookingDialog}
+          sessionId={selectedSession.id}
+          experienceTitle={listing.title}
+          sessionStartTime={selectedSession.startTime}
+          sessionEndTime={selectedSession.endTime}
+          pricePerPerson={listing.price}
+          availableSlots={selectedSession.availableSlots}
+          onBookingSuccess={async () => {
+            // Refresh listing to get updated session info
+            try {
+              const response = await getExperienceListingById(id!);
+              setListing(response.data);
+            } catch (error) {
+              console.error("Error refreshing listing:", error);
+            }
+          }}
+        />
+      )}
 
       {/* All Photos Modal */}
       {showAllPhotos && listing.images && listing.images.length > 0 && (
