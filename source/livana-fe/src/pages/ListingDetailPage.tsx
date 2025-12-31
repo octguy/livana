@@ -64,7 +64,7 @@ export function ListingDetailPage() {
         }
         setAmenities(amenityMap);
       } catch (error) {
-        toast.error("Failed to load listing details");
+        toast.error("Không thể tải chi tiết tin đăng");
         console.error("Error fetching listing:", error);
       } finally {
         setLoading(false);
@@ -79,7 +79,7 @@ export function ListingDetailPage() {
       <div className="min-h-screen flex flex-col">
         <PublicHeader />
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-xl text-muted-foreground">Loading...</div>
+          <div className="text-xl text-muted-foreground">Đang tải...</div>
         </div>
         <Footer />
       </div>
@@ -92,9 +92,9 @@ export function ListingDetailPage() {
         <PublicHeader />
         <div className="flex-1 flex flex-col items-center justify-center">
           <p className="text-xl text-muted-foreground mb-4">
-            Listing not found
+            Không tìm thấy tin đăng
           </p>
-          <Button onClick={() => navigate("/")}>Back to Home</Button>
+          <Button onClick={() => navigate("/")}>Về trang chủ</Button>
         </div>
         <Footer />
       </div>
@@ -145,7 +145,7 @@ export function ListingDetailPage() {
                           onClick={() => setShowAllPhotos(true)}
                           className="absolute inset-0 bg-black/40 hover:bg-black/50 transition-all flex items-center justify-center text-white font-semibold"
                         >
-                          +{listing.images.length - 5} more photos
+                          +{listing.images.length - 5} hình ảnh khác
                         </button>
                       )}
                     </div>
@@ -167,18 +167,17 @@ export function ListingDetailPage() {
                 {/* Property Info */}
                 <div className="pb-8 border-b border-gray-200">
                   <h2 className="text-2xl font-semibold mb-4">
-                    Property hosted by {listing.host?.hostDisplayName || "Host"}
+                    Nhà ở được cho thuê bởi{" "}
+                    {listing.host?.hostDisplayName || "Chủ nhà"}
                   </h2>
                   <div className="flex items-center gap-3 text-lg text-muted-foreground">
-                    <span>{listing.capacity} guests</span>
+                    <span>{listing.capacity} khách</span>
                   </div>
                 </div>
 
                 {/* Description */}
                 <div className="pb-8 border-b border-gray-200">
-                  <h2 className="text-2xl font-semibold mb-4">
-                    About this place
-                  </h2>
+                  <h2 className="text-2xl font-semibold mb-4">Về chỗ ở này</h2>
                   <p className="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
                     {listing.description}
                   </p>
@@ -187,7 +186,9 @@ export function ListingDetailPage() {
                 {/* Facilities */}
                 {listing.facilities && listing.facilities.length > 0 && (
                   <div className="pb-8 border-b border-gray-200">
-                    <h2 className="text-2xl font-semibold mb-6">Facilities</h2>
+                    <h2 className="text-2xl font-semibold mb-6">
+                      Tiện nghi cơ bản
+                    </h2>
                     <div className="grid grid-cols-2 gap-4">
                       {listing.facilities.slice(0, 6).map((facility) => {
                         const facilityData = facilities.get(
@@ -208,7 +209,7 @@ export function ListingDetailPage() {
                                     {facilityData.name}
                                   </p>
                                   <p className="text-sm text-muted-foreground">
-                                    Quantity: {facility.quantity}
+                                    Số lượng: {facility.quantity}
                                   </p>
                                 </div>
                               </>
@@ -219,7 +220,7 @@ export function ListingDetailPage() {
                     </div>
                     {listing.facilities.length > 6 && (
                       <button className="mt-6 px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
-                        Show all {listing.facilities.length} facilities
+                        Hiển thị tất cả {listing.facilities.length} tiện nghi
                       </button>
                     )}
                   </div>
@@ -229,7 +230,7 @@ export function ListingDetailPage() {
                 {listing.amenityIds && listing.amenityIds.length > 0 && (
                   <div className="pb-8 border-b border-gray-200">
                     <h2 className="text-2xl font-semibold mb-6">
-                      What this place offers
+                      Tiện ích nơi này cung cấp
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
                       {listing.amenityIds.slice(0, 10).map((amenityId) => {
@@ -255,7 +256,7 @@ export function ListingDetailPage() {
                     </div>
                     {listing.amenityIds.length > 10 && (
                       <button className="mt-6 px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
-                        Show all {listing.amenityIds.length} amenities
+                        Hiển thị tất cả {listing.amenityIds.length} tiện ích
                       </button>
                     )}
                   </div>
@@ -264,9 +265,7 @@ export function ListingDetailPage() {
                 {/* Location */}
                 {listing.latitude && listing.longitude && (
                   <div className="pb-8 border-b border-gray-200">
-                    <h2 className="text-2xl font-semibold mb-6">
-                      Where you'll be
-                    </h2>
+                    <h2 className="text-2xl font-semibold mb-6">Địa điểm</h2>
                     <div className="w-full h-[480px] rounded-2xl overflow-hidden mb-6 border">
                       <iframe
                         width="100%"
@@ -280,7 +279,7 @@ export function ListingDetailPage() {
                     <div className="space-y-2">
                       <p className="font-semibold text-lg">{listing.address}</p>
                       <p className="text-sm text-muted-foreground">
-                        Coordinates: {listing.latitude.toFixed(6)},{" "}
+                        Tọa độ: {listing.latitude.toFixed(6)},{" "}
                         {listing.longitude.toFixed(6)}
                       </p>
                     </div>
@@ -291,7 +290,7 @@ export function ListingDetailPage() {
                 {listing.host && (
                   <div className="pb-8">
                     <h2 className="text-2xl font-semibold mb-6">
-                      Meet your host
+                      Gặp gỡ chủ nhà
                     </h2>
                     <div className="flex items-center gap-6 mb-6">
                       <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-3xl font-medium">
@@ -315,7 +314,7 @@ export function ListingDetailPage() {
                         navigate(`/host/${listing.host.hostId}/listings`)
                       }
                     >
-                      Show all listings from {listing.host.hostDisplayName}
+                      Xem tất cả tin đăng từ {listing.host.hostDisplayName}
                     </Button>
                   </div>
                 )}
@@ -330,24 +329,24 @@ export function ListingDetailPage() {
                         ${formatPrice(listing.price)}
                       </span>
                       <span className="text-muted-foreground text-lg">
-                        / night
+                        / đêm
                       </span>
                     </div>
                   </div>
 
                   <div className="space-y-4 mb-6">
                     <Button className="w-full" size="lg">
-                      Reserve
+                      Đặt chỗ
                     </Button>
                     <p className="text-sm text-center text-muted-foreground">
-                      You won't be charged yet
+                      Bạn chưa bị tính phí
                     </p>
                   </div>
 
                   <div className="space-y-4 pt-6 border-t border-gray-200">
                     <div className="flex items-center justify-between py-2">
                       <span className="text-sm text-muted-foreground">
-                        Max guests
+                        Số khách tối đa
                       </span>
                       <span className="font-medium text-sm">
                         {listing.capacity}
@@ -362,10 +361,10 @@ export function ListingDetailPage() {
           {/* Navigation Buttons */}
           <div className="flex items-center justify-between mt-16 pt-8 border-t border-gray-200">
             <Button variant="outline" onClick={() => navigate("/")} size="lg">
-              Back to listings
+              Về danh sách tin đăng
             </Button>
             <Button size="lg" className="px-8">
-              Contact Host
+              Liên hệ chủ nhà
             </Button>
           </div>
         </div>
@@ -380,7 +379,7 @@ export function ListingDetailPage() {
               className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded-lg"
             >
               <X className="w-5 h-5" />
-              Close
+              Đóng
             </button>
           </div>
           <div className="container max-w-4xl mx-auto px-6 py-8">

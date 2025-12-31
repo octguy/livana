@@ -42,7 +42,7 @@ export function MyListingsPage() {
         setHomeListings(homeResponse.data || []);
         setExperienceListings(experienceResponse.data || []);
       } catch (error) {
-        toast.error("Failed to load your listings");
+        toast.error("Không thể tải tin đăng của bạn");
         console.error("Error fetching listings:", error);
       } finally {
         setLoading(false);
@@ -65,20 +65,18 @@ export function MyListingsPage() {
         <div className="container max-w-7xl mx-auto py-8 px-6">
           <div className="mb-8 flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold mb-2">My Listings</h1>
+              <h1 className="text-4xl font-bold mb-2">Tin đăng của tôi</h1>
               <p className="text-muted-foreground">
-                {totalListings} total{" "}
-                {totalListings === 1 ? "listing" : "listings"}
+                {totalListings} tổng số tin
                 {" • "}
-                {homeListings.length} home{homeListings.length !== 1 && "s"}
+                {homeListings.length} nhà
                 {" • "}
-                {experienceListings.length} experience
-                {experienceListings.length !== 1 && "s"}
+                {experienceListings.length} trải nghiệm
               </p>
             </div>
             <Button onClick={() => setShowHostingDialog(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Create new listing
+              Tạo tin đăng mới
             </Button>
           </div>
 
@@ -89,14 +87,14 @@ export function MyListingsPage() {
             <TabsList className="mb-6">
               <TabsTrigger value="home" className="flex items-center gap-2">
                 <Home className="h-4 w-4" />
-                Home Listings ({homeListings.length})
+                Nhà ở ({homeListings.length})
               </TabsTrigger>
               <TabsTrigger
                 value="experience"
                 className="flex items-center gap-2"
               >
                 <Sparkles className="h-4 w-4" />
-                Experience Listings ({experienceListings.length})
+                Trải nghiệm ({experienceListings.length})
               </TabsTrigger>
             </TabsList>
 
@@ -117,17 +115,17 @@ export function MyListingsPage() {
                 <div className="text-center py-20">
                   <div className="max-w-md mx-auto">
                     <h2 className="text-2xl font-semibold mb-4">
-                      You don't have any home listings yet
+                      Bạn chưa có tin đăng nhà ở nào
                     </h2>
                     <p className="text-muted-foreground mb-6">
-                      Start hosting by creating your first home listing
+                      Bắt đầu cho thuê bằng cách tạo tin đăng nhà ở đầu tiên
                     </p>
                     <Button
                       onClick={() => setShowHostingDialog(true)}
                       size="lg"
                     >
                       <Plus className="h-5 w-5 mr-2" />
-                      Create your first home listing
+                      Tạo tin đăng nhà ở đầu tiên
                     </Button>
                   </div>
                 </div>
@@ -162,7 +160,7 @@ export function MyListingsPage() {
                           <span className="text-lg font-bold whitespace-nowrap ml-2">
                             ₫{formatPrice(listing.price)}
                             <span className="text-sm text-muted-foreground font-normal">
-                              /night
+                              /đêm
                             </span>
                           </span>
                         </div>
@@ -176,7 +174,7 @@ export function MyListingsPage() {
                         </div>
                         <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
                           <Users className="h-4 w-4" />
-                          <span>{listing.capacity} guests</span>
+                          <span>{listing.capacity} khách</span>
                         </div>
                       </CardContent>
                     </Card>
@@ -202,17 +200,18 @@ export function MyListingsPage() {
                 <div className="text-center py-20">
                   <div className="max-w-md mx-auto">
                     <h2 className="text-2xl font-semibold mb-4">
-                      You don't have any experience listings yet
+                      Bạn chưa có tin đăng trải nghiệm nào
                     </h2>
                     <p className="text-muted-foreground mb-6">
-                      Start hosting by creating your first experience listing
+                      Bắt đầu cho thuê bằng cách tạo tin đăng trải nghiệm đầu
+                      tiên
                     </p>
                     <Button
                       onClick={() => setShowHostingDialog(true)}
                       size="lg"
                     >
                       <Plus className="h-5 w-5 mr-2" />
-                      Create your first experience listing
+                      Tạo tin đăng trải nghiệm đầu tiên
                     </Button>
                   </div>
                 </div>
@@ -255,7 +254,7 @@ export function MyListingsPage() {
                           <span className="text-lg font-bold whitespace-nowrap ml-2">
                             ₫{formatPrice(listing.price)}
                             <span className="text-sm text-muted-foreground font-normal">
-                              /person
+                              /người
                             </span>
                           </span>
                         </div>
@@ -269,12 +268,11 @@ export function MyListingsPage() {
                         </div>
                         <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
                           <Users className="h-4 w-4" />
-                          <span>Up to {listing.capacity} guests</span>
+                          <span>Tối đa {listing.capacity} khách</span>
                         </div>
                         {listing.sessions && listing.sessions.length > 0 && (
                           <div className="mt-2 text-xs text-muted-foreground">
-                            {listing.sessions.length} session
-                            {listing.sessions.length !== 1 && "s"} available
+                            {listing.sessions.length} buổi khả dụng
                           </div>
                         )}
                       </CardContent>

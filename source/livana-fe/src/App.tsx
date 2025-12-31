@@ -26,6 +26,7 @@ import { ExperiencePricePage } from "@/pages/host/experience/ExperiencePricePage
 import { ExperienceReviewPage } from "@/pages/host/experience/ExperienceReviewPage";
 import ExperienceSessionsPage from "@/pages/host/experience/ExperienceSessionsPage";
 import { HomePage } from "@/pages/HomePage";
+import { ExperiencesPage } from "@/pages/ExperiencesPage";
 import { ListingDetailPage } from "@/pages/ListingDetailPage";
 import { ExperienceListingDetailPage } from "@/pages/ExperienceListingDetailPage";
 import { HostListingsPage } from "@/pages/HostListingsPage";
@@ -69,6 +70,7 @@ function App() {
         <Routes>
           {/* public route */}
           <Route path="/" element={<HomePage />} />
+          <Route path="/experiences" element={<ExperiencesPage />} />
           <Route path="/listings/:id" element={<ListingDetailPage />} />
           <Route
             path="/experience-listings/:id"

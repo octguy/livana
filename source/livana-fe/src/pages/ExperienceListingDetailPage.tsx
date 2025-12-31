@@ -41,7 +41,7 @@ export function ExperienceListingDetailPage() {
       <div className="min-h-screen flex flex-col">
         <PublicHeader />
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-xl text-muted-foreground">Loading...</div>
+          <div className="text-xl text-muted-foreground">Đang tải...</div>
         </div>
         <Footer />
       </div>
@@ -54,9 +54,9 @@ export function ExperienceListingDetailPage() {
         <PublicHeader />
         <div className="flex-1 flex flex-col items-center justify-center">
           <p className="text-xl text-muted-foreground mb-4">
-            Experience not found
+            Không tìm thấy trải nghiệm
           </p>
-          <Button onClick={() => navigate("/")}>Back to Home</Button>
+          <Button onClick={() => navigate("/")}>Về trang chủ</Button>
         </div>
         <Footer />
       </div>
@@ -126,7 +126,7 @@ export function ExperienceListingDetailPage() {
               ) : (
                 <div className="w-full h-[400px] bg-muted rounded-2xl flex items-center justify-center">
                   <span className="text-muted-foreground">
-                    No images available
+                    Không có hình ảnh
                   </span>
                 </div>
               )}
@@ -139,19 +139,19 @@ export function ExperienceListingDetailPage() {
                 {/* Experience Info */}
                 <div className="pb-8 border-b border-gray-200">
                   <h2 className="text-2xl font-semibold mb-4">
-                    Experience hosted by{" "}
-                    {listing.host?.hostDisplayName || "Host"}
+                    Trải nghiệm được tổ chức bởi{" "}
+                    {listing.host?.hostDisplayName || "Chủ nhà"}
                   </h2>
                   <div className="flex items-center gap-3 text-lg text-muted-foreground">
                     <Users className="w-5 h-5" />
-                    <span>Up to {listing.capacity} guests</span>
+                    <span>Tối đa {listing.capacity} khách</span>
                   </div>
                 </div>
 
                 {/* Description */}
                 <div className="pb-8 border-b border-gray-200">
                   <h2 className="text-2xl font-semibold mb-4">
-                    About this experience
+                    Về trải nghiệm này
                   </h2>
                   <p className="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
                     {listing.description}
@@ -162,7 +162,7 @@ export function ExperienceListingDetailPage() {
                 {listing.sessions && listing.sessions.length > 0 && (
                   <div className="pb-8 border-b border-gray-200">
                     <h2 className="text-2xl font-semibold mb-6">
-                      Available Sessions
+                      Buổi khả dụng
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {listing.sessions.map((session, index) => {
@@ -191,7 +191,7 @@ export function ExperienceListingDetailPage() {
                                   {index + 1}
                                 </div>
                                 <span className="font-medium text-gray-900">
-                                  Session {index + 1}
+                                  Buổi {index + 1}
                                 </span>
                               </div>
                               <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
@@ -214,18 +214,18 @@ export function ExperienceListingDetailPage() {
                                 <Users className="w-4 h-4" />
                                 <span>
                                   {session.availableSlots} / {session.capacity}{" "}
-                                  spots available
+                                  chỗ trống
                                 </span>
                               </div>
                             </div>
                             {session.availableSlots > 0 && (
                               <Button className="w-full mt-4" size="sm">
-                                Book this session
+                                Đặt buổi này
                               </Button>
                             )}
                             {session.availableSlots === 0 && (
                               <div className="text-center text-sm text-muted-foreground mt-4 py-2 bg-gray-50 rounded">
-                                Fully booked
+                                Đã đầy
                               </div>
                             )}
                           </div>
@@ -238,9 +238,7 @@ export function ExperienceListingDetailPage() {
                 {/* Location */}
                 {listing.latitude && listing.longitude && (
                   <div className="pb-8 border-b border-gray-200">
-                    <h2 className="text-2xl font-semibold mb-6">
-                      Where you'll be
-                    </h2>
+                    <h2 className="text-2xl font-semibold mb-6">Địa điểm</h2>
                     <div className="w-full h-[480px] rounded-2xl overflow-hidden mb-6 border">
                       <iframe
                         width="100%"
@@ -254,7 +252,7 @@ export function ExperienceListingDetailPage() {
                     <div className="space-y-2">
                       <p className="font-semibold text-lg">{listing.address}</p>
                       <p className="text-sm text-muted-foreground">
-                        Coordinates: {listing.latitude.toFixed(6)},{" "}
+                        Tọa độ: {listing.latitude.toFixed(6)},{" "}
                         {listing.longitude.toFixed(6)}
                       </p>
                     </div>
@@ -265,7 +263,7 @@ export function ExperienceListingDetailPage() {
                 {listing.host && (
                   <div className="pb-8">
                     <h2 className="text-2xl font-semibold mb-6">
-                      Meet your host
+                      Gặp gỡ chủ nhà
                     </h2>
                     <div className="flex items-center gap-6 mb-6">
                       {listing.host.avatarUrl ? (
@@ -297,7 +295,7 @@ export function ExperienceListingDetailPage() {
                         navigate(`/host/${listing.host.hostId}/listings`)
                       }
                     >
-                      Show all listings from {listing.host.hostDisplayName}
+                      Xem tất cả tin đăng từ {listing.host.hostDisplayName}
                     </Button>
                   </div>
                 )}
@@ -312,11 +310,11 @@ export function ExperienceListingDetailPage() {
                         ₫{formatPrice(listing.price)}
                       </span>
                       <span className="text-muted-foreground text-lg">
-                        / person
+                        / người
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground mt-2">
-                      Price per participant
+                      Giá mỗi người tham gia
                     </p>
                   </div>
 
@@ -331,25 +329,22 @@ export function ExperienceListingDetailPage() {
                     </div>
                     <div className="flex items-center gap-3 text-muted-foreground">
                       <Users className="w-5 h-5" />
-                      <span>Up to {listing.capacity} guests</span>
+                      <span>Tối đa {listing.capacity} khách</span>
                     </div>
                     {listing.sessions && listing.sessions.length > 0 && (
                       <div className="flex items-center gap-3 text-muted-foreground">
                         <Calendar className="w-5 h-5" />
-                        <span>
-                          {listing.sessions.length} session
-                          {listing.sessions.length !== 1 && "s"} available
-                        </span>
+                        <span>{listing.sessions.length} buổi khả dụng</span>
                       </div>
                     )}
                   </div>
 
                   <div className="space-y-4">
                     <Button className="w-full" size="lg">
-                      Check Availability
+                      Kiểm tra lịch trống
                     </Button>
                     <p className="text-sm text-center text-muted-foreground">
-                      Choose a session to book
+                      Chọn buổi để đặt
                     </p>
                   </div>
                 </div>
@@ -360,10 +355,10 @@ export function ExperienceListingDetailPage() {
           {/* Navigation Buttons */}
           <div className="flex items-center justify-between mt-16 pt-8 border-t border-gray-200">
             <Button variant="outline" onClick={() => navigate("/")} size="lg">
-              Back to experiences
+              Về danh sách trải nghiệm
             </Button>
             <Button size="lg" className="px-8">
-              Contact Host
+              Liên hệ chủ nhà
             </Button>
           </div>
         </div>
@@ -378,7 +373,7 @@ export function ExperienceListingDetailPage() {
               className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded-lg"
             >
               <X className="w-5 h-5" />
-              Close
+              Đóng
             </button>
           </div>
           <div className="container max-w-4xl mx-auto px-6 py-8">
