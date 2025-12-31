@@ -347,23 +347,33 @@ export function ListingDetailPage() {
                   </div>
 
                   <div className="space-y-4 mb-6">
-                    <Button
-                      className="w-full"
-                      size="lg"
-                      onClick={() => {
-                        if (!user) {
-                          toast.error("Vui lòng đăng nhập để đặt phòng");
-                          navigate("/login");
-                          return;
-                        }
-                        setShowBookingDialog(true);
-                      }}
-                    >
-                      Đặt chỗ
-                    </Button>
-                    <p className="text-sm text-center text-muted-foreground">
-                      Bạn chưa bị tính phí
-                    </p>
+                    {user?.id === listing.host.hostId ? (
+                      <div className="text-center py-3 px-4 bg-muted rounded-lg">
+                        <p className="text-muted-foreground">
+                          Đây là tin đăng của bạn
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <Button
+                          className="w-full"
+                          size="lg"
+                          onClick={() => {
+                            if (!user) {
+                              toast.error("Vui lòng đăng nhập để đặt phòng");
+                              navigate("/login");
+                              return;
+                            }
+                            setShowBookingDialog(true);
+                          }}
+                        >
+                          Đặt chỗ
+                        </Button>
+                        <p className="text-sm text-center text-muted-foreground">
+                          Bạn chưa bị tính phí
+                        </p>
+                      </>
+                    )}
                   </div>
 
                   <div className="space-y-4 pt-6 border-t border-gray-200">

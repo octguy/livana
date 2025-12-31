@@ -48,6 +48,11 @@ public class HomeBookingServiceImpl implements IHomeBookingService {
         HomeListing homeListing = homeListingRepository.findById(request.getHomeListingId())
             .orElseThrow(() -> new ResourceNotFoundException("Home listing not found"));
 
+        // Prevent host from booking their own listing
+        if (homeListing.getHost().getId().equals(customerId)) {
+            throw new BadRequestException("You cannot book your own listing");
+        }
+
         // Validate dates
         if (request.getCheckOutTime().isBefore(request.getCheckInTime())) {
             throw new BadRequestException("Check-out time must be after check-in time");

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { PublicHeader } from "@/components/layout/public-header";
 import { Footer } from "@/components/layout/footer";
@@ -13,8 +13,8 @@ import {
 import type {
   HomeBookingResponse,
   ExperienceBookingResponse,
-  BookingStatus,
 } from "@/types/response/bookingResponse";
+import { BookingStatus } from "@/types/response/bookingResponse";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -25,6 +25,10 @@ import {
   Eye,
   User,
   Check,
+  Clock,
+  CheckCircle,
+  Ban,
+  List,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,8 +36,20 @@ import { toast } from "sonner";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type BookingType = "home" | "experience";
+type StatusFilter = "ALL" | BookingStatus;
 
 const getStatusBadge = (status: BookingStatus) => {
   switch (status) {
@@ -91,6 +107,39 @@ export function HostBookingsPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<BookingType>("home");
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
+
+  // Filtered bookings based on status
+  const filteredHomeBookings = useMemo(() => {
+    if (statusFilter === "ALL") return homeBookings;
+    return homeBookings.filter((b) => b.status === statusFilter);
+  }, [homeBookings, statusFilter]);
+
+  const filteredExperienceBookings = useMemo(() => {
+    if (statusFilter === "ALL") return experienceBookings;
+    return experienceBookings.filter((b) => b.status === statusFilter);
+  }, [experienceBookings, statusFilter]);
+
+  // Count by status for badges
+  const homeStatusCounts = useMemo(
+    () => ({
+      PENDING: homeBookings.filter((b) => b.status === "PENDING").length,
+      CONFIRMED: homeBookings.filter((b) => b.status === "CONFIRMED").length,
+      CANCELLED: homeBookings.filter((b) => b.status === "CANCELLED").length,
+    }),
+    [homeBookings]
+  );
+
+  const experienceStatusCounts = useMemo(
+    () => ({
+      PENDING: experienceBookings.filter((b) => b.status === "PENDING").length,
+      CONFIRMED: experienceBookings.filter((b) => b.status === "CONFIRMED")
+        .length,
+      CANCELLED: experienceBookings.filter((b) => b.status === "CANCELLED")
+        .length,
+    }),
+    [experienceBookings]
+  );
 
   useEffect(() => {
     if (!user?.id) {
@@ -193,7 +242,10 @@ export function HostBookingsPage() {
 
           <Tabs
             value={activeTab}
-            onValueChange={(v) => setActiveTab(v as BookingType)}
+            onValueChange={(v) => {
+              setActiveTab(v as BookingType);
+              setStatusFilter("ALL");
+            }}
           >
             <TabsList className="mb-6">
               <TabsTrigger value="home" className="flex items-center gap-2">
@@ -209,6 +261,72 @@ export function HostBookingsPage() {
               </TabsTrigger>
             </TabsList>
 
+            {/* Status Filter Tabs */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              <Button
+                variant={statusFilter === "ALL" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("ALL")}
+                className="flex items-center gap-2"
+              >
+                <List className="h-4 w-4" />
+                Tất cả (
+                {activeTab === "home"
+                  ? homeBookings.length
+                  : experienceBookings.length}
+                )
+              </Button>
+              <Button
+                variant={
+                  statusFilter === BookingStatus.PENDING ? "default" : "outline"
+                }
+                size="sm"
+                onClick={() => setStatusFilter(BookingStatus.PENDING)}
+                className="flex items-center gap-2"
+              >
+                <Clock className="h-4 w-4" />
+                Chờ xác nhận (
+                {activeTab === "home"
+                  ? homeStatusCounts.PENDING
+                  : experienceStatusCounts.PENDING}
+                )
+              </Button>
+              <Button
+                variant={
+                  statusFilter === BookingStatus.CONFIRMED
+                    ? "default"
+                    : "outline"
+                }
+                size="sm"
+                onClick={() => setStatusFilter(BookingStatus.CONFIRMED)}
+                className="flex items-center gap-2"
+              >
+                <CheckCircle className="h-4 w-4" />
+                Đã xác nhận (
+                {activeTab === "home"
+                  ? homeStatusCounts.CONFIRMED
+                  : experienceStatusCounts.CONFIRMED}
+                )
+              </Button>
+              <Button
+                variant={
+                  statusFilter === BookingStatus.CANCELLED
+                    ? "default"
+                    : "outline"
+                }
+                size="sm"
+                onClick={() => setStatusFilter(BookingStatus.CANCELLED)}
+                className="flex items-center gap-2"
+              >
+                <Ban className="h-4 w-4" />
+                Đã hủy (
+                {activeTab === "home"
+                  ? homeStatusCounts.CANCELLED
+                  : experienceStatusCounts.CANCELLED}
+                )
+              </Button>
+            </div>
+
             <TabsContent value="home">
               {loading ? (
                 <div className="space-y-4">
@@ -222,23 +340,32 @@ export function HostBookingsPage() {
                     </Card>
                   ))}
                 </div>
-              ) : homeBookings.length === 0 ? (
+              ) : filteredHomeBookings.length === 0 ? (
                 <div className="text-center py-20">
                   <div className="max-w-md mx-auto">
                     <h2 className="text-2xl font-semibold mb-4">
-                      Chưa có đơn đặt phòng nào
+                      {statusFilter === "ALL"
+                        ? "Chưa có đơn đặt phòng nào"
+                        : "Không có đơn đặt nào với trạng thái này"}
                     </h2>
                     <p className="text-muted-foreground mb-6">
-                      Khi khách đặt nhà ở của bạn, đơn đặt sẽ hiển thị ở đây
+                      {statusFilter === "ALL"
+                        ? "Khi khách đặt nhà ở của bạn, đơn đặt sẽ hiển thị ở đây"
+                        : "Thử chọn trạng thái khác để xem đơn đặt"}
                     </p>
-                    <Button onClick={() => navigate("/my-listings")} size="lg">
-                      Xem tin đăng của tôi
-                    </Button>
+                    {statusFilter === "ALL" && (
+                      <Button
+                        onClick={() => navigate("/my-listings")}
+                        size="lg"
+                      >
+                        Xem tin đăng của tôi
+                      </Button>
+                    )}
                   </div>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {homeBookings.map((booking) => (
+                  {filteredHomeBookings.map((booking) => (
                     <Card
                       key={booking.id}
                       className="hover:shadow-md transition-shadow"
@@ -329,19 +456,44 @@ export function HostBookingsPage() {
                           </div>
                           <div className="flex gap-2">
                             {booking.status === "PENDING" && (
-                              <Button
-                                variant="default"
-                                size="sm"
-                                onClick={() =>
-                                  handleConfirmHomeBooking(booking.id)
-                                }
-                                disabled={confirmingId === booking.id}
-                              >
-                                <Check className="h-4 w-4 mr-1" />
-                                {confirmingId === booking.id
-                                  ? "Đang xác nhận..."
-                                  : "Xác nhận"}
-                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="default"
+                                    size="sm"
+                                    disabled={confirmingId === booking.id}
+                                  >
+                                    <Check className="h-4 w-4 mr-1" />
+                                    {confirmingId === booking.id
+                                      ? "Đang xác nhận..."
+                                      : "Xác nhận"}
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Xác nhận đơn đặt phòng?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Bạn có chắc chắn muốn xác nhận đơn đặt
+                                      phòng này? Khách hàng sẽ nhận được thông
+                                      báo xác nhận.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                      Hủy bỏ
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() =>
+                                        handleConfirmHomeBooking(booking.id)
+                                      }
+                                    >
+                                      Xác nhận đặt phòng
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             )}
                             <Button
                               variant="outline"
@@ -375,24 +527,32 @@ export function HostBookingsPage() {
                     </Card>
                   ))}
                 </div>
-              ) : experienceBookings.length === 0 ? (
+              ) : filteredExperienceBookings.length === 0 ? (
                 <div className="text-center py-20">
                   <div className="max-w-md mx-auto">
                     <h2 className="text-2xl font-semibold mb-4">
-                      Chưa có đơn đặt trải nghiệm nào
+                      {statusFilter === "ALL"
+                        ? "Chưa có đơn đặt trải nghiệm nào"
+                        : "Không có đơn đặt nào với trạng thái này"}
                     </h2>
                     <p className="text-muted-foreground mb-6">
-                      Khi khách đặt trải nghiệm của bạn, đơn đặt sẽ hiển thị ở
-                      đây
+                      {statusFilter === "ALL"
+                        ? "Khi khách đặt trải nghiệm của bạn, đơn đặt sẽ hiển thị ở đây"
+                        : "Thử chọn trạng thái khác để xem đơn đặt"}
                     </p>
-                    <Button onClick={() => navigate("/my-listings")} size="lg">
-                      Xem tin đăng của tôi
-                    </Button>
+                    {statusFilter === "ALL" && (
+                      <Button
+                        onClick={() => navigate("/my-listings")}
+                        size="lg"
+                      >
+                        Xem tin đăng của tôi
+                      </Button>
+                    )}
                   </div>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {experienceBookings.map((booking) => (
+                  {filteredExperienceBookings.map((booking) => (
                     <Card
                       key={booking.id}
                       className="hover:shadow-md transition-shadow"
@@ -483,19 +643,46 @@ export function HostBookingsPage() {
                           </div>
                           <div className="flex gap-2">
                             {booking.status === "PENDING" && (
-                              <Button
-                                variant="default"
-                                size="sm"
-                                onClick={() =>
-                                  handleConfirmExperienceBooking(booking.id)
-                                }
-                                disabled={confirmingId === booking.id}
-                              >
-                                <Check className="h-4 w-4 mr-1" />
-                                {confirmingId === booking.id
-                                  ? "Đang xác nhận..."
-                                  : "Xác nhận"}
-                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="default"
+                                    size="sm"
+                                    disabled={confirmingId === booking.id}
+                                  >
+                                    <Check className="h-4 w-4 mr-1" />
+                                    {confirmingId === booking.id
+                                      ? "Đang xác nhận..."
+                                      : "Xác nhận"}
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Xác nhận đơn đặt trải nghiệm?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Bạn có chắc chắn muốn xác nhận đơn đặt
+                                      trải nghiệm này? Khách hàng sẽ nhận được
+                                      thông báo xác nhận.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                      Hủy bỏ
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() =>
+                                        handleConfirmExperienceBooking(
+                                          booking.id
+                                        )
+                                      }
+                                    >
+                                      Xác nhận đặt trải nghiệm
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             )}
                             <Button
                               variant="outline"

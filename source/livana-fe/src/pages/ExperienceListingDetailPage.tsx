@@ -225,25 +225,32 @@ export function ExperienceListingDetailPage() {
                                 </span>
                               </div>
                             </div>
-                            {session.availableSlots > 0 && (
-                              <Button
-                                className="w-full mt-4"
-                                size="sm"
-                                onClick={() => {
-                                  if (!user) {
-                                    toast.error(
-                                      "Vui lòng đăng nhập để đặt trải nghiệm"
-                                    );
-                                    navigate("/login");
-                                    return;
-                                  }
-                                  setSelectedSession(session);
-                                  setShowBookingDialog(true);
-                                }}
-                              >
-                                Đặt buổi này
-                              </Button>
-                            )}
+                            {session.availableSlots > 0 &&
+                              user?.id !== listing.host.hostId && (
+                                <Button
+                                  className="w-full mt-4"
+                                  size="sm"
+                                  onClick={() => {
+                                    if (!user) {
+                                      toast.error(
+                                        "Vui lòng đăng nhập để đặt trải nghiệm"
+                                      );
+                                      navigate("/login");
+                                      return;
+                                    }
+                                    setSelectedSession(session);
+                                    setShowBookingDialog(true);
+                                  }}
+                                >
+                                  Đặt buổi này
+                                </Button>
+                              )}
+                            {session.availableSlots > 0 &&
+                              user?.id === listing.host.hostId && (
+                                <div className="text-center text-sm text-muted-foreground mt-4 py-2 bg-gray-50 rounded">
+                                  Đây là tin đăng của bạn
+                                </div>
+                              )}
                             {session.availableSlots === 0 && (
                               <div className="text-center text-sm text-muted-foreground mt-4 py-2 bg-gray-50 rounded">
                                 Đã đầy

@@ -49,6 +49,11 @@ public class ExperienceBookingServiceImpl implements IExperienceBookingService {
         ExperienceSession session = experienceSessionRepository.findById(request.getSessionId())
             .orElseThrow(() -> new ResourceNotFoundException("Session not found"));
 
+        // Prevent host from booking their own listing
+        if (session.getExperienceListing().getHost().getId().equals(customerId)) {
+            throw new BadRequestException("You cannot book your own listing");
+        }
+
         // Validate session status
         if (session.getSessionStatus() != SessionStatus.ACTIVE) {
             throw new BadRequestException("Session is not available for booking");
