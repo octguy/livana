@@ -6,6 +6,7 @@ import { useExperienceCategoryStore } from "@/stores/useExperienceCategoryStore"
 import { MapPin, Users, X, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { cloudinaryService } from "@/services/cloudinaryService";
+import { createExperienceSessions } from "@/services/experienceSessionService";
 
 export function ExperienceReviewPage() {
   const navigate = useNavigate();
@@ -93,6 +94,38 @@ export function ExperienceReviewPage() {
       toast.loading("Publishing experience...");
       const response = await listing.createListing(payload);
       console.log("Experience listing created successfully:", response.data);
+
+      // Create sessions if there are any
+      if (listing.sessions.length > 0) {
+        console.log("========== CREATING SESSIONS ==========");
+        try {
+          toast.dismiss();
+          toast.loading("Creating sessions...");
+          const sessionPayload = {
+            sessions: listing.sessions.map((session) => ({
+              startTime: session.startTime,
+              endTime: session.endTime,
+            })),
+          };
+          console.log(
+            "Session payload:",
+            JSON.stringify(sessionPayload, null, 2)
+          );
+          console.log("Experience listing ID:", response.data.listingId);
+
+          const sessionResponse = await createExperienceSessions(
+            response.data.listingId,
+            sessionPayload
+          );
+          console.log("Sessions created successfully:", sessionResponse.data);
+        } catch (sessionError: any) {
+          console.error("Error creating sessions:", sessionError);
+          toast.dismiss();
+          toast.error("Experience published but failed to create sessions");
+          // Don't return here - still show success for the listing creation
+        }
+      }
+
       toast.dismiss();
       toast.success("Experience published successfully!");
       listing.clearState();

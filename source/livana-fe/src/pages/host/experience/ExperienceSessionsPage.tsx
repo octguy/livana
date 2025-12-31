@@ -175,12 +175,12 @@ export default function ExperienceSessionsPage() {
   const handleNext = () => {
     if (!validateSessions()) return;
 
-    // Convert to ISO strings
+    // Convert to LocalDateTime format (without timezone conversion)
     const convertedSessions = sessionForms.map((form) => {
       const dateStr = format(form.date!, "yyyy-MM-dd");
       return {
-        startTime: new Date(`${dateStr}T${form.startTime}`).toISOString(),
-        endTime: new Date(`${dateStr}T${form.endTime}`).toISOString(),
+        startTime: `${dateStr}T${form.startTime}:00`,
+        endTime: `${dateStr}T${form.endTime}:00`,
       };
     });
 
