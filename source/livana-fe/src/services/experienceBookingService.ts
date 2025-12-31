@@ -47,3 +47,9 @@ export const cancelExperienceBooking = async (bookingId: string) => {
     `/experience-bookings/${bookingId}/cancel`
   );
 };
+
+export const confirmExperienceBooking = async (bookingId: string) => {
+  return axios.put<ResponseData<ExperienceBookingResponse>>(
+    `/experience-bookings/${bookingId}/confirm`
+  );
+};

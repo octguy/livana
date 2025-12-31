@@ -2,8 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { PublicHeader } from "@/components/layout/public-header";
 import { Footer } from "@/components/layout/footer";
-import { getHostHomeBookings } from "@/services/homeBookingService";
-import { getHostExperienceBookings } from "@/services/experienceBookingService";
+import {
+  getHostHomeBookings,
+  confirmHomeBooking,
+} from "@/services/homeBookingService";
+import {
+  getHostExperienceBookings,
+  confirmExperienceBooking,
+} from "@/services/experienceBookingService";
 import type {
   HomeBookingResponse,
   ExperienceBookingResponse,
@@ -11,7 +17,15 @@ import type {
 } from "@/types/response/bookingResponse";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Home, Sparkles, Calendar, Users, Eye, User } from "lucide-react";
+import {
+  Home,
+  Sparkles,
+  Calendar,
+  Users,
+  Eye,
+  User,
+  Check,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -76,6 +90,7 @@ export function HostBookingsPage() {
   >([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<BookingType>("home");
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user?.id) {
@@ -99,6 +114,34 @@ export function HostBookingsPage() {
       console.error("Error fetching bookings:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleConfirmHomeBooking = async (bookingId: string) => {
+    setConfirmingId(bookingId);
+    try {
+      await confirmHomeBooking(bookingId);
+      toast.success("Đã xác nhận đặt phòng thành công");
+      fetchBookings();
+    } catch (error) {
+      toast.error("Không thể xác nhận đặt phòng");
+      console.error("Error confirming booking:", error);
+    } finally {
+      setConfirmingId(null);
+    }
+  };
+
+  const handleConfirmExperienceBooking = async (bookingId: string) => {
+    setConfirmingId(bookingId);
+    try {
+      await confirmExperienceBooking(bookingId);
+      toast.success("Đã xác nhận đặt trải nghiệm thành công");
+      fetchBookings();
+    } catch (error) {
+      toast.error("Không thể xác nhận đặt trải nghiệm");
+      console.error("Error confirming booking:", error);
+    } finally {
+      setConfirmingId(null);
     }
   };
 
@@ -284,16 +327,33 @@ export function HostBookingsPage() {
                                 : "Chưa thanh toán"}
                             </Badge>
                           </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              navigate(`/listings/${booking.homeListingId}`)
-                            }
-                          >
-                            <Eye className="h-4 w-4 mr-1" />
-                            Xem tin đăng
-                          </Button>
+                          <div className="flex gap-2">
+                            {booking.status === "PENDING" && (
+                              <Button
+                                variant="default"
+                                size="sm"
+                                onClick={() =>
+                                  handleConfirmHomeBooking(booking.id)
+                                }
+                                disabled={confirmingId === booking.id}
+                              >
+                                <Check className="h-4 w-4 mr-1" />
+                                {confirmingId === booking.id
+                                  ? "Đang xác nhận..."
+                                  : "Xác nhận"}
+                              </Button>
+                            )}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                navigate(`/listings/${booking.homeListingId}`)
+                              }
+                            >
+                              <Eye className="h-4 w-4 mr-1" />
+                              Xem tin đăng
+                            </Button>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -421,18 +481,35 @@ export function HostBookingsPage() {
                                 : "Chưa thanh toán"}
                             </Badge>
                           </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              navigate(
-                                `/experience-listings/${booking.experienceListingId}`
-                              )
-                            }
-                          >
-                            <Eye className="h-4 w-4 mr-1" />
-                            Xem tin đăng
-                          </Button>
+                          <div className="flex gap-2">
+                            {booking.status === "PENDING" && (
+                              <Button
+                                variant="default"
+                                size="sm"
+                                onClick={() =>
+                                  handleConfirmExperienceBooking(booking.id)
+                                }
+                                disabled={confirmingId === booking.id}
+                              >
+                                <Check className="h-4 w-4 mr-1" />
+                                {confirmingId === booking.id
+                                  ? "Đang xác nhận..."
+                                  : "Xác nhận"}
+                              </Button>
+                            )}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                navigate(
+                                  `/experience-listings/${booking.experienceListingId}`
+                                )
+                              }
+                            >
+                              <Eye className="h-4 w-4 mr-1" />
+                              Xem tin đăng
+                            </Button>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>

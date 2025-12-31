@@ -18,5 +18,7 @@ public interface IHomeBookingService {
     
     List<HomeBookingResponse> getHostBookings(UUID hostId);
     
+    HomeBookingResponse confirmBooking(UUID bookingId, UUID hostId);
+    
     HomeBookingResponse cancelBooking(UUID bookingId, UUID customerId);
 }

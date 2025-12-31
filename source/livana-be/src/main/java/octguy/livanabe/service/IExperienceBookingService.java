@@ -20,5 +20,7 @@ public interface IExperienceBookingService {
     
     List<ExperienceBookingResponse> getHostBookings(UUID hostId);
     
+    ExperienceBookingResponse confirmBooking(UUID bookingId, UUID hostId);
+    
     ExperienceBookingResponse cancelBooking(UUID bookingId, UUID customerId);
 }

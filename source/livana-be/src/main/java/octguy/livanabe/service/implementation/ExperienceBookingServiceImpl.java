@@ -151,6 +151,53 @@ public class ExperienceBookingServiceImpl implements IExperienceBookingService {
 
     @Override
     @Transactional
+    public ExperienceBookingResponse confirmBooking(UUID bookingId, UUID hostId) {
+        ExperienceBooking booking = experienceBookingRepository.findById(bookingId)
+            .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+        // Verify the host owns this listing
+        if (!booking.getSession().getExperienceListing().getHost().getId().equals(hostId)) {
+            throw new BadRequestException("You can only confirm bookings for your own listings");
+        }
+
+        if (booking.getStatus() == BookingStatus.CONFIRMED) {
+            throw new BadRequestException("Booking is already confirmed");
+        }
+
+        if (booking.getStatus() == BookingStatus.CANCELLED) {
+            throw new BadRequestException("Cannot confirm a cancelled booking");
+        }
+
+        booking.setStatus(BookingStatus.CONFIRMED);
+        ExperienceBooking savedBooking = experienceBookingRepository.save(booking);
+        
+        // Send notification to guest
+        sendConfirmationNotificationToGuest(savedBooking);
+        
+        return convertToResponse(savedBooking);
+    }
+    
+    private void sendConfirmationNotificationToGuest(ExperienceBooking booking) {
+        UUID guestId = booking.getCustomer().getId();
+        
+        NotificationMessage notification = NotificationMessage.builder()
+                .id(UUID.randomUUID())
+                .recipientId(guestId)
+                .type("BOOKING_CONFIRMED")
+                .title("Đặt trải nghiệm đã được xác nhận!")
+                .message(String.format("Đặt trải nghiệm '%s' của bạn đã được xác nhận. Thời gian: %s",
+                        booking.getSession().getExperienceListing().getTitle(),
+                        booking.getSession().getStartTime().toLocalDate()))
+                .data(convertToResponse(booking))
+                .read(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+        
+        notificationService.sendBookingNotificationToHost(guestId, notification);
+    }
+
+    @Override
+    @Transactional
     public ExperienceBookingResponse cancelBooking(UUID bookingId, UUID customerId) {
         ExperienceBooking booking = experienceBookingRepository.findById(bookingId)
             .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));

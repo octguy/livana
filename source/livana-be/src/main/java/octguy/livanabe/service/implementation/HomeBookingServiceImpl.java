@@ -147,6 +147,53 @@ public class HomeBookingServiceImpl implements IHomeBookingService {
 
     @Override
     @Transactional
+    public HomeBookingResponse confirmBooking(UUID bookingId, UUID hostId) {
+        HomeBooking booking = homeBookingRepository.findById(bookingId)
+            .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+        // Verify the host owns this listing
+        if (!booking.getHomeListing().getHost().getId().equals(hostId)) {
+            throw new BadRequestException("You can only confirm bookings for your own listings");
+        }
+
+        if (booking.getStatus() == BookingStatus.CONFIRMED) {
+            throw new BadRequestException("Booking is already confirmed");
+        }
+
+        if (booking.getStatus() == BookingStatus.CANCELLED) {
+            throw new BadRequestException("Cannot confirm a cancelled booking");
+        }
+
+        booking.setStatus(BookingStatus.CONFIRMED);
+        HomeBooking savedBooking = homeBookingRepository.save(booking);
+        
+        // Send notification to guest
+        sendConfirmationNotificationToGuest(savedBooking);
+        
+        return convertToResponse(savedBooking);
+    }
+    
+    private void sendConfirmationNotificationToGuest(HomeBooking booking) {
+        UUID guestId = booking.getCustomer().getId();
+        
+        NotificationMessage notification = NotificationMessage.builder()
+                .id(UUID.randomUUID())
+                .recipientId(guestId)
+                .type("BOOKING_CONFIRMED")
+                .title("Đặt phòng đã được xác nhận!")
+                .message(String.format("Đặt phòng '%s' của bạn đã được chủ nhà xác nhận. Nhận phòng: %s",
+                        booking.getHomeListing().getTitle(),
+                        booking.getCheckInTime().toLocalDate()))
+                .data(convertToResponse(booking))
+                .read(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+        
+        notificationService.sendBookingNotificationToHost(guestId, notification);
+    }
+
+    @Override
+    @Transactional
     public HomeBookingResponse cancelBooking(UUID bookingId, UUID customerId) {
         HomeBooking booking = homeBookingRepository.findById(bookingId)
             .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));

@@ -110,6 +110,23 @@ public class ExperienceBookingController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{id}/confirm")
+    public ResponseEntity<ApiResponse<ExperienceBookingResponse>> confirmBooking(
+        @PathVariable UUID id
+    ) {
+        UUID hostId = SecurityUtils.getCurrentUser().getId();
+        ExperienceBookingResponse booking = experienceBookingService.confirmBooking(id, hostId);
+        
+        ApiResponse<ExperienceBookingResponse> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Booking confirmed successfully",
+                booking,
+                null
+        );
+        
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{id}/cancel")
     public ResponseEntity<ApiResponse<ExperienceBookingResponse>> cancelBooking(
         @PathVariable UUID id

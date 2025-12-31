@@ -96,6 +96,23 @@ public class HomeBookingController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{id}/confirm")
+    public ResponseEntity<ApiResponse<HomeBookingResponse>> confirmBooking(
+        @PathVariable UUID id
+    ) {
+        UUID hostId = SecurityUtils.getCurrentUser().getId();
+        HomeBookingResponse booking = homeBookingService.confirmBooking(id, hostId);
+        
+        ApiResponse<HomeBookingResponse> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Booking confirmed successfully",
+                booking,
+                null
+        );
+        
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{id}/cancel")
     public ResponseEntity<ApiResponse<HomeBookingResponse>> cancelBooking(
         @PathVariable UUID id

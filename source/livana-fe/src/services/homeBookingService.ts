@@ -39,3 +39,9 @@ export const cancelHomeBooking = async (bookingId: string) => {
     `/home-bookings/${bookingId}/cancel`
   );
 };
+
+export const confirmHomeBooking = async (bookingId: string) => {
+  return axios.put<ResponseData<HomeBookingResponse>>(
+    `/home-bookings/${bookingId}/confirm`
+  );
+};
