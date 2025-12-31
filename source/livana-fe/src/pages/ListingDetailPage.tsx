@@ -293,9 +293,17 @@ export function ListingDetailPage() {
                       Gặp gỡ chủ nhà
                     </h2>
                     <div className="flex items-center gap-6 mb-6">
-                      <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-3xl font-medium">
-                        {listing.host.hostDisplayName.charAt(0).toUpperCase()}
-                      </div>
+                      {listing.host.avatarUrl ? (
+                        <img
+                          src={listing.host.avatarUrl}
+                          alt={listing.host.hostDisplayName}
+                          className="w-20 h-20 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-3xl font-medium">
+                          {listing.host.hostDisplayName.charAt(0).toUpperCase()}
+                        </div>
+                      )}
                       <div>
                         <p className="text-2xl font-semibold">
                           {listing.host.hostDisplayName}

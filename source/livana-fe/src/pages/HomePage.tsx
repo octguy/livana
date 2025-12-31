@@ -63,11 +63,11 @@ export function HomePage() {
           <h2 className="text-3xl font-bold mb-8">Featured Stays</h2>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
               {[...Array(8)].map((_, i) => (
                 <Card key={i} className="overflow-hidden animate-pulse">
-                  <div className="aspect-[4/3] bg-muted" />
-                  <CardContent className="p-4">
+                  <div className="aspect-square bg-muted" />
+                  <CardContent className="p-3">
                     <div className="h-4 bg-muted rounded mb-2" />
                     <div className="h-3 bg-muted rounded w-2/3" />
                   </CardContent>
@@ -81,14 +81,14 @@ export function HomePage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
               {listings.map((listing) => (
                 <Card
                   key={listing.listingId}
                   className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
                   onClick={() => navigate(`/listings/${listing.listingId}`)}
                 >
-                  <div className="aspect-[4/3] relative overflow-hidden">
+                  <div className="aspect-square relative overflow-hidden">
                     {listing.images && listing.images.length > 0 ? (
                       <img
                         src={listing.images[0].image.url}
@@ -101,34 +101,34 @@ export function HomePage() {
                       </div>
                     )}
                   </div>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-lg line-clamp-1">
+                  <CardContent className="p-3">
+                    <div className="flex items-start justify-between mb-1">
+                      <h3 className="font-semibold text-sm line-clamp-1">
                         {listing.title}
                       </h3>
-                      <span className="text-lg font-bold whitespace-nowrap ml-2">
+                      <span className="text-sm font-bold whitespace-nowrap ml-2">
                         ${listing.price}
-                        <span className="text-sm text-muted-foreground font-normal">
+                        <span className="text-xs text-muted-foreground font-normal">
                           /night
                         </span>
                       </span>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
+                        <MapPin className="h-3 w-3" />
                         <span className="line-clamp-1">{listing.address}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                      <Users className="h-4 w-4" />
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                      <Users className="h-3 w-3" />
                       <span>{listing.capacity} guests</span>
                     </div>
                     {listing.host && (
-                      <div className="mt-3 pt-3 border-t flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
+                      <div className="mt-2 pt-2 border-t flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
                           {listing.host.hostDisplayName.charAt(0).toUpperCase()}
                         </div>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           Hosted by {listing.host.hostDisplayName}
                         </span>
                       </div>

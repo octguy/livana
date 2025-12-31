@@ -100,11 +100,11 @@ export function MyListingsPage() {
 
             <TabsContent value="home">
               {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                   {[...Array(8)].map((_, i) => (
                     <Card key={i} className="overflow-hidden animate-pulse">
-                      <div className="aspect-[4/3] bg-muted" />
-                      <CardContent className="p-4">
+                      <div className="aspect-square bg-muted" />
+                      <CardContent className="p-3">
                         <div className="h-4 bg-muted rounded mb-2" />
                         <div className="h-3 bg-muted rounded w-2/3" />
                       </CardContent>
@@ -130,14 +130,14 @@ export function MyListingsPage() {
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                   {homeListings.map((listing) => (
                     <Card
                       key={listing.listingId}
                       className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
                       onClick={() => navigate(`/listings/${listing.listingId}`)}
                     >
-                      <div className="aspect-[4/3] relative overflow-hidden">
+                      <div className="aspect-square relative overflow-hidden">
                         {listing.images && listing.images.length > 0 ? (
                           <img
                             src={listing.images[0].image.url}
@@ -157,16 +157,16 @@ export function MyListingsPage() {
                           <h3 className="font-semibold text-lg line-clamp-1">
                             {listing.title}
                           </h3>
-                          <span className="text-lg font-bold whitespace-nowrap ml-2">
+                          <span className="text-sm font-bold whitespace-nowrap ml-2">
                             ₫{formatPrice(listing.price)}
-                            <span className="text-sm text-muted-foreground font-normal">
+                            <span className="text-xs text-muted-foreground font-normal">
                               /đêm
                             </span>
                           </span>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
+                            <MapPin className="h-3 w-3" />
                             <span className="line-clamp-1">
                               {listing.address}
                             </span>
@@ -185,11 +185,11 @@ export function MyListingsPage() {
 
             <TabsContent value="experience">
               {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                   {[...Array(8)].map((_, i) => (
                     <Card key={i} className="overflow-hidden animate-pulse">
-                      <div className="aspect-[4/3] bg-muted" />
-                      <CardContent className="p-4">
+                      <div className="aspect-square bg-muted" />
+                      <CardContent className="p-3">
                         <div className="h-4 bg-muted rounded mb-2" />
                         <div className="h-3 bg-muted rounded w-2/3" />
                       </CardContent>
@@ -216,7 +216,7 @@ export function MyListingsPage() {
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                   {experienceListings.map((listing) => (
                     <Card
                       key={listing.listingId}
@@ -225,7 +225,7 @@ export function MyListingsPage() {
                         navigate(`/experience-listings/${listing.listingId}`)
                       }
                     >
-                      <div className="aspect-[4/3] relative overflow-hidden">
+                      <div className="aspect-square relative overflow-hidden">
                         {listing.images && listing.images.length > 0 ? (
                           <img
                             src={listing.images[0].image.url}
@@ -239,39 +239,39 @@ export function MyListingsPage() {
                             </span>
                           </div>
                         )}
-                        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
-                          <span className="text-xs font-semibold flex items-center gap-1">
+                        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-2 py-0.5">
+                          <span className="text-[10px] font-semibold flex items-center gap-1">
                             <span>{listing.experienceCategory.icon}</span>
                             {listing.experienceCategory.name}
                           </span>
                         </div>
                       </div>
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <h3 className="font-semibold text-lg line-clamp-1">
+                      <CardContent className="p-3">
+                        <div className="flex items-start justify-between mb-1">
+                          <h3 className="font-semibold text-sm line-clamp-1">
                             {listing.title}
                           </h3>
-                          <span className="text-lg font-bold whitespace-nowrap ml-2">
+                          <span className="text-sm font-bold whitespace-nowrap ml-2">
                             ₫{formatPrice(listing.price)}
-                            <span className="text-sm text-muted-foreground font-normal">
+                            <span className="text-xs text-muted-foreground font-normal">
                               /người
                             </span>
                           </span>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
+                            <MapPin className="h-3 w-3" />
                             <span className="line-clamp-1">
                               {listing.address}
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                          <Users className="h-4 w-4" />
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                          <Users className="h-3 w-3" />
                           <span>Tối đa {listing.capacity} khách</span>
                         </div>
                         {listing.sessions && listing.sessions.length > 0 && (
-                          <div className="mt-2 text-xs text-muted-foreground">
+                          <div className="mt-1 text-[10px] text-muted-foreground">
                             {listing.sessions.length} buổi khả dụng
                           </div>
                         )}

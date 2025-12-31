@@ -64,11 +64,11 @@ export function ExperiencesPage() {
           <h2 className="text-3xl font-bold mb-8">Trải nghiệm nổi bật</h2>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
               {[...Array(8)].map((_, i) => (
                 <Card key={i} className="overflow-hidden animate-pulse">
-                  <div className="aspect-[4/3] bg-muted" />
-                  <CardContent className="p-4">
+                  <div className="aspect-square bg-muted" />
+                  <CardContent className="p-3">
                     <div className="h-4 bg-muted rounded mb-2" />
                     <div className="h-3 bg-muted rounded w-2/3" />
                   </CardContent>
@@ -82,7 +82,7 @@ export function ExperiencesPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
               {listings.map((listing) => (
                 <Card
                   key={listing.listingId}
@@ -91,7 +91,7 @@ export function ExperiencesPage() {
                     navigate(`/experience-listings/${listing.listingId}`)
                   }
                 >
-                  <div className="aspect-[4/3] relative overflow-hidden">
+                  <div className="aspect-square relative overflow-hidden">
                     {listing.images && listing.images.length > 0 ? (
                       <img
                         src={listing.images[0].image.url}
@@ -106,52 +106,52 @@ export function ExperiencesPage() {
                       </div>
                     )}
                   </div>
-                  <CardContent className="p-4">
-                    <div className="mb-2">
-                      <h3 className="font-semibold text-lg line-clamp-1">
+                  <CardContent className="p-3">
+                    <div className="mb-1">
+                      <h3 className="font-semibold text-sm line-clamp-1">
                         {listing.title}
                       </h3>
                       {listing.experienceCategory && (
-                        <p className="text-sm text-primary font-medium">
+                        <p className="text-xs text-primary font-medium">
                           {listing.experienceCategory.name}
                         </p>
                       )}
                     </div>
 
-                    <div className="space-y-1 text-sm text-muted-foreground">
+                    <div className="space-y-0.5 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4 flex-shrink-0" />
+                        <MapPin className="h-3 w-3 flex-shrink-0" />
                         <span className="line-clamp-1">{listing.address}</span>
                       </div>
 
                       <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4 flex-shrink-0" />
+                        <Users className="h-3 w-3 flex-shrink-0" />
                         <span>Tối đa {listing.capacity} người</span>
                       </div>
 
                       {listing.sessions && listing.sessions.length > 0 && (
                         <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4 flex-shrink-0" />
+                          <Calendar className="h-3 w-3 flex-shrink-0" />
                           <span>{listing.sessions.length} buổi khả dụng</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="mt-3 pt-3 border-t">
-                      <span className="text-lg font-bold">
+                    <div className="mt-2 pt-2 border-t">
+                      <span className="text-sm font-bold">
                         ${listing.price}
-                        <span className="text-sm text-muted-foreground font-normal">
+                        <span className="text-xs text-muted-foreground font-normal">
                           /người
                         </span>
                       </span>
                     </div>
 
                     {listing.host && (
-                      <div className="mt-3 flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
                           {listing.host.hostDisplayName.charAt(0).toUpperCase()}
                         </div>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           Tổ chức bởi {listing.host.hostDisplayName}
                         </span>
                       </div>
