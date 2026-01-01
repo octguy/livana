@@ -1,27 +1,10 @@
 import api from "@/lib/axios";
 import type { HomeListingResponse } from "@/types/response/homeListingResponse";
 import type { ApiResponse } from "@/types/response/apiResponse";
-import type {
-  HomeFacilityRequest,
-  ImageOrderDto,
-} from "@/types/request/createHomeListingRequest";
-
-export interface CreateHomeListingPayload {
-  title: string;
-  price: number;
-  description: string;
-  capacity: number;
-  address: string;
-  latitude: number;
-  longitude: number;
-  propertyTypeId: string;
-  facilityRequests: HomeFacilityRequest[];
-  amenityIds: string[];
-  images: ImageOrderDto[];
-}
+import type { CreateHomeListingRequest } from "@/types/request/createHomeListingRequest";
 
 export const createHomeListing = async (
-  payload: CreateHomeListingPayload
+  payload: CreateHomeListingRequest
 ): Promise<ApiResponse<HomeListingResponse>> => {
   const formData = new FormData();
 
@@ -55,6 +38,7 @@ export const createHomeListing = async (
   // Append images with their order
   payload.images.forEach((imageDto, index) => {
     formData.append(`images[${index}].image`, imageDto.image);
+    formData.append(`images[${index}].publicId`, imageDto.publicId);
     formData.append(`images[${index}].order`, imageDto.order.toString());
   });
 

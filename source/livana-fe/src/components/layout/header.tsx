@@ -57,7 +57,9 @@ export function Header() {
             onClick={() => navigate("/profile")}
           >
             <AvatarImage src={user?.avatarUrl || ""} alt="Avatar" />
-            <AvatarFallback>T</AvatarFallback>
+            <AvatarFallback>
+              {user?.fullName?.charAt(0).toUpperCase() || "U"}
+            </AvatarFallback>
           </Avatar>
           <SettingDropdown />
         </div>

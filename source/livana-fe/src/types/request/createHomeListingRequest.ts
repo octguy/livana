@@ -4,7 +4,8 @@ export interface HomeFacilityRequest {
 }
 
 export interface ImageOrderDto {
-  image: File;
+  image: string; // Cloudinary URL
+  publicId: string; // Cloudinary public ID
   order: number;
 }
 

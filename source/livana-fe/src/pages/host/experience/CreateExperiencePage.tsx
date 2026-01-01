@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
 import { useExperienceCategoryStore } from "@/stores/useExperienceCategoryStore";
+import { useExperienceListingStore } from "@/stores/useExperienceListingStore";
 
 type ExperienceType = string | null;
 
@@ -10,15 +11,19 @@ export function CreateExperiencePage() {
   const [experienceType, setExperienceType] = useState<ExperienceType>(null);
   const { experienceCategories, loading, getAllExperienceCategories } =
     useExperienceCategoryStore();
+  const { setExperienceCategory, clearState } = useExperienceListingStore();
 
   useEffect(() => {
+    // Clear any previous listing data when starting a new one
+    clearState();
     getAllExperienceCategories();
-  }, [getAllExperienceCategories]);
+  }, [clearState, getAllExperienceCategories]);
 
   const handleNext = () => {
     if (experienceType) {
+      setExperienceCategory(experienceType);
       console.log("Creating experience listing:", { experienceType });
-      navigate("/host/experiences/details");
+      navigate("/host/experiences/location");
     }
   };
 

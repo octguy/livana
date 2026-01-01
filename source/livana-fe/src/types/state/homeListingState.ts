@@ -1,6 +1,6 @@
 import type { ApiResponse } from "../response/apiResponse";
 import type { HomeListingResponse } from "../response/homeListingResponse";
-import type { CreateHomeListingPayload } from "@/services/homeListingService";
+import type { CreateHomeListingRequest } from "../request/createHomeListingRequest";
 
 export interface HomeListingState {
   // Loading state
@@ -66,6 +66,6 @@ export interface HomeListingState {
 
   // API Actions
   createListing: (
-    payload: CreateHomeListingPayload
+    payload: CreateHomeListingRequest
   ) => Promise<ApiResponse<HomeListingResponse>>;
 }

@@ -1,5 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, LogOut, Home, ListChecks } from "lucide-react";
+import {
+  Menu,
+  X,
+  User,
+  LogOut,
+  Home,
+  ListChecks,
+  CalendarCheck,
+  ClipboardList,
+} from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
@@ -20,6 +29,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HostingDialog } from "@/components/hosting/hosting-dialog";
+import { NotificationDropdown } from "@/components/layout/notification-dropdown";
 
 export function PublicHeader() {
   const navigate = useNavigate();
@@ -32,12 +42,8 @@ export function PublicHeader() {
     navigate("/");
   };
 
-  const getInitials = (fullName: string) => {
-    const names = fullName.split(" ");
-    if (names.length >= 2) {
-      return `${names[0].charAt(0)}${names[names.length - 1].charAt(0)}`;
-    }
-    return fullName.charAt(0);
+  const getFirstLetter = (fullName: string) => {
+    return fullName.charAt(0).toUpperCase();
   };
 
   return (
@@ -54,13 +60,13 @@ export function PublicHeader() {
           </a>
           <nav className="hidden md:flex items-center gap-6">
             <a href="/" className="text-sm font-medium hover:text-primary">
-              Home
+              Trang chủ
             </a>
             <a
               href="/experiences"
               className="text-sm font-medium hover:text-primary"
             >
-              Experiences
+              Trải nghiệm
             </a>
           </nav>
         </div>
@@ -76,8 +82,9 @@ export function PublicHeader() {
                   onClick={() => setHostingDialogOpen(true)}
                 >
                   <Home className="mr-2 h-4 w-4" />
-                  Become a host
+                  Trở thành chủ nhà
                 </Button>
+                <NotificationDropdown />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -90,7 +97,7 @@ export function PublicHeader() {
                           alt={user.fullName}
                         />
                         <AvatarFallback>
-                          {getInitials(user.fullName)}
+                          {getFirstLetter(user.fullName)}
                         </AvatarFallback>
                       </Avatar>
                     </Button>
@@ -100,20 +107,30 @@ export function PublicHeader() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                       <User className="mr-2 h-4 w-4" />
-                      Dashboard
+                      Bảng điều khiển
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/profile")}>
                       <User className="mr-2 h-4 w-4" />
-                      Profile
+                      Hồ sơ
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/my-listings")}>
                       <ListChecks className="mr-2 h-4 w-4" />
-                      My listings
+                      Tin đăng của tôi
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/my-bookings")}>
+                      <CalendarCheck className="mr-2 h-4 w-4" />
+                      Đặt chỗ của tôi
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => navigate("/host-bookings")}
+                    >
+                      <ClipboardList className="mr-2 h-4 w-4" />
+                      Đơn đặt chỗ
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
-                      Log out
+                      Đăng xuất
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -125,10 +142,10 @@ export function PublicHeader() {
                   size="sm"
                   onClick={() => navigate("/login")}
                 >
-                  Log in
+                  Đăng nhập
                 </Button>
                 <Button size="sm" onClick={() => navigate("/signup")}>
-                  Sign up
+                  Đăng ký
                 </Button>
               </>
             )}
@@ -155,14 +172,14 @@ export function PublicHeader() {
                   className="text-base font-medium hover:text-primary py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Home
+                  Trang chủ
                 </a>
                 <a
                   href="/experiences"
                   className="text-base font-medium hover:text-primary py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Experiences
+                  Trải nghiệm
                 </a>
                 <div className="border-t pt-4 mt-4 flex flex-col gap-3">
                   {user ? (
@@ -174,7 +191,7 @@ export function PublicHeader() {
                             alt={user.fullName}
                           />
                           <AvatarFallback>
-                            {getInitials(user.fullName)}
+                            {getFirstLetter(user.fullName)}
                           </AvatarFallback>
                         </Avatar>
                         <div>
@@ -193,7 +210,7 @@ export function PublicHeader() {
                         }}
                       >
                         <User className="mr-2 h-4 w-4" />
-                        Dashboard
+                        Bảng điều khiển
                       </Button>
                       <Button
                         variant="outline"
@@ -204,7 +221,40 @@ export function PublicHeader() {
                         }}
                       >
                         <User className="mr-2 h-4 w-4" />
-                        Profile
+                        Hồ sơ
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate("/my-listings");
+                        }}
+                      >
+                        <ListChecks className="mr-2 h-4 w-4" />
+                        Tin đăng của tôi
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate("/my-bookings");
+                        }}
+                      >
+                        <CalendarCheck className="mr-2 h-4 w-4" />
+                        Đặt chỗ của tôi
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate("/host-bookings");
+                        }}
+                      >
+                        <ClipboardList className="mr-2 h-4 w-4" />
+                        Đơn đặt chỗ
                       </Button>
                       <Button
                         variant="destructive"
@@ -215,7 +265,7 @@ export function PublicHeader() {
                         }}
                       >
                         <LogOut className="mr-2 h-4 w-4" />
-                        Log out
+                        Đăng xuất
                       </Button>
                     </>
                   ) : (
@@ -228,7 +278,7 @@ export function PublicHeader() {
                           navigate("/login");
                         }}
                       >
-                        Log in
+                        Đăng nhập
                       </Button>
                       <Button
                         className="w-full"
@@ -237,7 +287,7 @@ export function PublicHeader() {
                           navigate("/signup");
                         }}
                       >
-                        Sign up
+                        Đăng ký
                       </Button>
                     </>
                   )}
