@@ -3,13 +3,16 @@ import { useParams, useNavigate } from "react-router";
 import { PublicHeader } from "@/components/layout/public-header.tsx";
 import { Footer } from "@/components/layout/footer";
 import { HomeBookingDialog } from "@/components/booking/home-booking-dialog";
+import { ReviewSection } from "@/components/review/review-section";
 import { getHomeListingById } from "@/services/homeListingService";
 import { facilityService } from "@/services/facilityService";
 import { amenityService } from "@/services/amenityService";
+import { reviewService } from "@/services/reviewService";
 import type { HomeListingResponse } from "@/types/response/homeListingResponse";
 import type { FacilityResponse } from "@/types/response/facilityResponse";
 import type { AmenityResponse } from "@/types/response/amenityResponse";
-import { MapPin, X } from "lucide-react";
+import type { ListingRatingSummary } from "@/types/response/reviewResponse";
+import { MapPin, X, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -28,6 +31,17 @@ export function ListingDetailPage() {
   const [amenities, setAmenities] = useState<Map<string, AmenityResponse>>(
     new Map()
   );
+  const [ratingSummary, setRatingSummary] =
+    useState<ListingRatingSummary | null>(null);
+
+  const fetchReviews = async (listingId: string) => {
+    try {
+      const response = await reviewService.getListingReviews(listingId);
+      setRatingSummary(response.data);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -36,6 +50,9 @@ export function ListingDetailPage() {
       try {
         const response = await getHomeListingById(id);
         setListing(response.data);
+
+        // Fetch reviews
+        fetchReviews(id);
 
         // Fetch facility details
         const facilityMap = new Map<string, FacilityResponse>();
@@ -117,9 +134,22 @@ export function ListingDetailPage() {
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-semibold mb-4">{listing.title}</h1>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-muted-foreground" />
-              <span className="text-muted-foreground">{listing.address}</span>
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-muted-foreground" />
+                <span className="text-muted-foreground">{listing.address}</span>
+              </div>
+              {ratingSummary && ratingSummary.totalReviews > 0 && (
+                <div className="flex items-center gap-1">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <span className="font-medium">
+                    {ratingSummary.averageRating}
+                  </span>
+                  <span className="text-muted-foreground">
+                    ({ratingSummary.totalReviews} đánh giá)
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -390,6 +420,15 @@ export function ListingDetailPage() {
               </div>
             </div>
           </div>
+
+          {/* Reviews Section */}
+          <ReviewSection
+            listingId={listing.listingId}
+            reviewType="HOME_LISTING"
+            ratingSummary={ratingSummary}
+            onReviewSubmitted={() => fetchReviews(listing.listingId)}
+            isHostOwner={user?.id === listing.host.hostId}
+          />
 
           {/* Navigation Buttons */}
           <div className="flex items-center justify-between mt-16 pt-8 border-t border-gray-200">

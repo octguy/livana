@@ -3,10 +3,13 @@ import { useParams, useNavigate } from "react-router";
 import { PublicHeader } from "@/components/layout/public-header.tsx";
 import { Footer } from "@/components/layout/footer";
 import { ExperienceBookingDialog } from "@/components/booking/experience-booking-dialog";
+import { ReviewSection } from "@/components/review/review-section";
 import { getExperienceListingById } from "@/services/experienceListingService";
+import { reviewService } from "@/services/reviewService";
 import type { ExperienceListingResponse } from "@/types/response/experienceListingResponse";
 import type { SessionResponse } from "@/types/response/sessionResponse";
-import { MapPin, X, Users, Calendar, Clock } from "lucide-react";
+import type { ListingRatingSummary } from "@/types/response/reviewResponse";
+import { MapPin, X, Users, Calendar, Clock, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -24,6 +27,17 @@ export function ExperienceListingDetailPage() {
   const [showBookingDialog, setShowBookingDialog] = useState(false);
   const [selectedSession, setSelectedSession] =
     useState<SessionResponse | null>(null);
+  const [ratingSummary, setRatingSummary] =
+    useState<ListingRatingSummary | null>(null);
+
+  const fetchReviews = async (listingId: string) => {
+    try {
+      const response = await reviewService.getListingReviews(listingId);
+      setRatingSummary(response.data);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -32,6 +46,9 @@ export function ExperienceListingDetailPage() {
       try {
         const response = await getExperienceListingById(id);
         setListing(response.data);
+
+        // Fetch reviews
+        fetchReviews(id);
       } catch (error) {
         toast.error("Failed to load experience details");
         console.error("Error fetching experience listing:", error);
@@ -92,9 +109,22 @@ export function ExperienceListingDetailPage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-muted-foreground" />
-              <span className="text-muted-foreground">{listing.address}</span>
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-muted-foreground" />
+                <span className="text-muted-foreground">{listing.address}</span>
+              </div>
+              {ratingSummary && ratingSummary.totalReviews > 0 && (
+                <div className="flex items-center gap-1">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <span className="font-medium">
+                    {ratingSummary.averageRating}
+                  </span>
+                  <span className="text-muted-foreground">
+                    ({ratingSummary.totalReviews} đánh giá)
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -379,6 +409,15 @@ export function ExperienceListingDetailPage() {
               </div>
             </div>
           </div>
+
+          {/* Reviews Section */}
+          <ReviewSection
+            listingId={listing.listingId}
+            reviewType="EXPERIENCE_LISTING"
+            ratingSummary={ratingSummary}
+            onReviewSubmitted={() => fetchReviews(listing.listingId)}
+            isHostOwner={user?.id === listing.host.hostId}
+          />
 
           {/* Navigation Buttons */}
           <div className="flex items-center justify-between mt-16 pt-8 border-t border-gray-200">

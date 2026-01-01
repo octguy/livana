@@ -105,6 +105,9 @@ public class SecurityConfig {
                                 "/api/v1/listings/experiences/**",
                                 "/ws/**"
                         ).permitAll()
+                        
+                        // ===== Public Reviews (GET listing reviews) =====
+                        .requestMatchers(HttpMethod.GET, "/api/v1/reviews/listing/**").permitAll()
 
                         // ===== Catalog GET (both role) =====
                         .requestMatchers(HttpMethod.GET, CATALOG).permitAll()

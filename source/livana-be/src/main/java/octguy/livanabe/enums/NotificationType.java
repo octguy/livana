@@ -5,5 +5,6 @@ public enum NotificationType {
     BOOKING_EXPERIENCE,
     BOOKING_CONFIRMED,
     BOOKING_CANCELLED,
+    NEW_REVIEW,
     SYSTEM
 }
