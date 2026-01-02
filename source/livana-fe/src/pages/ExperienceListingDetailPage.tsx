@@ -4,6 +4,7 @@ import { PublicHeader } from "@/components/layout/public-header.tsx";
 import { Footer } from "@/components/layout/footer";
 import { ExperienceBookingDialog } from "@/components/booking/experience-booking-dialog";
 import { ReviewSection } from "@/components/review/review-section";
+import { ChatButton } from "@/components/chat";
 import { getExperienceListingById } from "@/services/experienceListingService";
 import { reviewService } from "@/services/reviewService";
 import type { ExperienceListingResponse } from "@/types/response/experienceListingResponse";
@@ -257,23 +258,31 @@ export function ExperienceListingDetailPage() {
                             </div>
                             {session.availableSlots > 0 &&
                               user?.id !== listing.host.hostId && (
-                                <Button
-                                  className="w-full mt-4"
-                                  size="sm"
-                                  onClick={() => {
-                                    if (!user) {
-                                      toast.error(
-                                        "Vui lòng đăng nhập để đặt trải nghiệm"
-                                      );
-                                      navigate("/login");
-                                      return;
-                                    }
-                                    setSelectedSession(session);
-                                    setShowBookingDialog(true);
-                                  }}
-                                >
-                                  Đặt buổi này
-                                </Button>
+                                <div className="space-y-2 mt-4">
+                                  <Button
+                                    className="w-full"
+                                    size="sm"
+                                    onClick={() => {
+                                      if (!user) {
+                                        toast.error(
+                                          "Vui lòng đăng nhập để đặt trải nghiệm"
+                                        );
+                                        navigate("/login");
+                                        return;
+                                      }
+                                      setSelectedSession(session);
+                                      setShowBookingDialog(true);
+                                    }}
+                                  >
+                                    Đặt buổi này
+                                  </Button>
+                                  <ChatButton
+                                    hostId={listing.host.hostId}
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full"
+                                  />
+                                </div>
                               )}
                             {session.availableSlots > 0 &&
                               user?.id === listing.host.hostId && (

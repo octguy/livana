@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Menu } from "lucide-react";
 import { SettingDropdown } from "../setting/setting-dropdown";
+import { ChatIcon } from "../chat";
 import { useNavigate } from "react-router";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { HostingDialog } from "../hosting/hosting-dialog";
@@ -49,6 +50,7 @@ export function Header() {
           >
             Chuyển sang hosting
           </Button>
+          <ChatIcon />
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-5 w-5" />
           </Button>

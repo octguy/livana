@@ -29,7 +29,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { login, user } = useAuthStore();
+  const { login } = useAuthStore();
   const navigate = useNavigate();
 
   // Add local state to show login error above the username field

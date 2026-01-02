@@ -4,6 +4,7 @@ import { PublicHeader } from "@/components/layout/public-header.tsx";
 import { Footer } from "@/components/layout/footer";
 import { HomeBookingDialog } from "@/components/booking/home-booking-dialog";
 import { ReviewSection } from "@/components/review/review-section";
+import { ChatButton } from "@/components/chat";
 import { getHomeListingById } from "@/services/homeListingService";
 import { facilityService } from "@/services/facilityService";
 import { amenityService } from "@/services/amenityService";
@@ -399,6 +400,11 @@ export function ListingDetailPage() {
                         >
                           Đặt chỗ
                         </Button>
+                        <ChatButton
+                          hostId={listing.host.hostId}
+                          variant="outline"
+                          className="w-full"
+                        />
                         <p className="text-sm text-center text-muted-foreground">
                           Bạn chưa bị tính phí
                         </p>

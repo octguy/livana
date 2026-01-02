@@ -4,12 +4,27 @@ import SockJS from "sockjs-client";
 const WEBSOCKET_URL = "http://localhost:8080/ws";
 
 let stompClient: Client | null = null;
+let isFullyConnected = false;
 const subscriptions: Map<string, StompSubscription> = new Map();
+const connectCallbacks: Array<() => void> = [];
+const errorCallbacks: Array<(error: unknown) => void> = [];
 
 export const websocketService = {
   connect: (onConnect?: () => void, onError?: (error: unknown) => void) => {
-    if (stompClient?.active) {
-      console.log("WebSocket already connected");
+    // Store callbacks
+    if (onConnect) connectCallbacks.push(onConnect);
+    if (onError) errorCallbacks.push(onError);
+
+    // If already fully connected, immediately call the onConnect callback
+    if (isFullyConnected && stompClient?.active) {
+      console.log("WebSocket already connected, calling callback immediately");
+      onConnect?.();
+      return;
+    }
+
+    // If client exists but not fully connected, it's still connecting - just wait for callbacks
+    if (stompClient) {
+      console.log("WebSocket is connecting...");
       return;
     }
 
@@ -25,17 +40,21 @@ export const websocketService = {
 
     stompClient.onConnect = () => {
       console.log("WebSocket connected");
-      onConnect?.();
+      isFullyConnected = true;
+      // Call all registered connect callbacks
+      connectCallbacks.forEach((cb) => cb());
     };
 
     stompClient.onStompError = (frame) => {
       console.error("STOMP error:", frame.headers["message"]);
-      onError?.(frame);
+      isFullyConnected = false;
+      errorCallbacks.forEach((cb) => cb(frame));
     };
 
     stompClient.onWebSocketError = (error) => {
       console.error("WebSocket error:", error);
-      onError?.(error);
+      isFullyConnected = false;
+      errorCallbacks.forEach((cb) => cb(error));
     };
 
     stompClient.activate();
@@ -45,7 +64,11 @@ export const websocketService = {
     if (stompClient?.active) {
       subscriptions.forEach((sub) => sub.unsubscribe());
       subscriptions.clear();
+      connectCallbacks.length = 0;
+      errorCallbacks.length = 0;
       stompClient.deactivate();
+      stompClient = null;
+      isFullyConnected = false;
       console.log("WebSocket disconnected");
     }
   },
@@ -95,6 +118,6 @@ export const websocketService = {
   },
 
   isConnected: (): boolean => {
-    return stompClient?.active ?? false;
+    return isFullyConnected && (stompClient?.active ?? false);
   },
 };

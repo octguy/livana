@@ -11,7 +11,7 @@ export function HomeDetailsPage() {
   const {
     guests,
     amenities,
-    facilities: storedFacilities,
+    facilities: _storedFacilities,
     setBasicInfo,
     setAmenities,
     setFacilities,
