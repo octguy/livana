@@ -15,6 +15,7 @@ interface ChatState {
   messages: MessageResponse[];
   unreadCount: number;
   isConnected: boolean;
+  isChatOpen: boolean;
   loading: boolean;
   sendingMessage: boolean;
 
@@ -43,6 +44,7 @@ interface ChatState {
   fetchUnreadCount: () => Promise<void>;
 
   // State management
+  setChatOpen: (open: boolean) => void;
   clearChat: () => void;
 }
 
@@ -52,6 +54,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   messages: [],
   unreadCount: 0,
   isConnected: false,
+  isChatOpen: false,
   loading: false,
   sendingMessage: false,
 
@@ -197,7 +200,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   addIncomingMessage: (message: ChatMessageDto) => {
-    const { currentConversation, conversations } = get();
+    const { currentConversation, conversations, isChatOpen } = get();
 
     // Create MessageResponse from ChatMessageDto
     const messageResponse: MessageResponse = {
@@ -216,11 +219,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
       createdAt: message.createdAt,
     };
 
-    // If this is the current conversation, add to messages
-    if (
+    // Check if user is currently viewing this conversation
+    const isViewingConversation =
+      isChatOpen &&
       currentConversation &&
-      currentConversation.id === message.conversationId
-    ) {
+      currentConversation.id === message.conversationId;
+
+    // If this is the current conversation and chat is open, add to messages
+    if (isViewingConversation) {
       set((state) => ({
         messages: [...state.messages, messageResponse],
       }));
@@ -235,7 +241,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
       set((state) => {
         const updatedConversations = state.conversations.map((conv) => {
           if (conv.id === message.conversationId) {
-            const isCurrentConv = currentConversation?.id === conv.id;
             return {
               ...conv,
               lastMessageContent:
@@ -245,7 +250,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
                   ? "[Hình ảnh]"
                   : "[Tệp đính kèm]",
               lastMessageAt: message.createdAt,
-              unreadCount: isCurrentConv
+              unreadCount: isViewingConversation
                 ? conv.unreadCount
                 : conv.unreadCount + 1,
             };
@@ -265,10 +270,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
         return {
           conversations: updatedConversations,
-          unreadCount:
-            currentConversation?.id === message.conversationId
-              ? state.unreadCount
-              : state.unreadCount + 1,
+          unreadCount: isViewingConversation
+            ? state.unreadCount
+            : state.unreadCount + 1,
         };
       });
     } else {
@@ -277,11 +281,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
       set((state) => ({ unreadCount: state.unreadCount + 1 }));
     }
 
-    // Show toast notification if not in current conversation
-    if (
-      !currentConversation ||
-      currentConversation.id !== message.conversationId
-    ) {
+    // Show toast notification if not viewing this conversation
+    if (!isViewingConversation) {
       toast.info(
         `${message.senderName}: ${message.content || "[Tệp đính kèm]"}`,
         {
@@ -323,12 +324,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
 
+  setChatOpen: (open: boolean) => {
+    set({ isChatOpen: open });
+    // Clear current conversation when closing chat
+    if (!open) {
+      set({ currentConversation: null, messages: [] });
+    }
+  },
+
   clearChat: () => {
     set({
       conversations: [],
       currentConversation: null,
       messages: [],
       unreadCount: 0,
+      isChatOpen: false,
     });
   },
 }));

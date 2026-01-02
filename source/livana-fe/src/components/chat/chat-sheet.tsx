@@ -54,6 +54,7 @@ export function ChatSheet({
     sendMessage,
     markMessagesAsRead,
     fetchUnreadCount,
+    setChatOpen,
   } = useChatStore();
 
   const [messageInput, setMessageInput] = useState("");
@@ -65,11 +66,14 @@ export function ChatSheet({
   // Connect to WebSocket and fetch conversations when opened
   useEffect(() => {
     if (open && user) {
+      setChatOpen(true);
       connect(user.id);
       fetchConversations();
       fetchUnreadCount();
+    } else if (!open) {
+      setChatOpen(false);
     }
-  }, [open, user, connect, fetchConversations, fetchUnreadCount]);
+  }, [open, user, connect, fetchConversations, fetchUnreadCount, setChatOpen]);
 
   // Open initial conversation if provided
   useEffect(() => {
