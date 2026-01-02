@@ -243,14 +243,37 @@ export function ChatSheet({
               </p>
             </div>
           )}
-          {msg.messageType === "IMAGE" && (
-            <div className="rounded-lg overflow-hidden">
+          {msg.messageType === "IMAGE" && msg.fileUrl && (
+            <div
+              className={cn(
+                "rounded-2xl overflow-hidden",
+                isMine ? "rounded-br-sm" : "rounded-bl-sm"
+              )}
+            >
               <img
-                src={msg.fileUrl || ""}
+                src={msg.fileUrl}
                 alt={msg.fileName || "Image"}
-                className="max-w-full max-h-60 object-cover cursor-pointer hover:opacity-90"
+                className="max-w-full max-h-60 object-cover cursor-pointer hover:opacity-90 transition-opacity"
                 onClick={() => window.open(msg.fileUrl || "", "_blank")}
+                onError={(e) => {
+                  // Fallback if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = "none";
+                  target.parentElement!.innerHTML = `<div class="flex items-center gap-2 px-3 py-2 bg-muted rounded-lg"><span class="text-sm">[Không thể tải hình ảnh]</span></div>`;
+                }}
               />
+            </div>
+          )}
+          {msg.messageType === "IMAGE" && !msg.fileUrl && (
+            <div
+              className={cn(
+                "px-3 py-2 rounded-2xl",
+                isMine
+                  ? "bg-primary text-primary-foreground rounded-br-sm"
+                  : "bg-muted rounded-bl-sm"
+              )}
+            >
+              <p className="text-sm">[Hình ảnh không khả dụng]</p>
             </div>
           )}
           {msg.messageType === "FILE" && (
