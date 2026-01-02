@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -28,4 +29,23 @@ public interface HomeBookingRepository extends JpaRepository<HomeBooking, UUID> 
         @Param("checkInTime") LocalDateTime checkInTime,
         @Param("checkOutTime") LocalDateTime checkOutTime
     );
+    
+    // Dashboard statistics queries
+    @Query("SELECT COUNT(hb) FROM HomeBooking hb WHERE hb.deletedAt IS NULL")
+    Long countAllActiveHomeBookings();
+    
+    @Query("SELECT COUNT(hb) FROM HomeBooking hb WHERE hb.createdAt >= :startDate AND hb.deletedAt IS NULL")
+    Long countHomeBookingsCreatedAfter(@Param("startDate") LocalDateTime startDate);
+    
+    @Query("SELECT COUNT(hb) FROM HomeBooking hb WHERE hb.createdAt >= :startDate AND hb.createdAt < :endDate AND hb.deletedAt IS NULL")
+    Long countHomeBookingsCreatedBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    
+    @Query("SELECT COALESCE(SUM(hb.totalPrice), 0) FROM HomeBooking hb WHERE hb.status = 'CONFIRMED' AND hb.deletedAt IS NULL")
+    BigDecimal sumAllHomeRevenue();
+    
+    @Query("SELECT COALESCE(SUM(hb.totalPrice), 0) FROM HomeBooking hb WHERE hb.status = 'CONFIRMED' AND hb.createdAt >= :startDate AND hb.deletedAt IS NULL")
+    BigDecimal sumHomeRevenueAfter(@Param("startDate") LocalDateTime startDate);
+    
+    @Query("SELECT COALESCE(SUM(hb.totalPrice), 0) FROM HomeBooking hb WHERE hb.status = 'CONFIRMED' AND hb.createdAt >= :startDate AND hb.createdAt < :endDate AND hb.deletedAt IS NULL")
+    BigDecimal sumHomeRevenueBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

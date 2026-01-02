@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,4 +27,23 @@ public interface ExperienceBookingRepository extends JpaRepository<ExperienceBoo
     @Query("SELECT COALESCE(SUM(eb.quantity), 0) FROM ExperienceBooking eb " +
            "WHERE eb.session.id = :sessionId AND eb.status != 'CANCELLED'")
     int countBookedParticipants(@Param("sessionId") UUID sessionId);
+    
+    // Dashboard statistics queries
+    @Query("SELECT COUNT(eb) FROM ExperienceBooking eb WHERE eb.deletedAt IS NULL")
+    Long countAllActiveExperienceBookings();
+    
+    @Query("SELECT COUNT(eb) FROM ExperienceBooking eb WHERE eb.createdAt >= :startDate AND eb.deletedAt IS NULL")
+    Long countExperienceBookingsCreatedAfter(@Param("startDate") LocalDateTime startDate);
+    
+    @Query("SELECT COUNT(eb) FROM ExperienceBooking eb WHERE eb.createdAt >= :startDate AND eb.createdAt < :endDate AND eb.deletedAt IS NULL")
+    Long countExperienceBookingsCreatedBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    
+    @Query("SELECT COALESCE(SUM(eb.totalPrice), 0) FROM ExperienceBooking eb WHERE eb.status = 'CONFIRMED' AND eb.deletedAt IS NULL")
+    BigDecimal sumAllExperienceRevenue();
+    
+    @Query("SELECT COALESCE(SUM(eb.totalPrice), 0) FROM ExperienceBooking eb WHERE eb.status = 'CONFIRMED' AND eb.createdAt >= :startDate AND eb.deletedAt IS NULL")
+    BigDecimal sumExperienceRevenueAfter(@Param("startDate") LocalDateTime startDate);
+    
+    @Query("SELECT COALESCE(SUM(eb.totalPrice), 0) FROM ExperienceBooking eb WHERE eb.status = 'CONFIRMED' AND eb.createdAt >= :startDate AND eb.createdAt < :endDate AND eb.deletedAt IS NULL")
+    BigDecimal sumExperienceRevenueBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

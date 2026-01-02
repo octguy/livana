@@ -13,6 +13,16 @@ export type {
   ChatMessageDto,
   ParticipantInfo,
 } from "./chatResponse";
+export type {
+  DashboardStatsResponse,
+  PeriodStatsResponse,
+  ComparisonStatsResponse,
+  DataPoint,
+  RevenueDataPoint,
+  ComparisonDataPoint,
+  RevenueComparisonDataPoint,
+  PeriodType,
+} from "./dashboardResponse";
 export type { ExperienceCategoryResponse } from "./experienceCategoryResponse";
 export type { ExperienceListingResponse } from "./experienceListingResponse";
 export type { FacilityResponse } from "./facilityResponse";

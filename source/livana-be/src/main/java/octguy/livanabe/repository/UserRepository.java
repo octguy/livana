@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,4 +36,14 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query(value = "select * from \"user\" where status = 'PENDING_VERIFICATION' and created_at + INTERVAL '24 hours' <= NOW();", nativeQuery = true)
     List<User> findPendingUserExceedOneDay();
+    
+    // Dashboard statistics queries
+    @Query("SELECT COUNT(u) FROM User u WHERE u.deletedAt IS NULL")
+    Long countAllActiveUsers();
+    
+    @Query("SELECT COUNT(u) FROM User u WHERE u.createdAt >= :startDate AND u.deletedAt IS NULL")
+    Long countUsersCreatedAfter(@Param("startDate") LocalDateTime startDate);
+    
+    @Query("SELECT COUNT(u) FROM User u WHERE u.createdAt >= :startDate AND u.createdAt < :endDate AND u.deletedAt IS NULL")
+    Long countUsersCreatedBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }
