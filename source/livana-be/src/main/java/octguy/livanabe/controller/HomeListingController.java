@@ -8,6 +8,10 @@ import octguy.livanabe.dto.response.HomeListingResponse;
 import octguy.livanabe.dto.response.ListingSearchResult;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.service.IHomeListingService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -127,6 +131,45 @@ public class HomeListingController {
                 HttpStatus.OK,
                 "Home listings search completed successfully",
                 results,
+                null
+        );
+
+        return ResponseEntity.ok(response);
+    }
+    
+    // ==================== Admin Endpoints ====================
+    
+    @GetMapping("/admin/paginated")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Page<HomeListingResponse>>> getAllHomeListingsPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<HomeListingResponse> homeListings = homeListingService.getAllHomeListingsPaginated(pageable);
+
+        ApiResponse<Page<HomeListingResponse>> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Home listings retrieved successfully",
+                homeListings,
+                null
+        );
+
+        return ResponseEntity.ok(response);
+    }
+    
+    @DeleteMapping("/admin/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> deleteHomeListing(@PathVariable UUID id) {
+        homeListingService.deleteHomeListing(id);
+
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Home listing deleted successfully",
+                null,
                 null
         );
 

@@ -22,6 +22,8 @@ import octguy.livanabe.repository.UserProfileRepository;
 import octguy.livanabe.service.IExperienceListingService;
 import octguy.livanabe.utils.GeoUtils;
 import octguy.livanabe.utils.SecurityUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -432,5 +434,34 @@ public class ExperienceListingServiceImpl implements IExperienceListingService {
         }
         results.sort(Comparator.comparingDouble(ListingSearchResult::getDistanceKm));
         return results;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ExperienceListingResponse> getAllExperienceListingsPaginated(Pageable pageable) {
+        log.info("Fetching paginated experience listings");
+        Page<ExperienceListing> listings = experienceListingRepository.findAll(pageable);
+        return listings.map(this::convertToResponse);
+    }
+    
+    @Override
+    @Transactional
+    public void deleteExperienceListing(UUID id) {
+        log.info("Deleting experience listing with id {}", id);
+        
+        ExperienceListing listing = experienceListingRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Experience listing not found with id {}", id);
+                    return new ResourceNotFoundException("Experience listing not found: " + id);
+                });
+        
+        // Delete related data first
+        experienceSessionRepository.deleteByExperienceListingId(id);
+        listingImageRepository.deleteByListingId(id);
+        
+        // Delete the listing
+        experienceListingRepository.delete(listing);
+        
+        log.info("Successfully deleted experience listing with id {}", id);
     }
 }

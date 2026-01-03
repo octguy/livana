@@ -129,3 +129,37 @@ export const searchExperienceListingsByLocation = async (
 
   return response.data;
 };
+
+// Admin functions
+export interface PaginatedResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+}
+
+export const getAllExperienceListingsPaginated = async (
+  page: number = 0,
+  size: number = 10,
+  sortBy: string = "createdAt",
+  sortDir: string = "desc"
+): Promise<ApiResponse<PaginatedResponse<ExperienceListingResponse>>> => {
+  const response = await api.get<
+    ApiResponse<PaginatedResponse<ExperienceListingResponse>>
+  >("/listings/experiences/admin/paginated", {
+    params: { page, size, sortBy, sortDir },
+  });
+  return response.data;
+};
+
+export const deleteExperienceListing = async (
+  id: string
+): Promise<ApiResponse<void>> => {
+  const response = await api.delete<ApiResponse<void>>(
+    `/listings/experiences/admin/${id}`
+  );
+  return response.data;
+};

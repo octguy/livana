@@ -6,6 +6,9 @@ import octguy.livanabe.dto.request.UpdateExperienceListingRequest;
 import octguy.livanabe.dto.response.ExperienceListingResponse;
 import octguy.livanabe.dto.response.ListingSearchResult;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -17,9 +20,13 @@ public interface IExperienceListingService {
     
     List<ExperienceListingResponse> getAllExperienceListings();
     
+    Page<ExperienceListingResponse> getAllExperienceListingsPaginated(Pageable pageable);
+    
     ExperienceListingResponse getExperienceListingById(UUID id);
     
     List<ExperienceListingResponse> getExperienceListingsByHostId(UUID hostId);
     
     List<ListingSearchResult<ExperienceListingResponse>> searchByLocation(LocationSearchRequest request);
+    
+    void deleteExperienceListing(UUID id);
 }

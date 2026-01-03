@@ -8,6 +8,10 @@ import octguy.livanabe.dto.response.ExperienceListingResponse;
 import octguy.livanabe.dto.response.ListingSearchResult;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.service.IExperienceListingService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -131,6 +135,45 @@ public class ExperienceListingController {
                 HttpStatus.OK,
                 "Experience listings search completed successfully",
                 results,
+                null
+        );
+
+        return ResponseEntity.ok(response);
+    }
+    
+    // ==================== Admin Endpoints ====================
+    
+    @GetMapping("/admin/paginated")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Page<ExperienceListingResponse>>> getAllExperienceListingsPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<ExperienceListingResponse> listings = experienceListingService.getAllExperienceListingsPaginated(pageable);
+
+        ApiResponse<Page<ExperienceListingResponse>> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Experience listings retrieved successfully",
+                listings,
+                null
+        );
+
+        return ResponseEntity.ok(response);
+    }
+    
+    @DeleteMapping("/admin/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> deleteExperienceListing(@PathVariable UUID id) {
+        experienceListingService.deleteExperienceListing(id);
+
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Experience listing deleted successfully",
+                null,
                 null
         );
 

@@ -18,6 +18,8 @@ import octguy.livanabe.repository.*;
 import octguy.livanabe.service.IHomeListingService;
 import octguy.livanabe.utils.GeoUtils;
 import octguy.livanabe.utils.SecurityUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -449,5 +451,35 @@ public class HomeListingServiceImpl implements IHomeListingService {
         }
         results.sort(Comparator.comparingDouble(ListingSearchResult::getDistanceKm));
         return results;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Page<HomeListingResponse> getAllHomeListingsPaginated(Pageable pageable) {
+        log.info("Fetching paginated home listings");
+        Page<HomeListing> homeListings = homeListingRepository.findAll(pageable);
+        return homeListings.map(this::convertToResponse);
+    }
+    
+    @Override
+    @Transactional
+    public void deleteHomeListing(UUID id) {
+        log.info("Deleting home listing with id {}", id);
+        
+        HomeListing homeListing = homeListingRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Home listing not found with id {}", id);
+                    return new ResourceNotFoundException("Home listing not found");
+                });
+        
+        // Delete related data first
+        homeFacilityRepository.deleteByListingId(id);
+        homeAmenityRepository.deleteByListingId(id);
+        listingImageRepository.deleteByListingId(id);
+        
+        // Delete the listing (soft delete via @SQLRestriction)
+        homeListingRepository.delete(homeListing);
+        
+        log.info("Successfully deleted home listing with id {}", id);
     }
 }

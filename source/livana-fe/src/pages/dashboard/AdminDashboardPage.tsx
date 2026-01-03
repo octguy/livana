@@ -23,6 +23,7 @@ import {
   FacilityManagement,
   AmenityManagement,
   DashboardOverview,
+  ListingManagement,
 } from "@/components/admin";
 import { useAuthStore } from "@/stores/useAuthStore";
 import {
@@ -37,12 +38,14 @@ import {
   PanelLeft,
   Activity,
   Settings,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type SectionId =
   | "overview"
+  | "listings"
   | "interests"
   | "experiences"
   | "properties"
@@ -65,6 +68,12 @@ const AdminDashboardPage = () => {
       label: "Tổng quan",
       icon: LayoutDashboard,
       description: "Xem tổng quan hệ thống",
+    },
+    {
+      id: "listings",
+      label: "Quản lý Listings",
+      icon: Building2,
+      description: "Quản lý tất cả listings",
     },
     {
       id: "interests",
@@ -284,6 +293,7 @@ const AdminDashboardPage = () => {
               <div className="p-6">
                 {activeSection === "overview" && <DashboardOverview />}
 
+                {activeSection === "listings" && <ListingManagement />}
                 {activeSection === "interests" && <InterestManagement />}
                 {activeSection === "experiences" && (
                   <ExperienceCategoryManagement />
