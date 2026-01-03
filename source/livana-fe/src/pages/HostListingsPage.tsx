@@ -52,7 +52,7 @@ export function HostListingsPage() {
           setHostName(experienceResponse.data[0].host.hostDisplayName);
         }
       } catch (error) {
-        toast.error("Không thể tải danh sách tin đăng của chủ nhà");
+        toast.error("Failed to load host's listings");
         console.error("Error fetching listings:", error);
       } finally {
         setLoading(false);
@@ -69,15 +69,15 @@ export function HostListingsPage() {
         <div className="container max-w-7xl mx-auto py-8 px-6">
           <Button variant="ghost" className="mb-6" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Quay lại
+            Go back
           </Button>
 
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2">
-              {hostName ? `Tin đăng của ${hostName}` : "Tin đăng của chủ nhà"}
+              {hostName ? `Listings by ${hostName}` : "Host's listings"}
             </h1>
             <p className="text-muted-foreground">
-              {homeListings.length + experienceListings.length} tin đăng
+              {homeListings.length + experienceListings.length} listings
             </p>
           </div>
 
@@ -85,14 +85,14 @@ export function HostListingsPage() {
             <TabsList className="mb-6">
               <TabsTrigger value="home" className="flex items-center gap-2">
                 <Home className="h-4 w-4" />
-                Nhà ({homeListings.length})
+                Homes ({homeListings.length})
               </TabsTrigger>
               <TabsTrigger
                 value="experience"
                 className="flex items-center gap-2"
               >
                 <Sparkles className="h-4 w-4" />
-                Trải nghiệm ({experienceListings.length})
+                Experiences ({experienceListings.length})
               </TabsTrigger>
             </TabsList>
 
@@ -112,7 +112,7 @@ export function HostListingsPage() {
               ) : homeListings.length === 0 ? (
                 <div className="text-center py-20">
                   <p className="text-xl text-muted-foreground">
-                    Chủ nhà này chưa có tin đăng nào
+                    This host doesn't have any listings yet
                   </p>
                 </div>
               ) : (
@@ -133,7 +133,7 @@ export function HostListingsPage() {
                         ) : (
                           <div className="w-full h-full bg-muted flex items-center justify-center">
                             <span className="text-muted-foreground">
-                              Không có ảnh
+                              No image
                             </span>
                           </div>
                         )}
@@ -146,7 +146,7 @@ export function HostListingsPage() {
                           <span className="text-sm font-bold whitespace-nowrap ml-2">
                             ${listing.price}
                             <span className="text-xs text-muted-foreground font-normal">
-                              /đêm
+                              /night
                             </span>
                           </span>
                         </div>
@@ -160,7 +160,7 @@ export function HostListingsPage() {
                         </div>
                         <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                           <Users className="h-3 w-3" />
-                          <span>{listing.capacity} khách</span>
+                          <span>{listing.capacity} guests</span>
                         </div>
                       </CardContent>
                     </Card>
@@ -185,7 +185,7 @@ export function HostListingsPage() {
               ) : experienceListings.length === 0 ? (
                 <div className="text-center py-20">
                   <p className="text-xl text-muted-foreground">
-                    Chủ nhà này chưa có trải nghiệm nào
+                    This host doesn't have any experiences yet
                   </p>
                 </div>
               ) : (
@@ -208,7 +208,7 @@ export function HostListingsPage() {
                         ) : (
                           <div className="w-full h-full bg-muted flex items-center justify-center">
                             <span className="text-muted-foreground">
-                              Không có ảnh
+                              No image
                             </span>
                           </div>
                         )}
@@ -235,14 +235,14 @@ export function HostListingsPage() {
 
                           <div className="flex items-center gap-1">
                             <Users className="h-3 w-3 flex-shrink-0" />
-                            <span>Tối đa {listing.capacity} người</span>
+                            <span>Up to {listing.capacity} guests</span>
                           </div>
 
                           {listing.sessions && listing.sessions.length > 0 && (
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3 flex-shrink-0" />
                               <span>
-                                {listing.sessions.length} buổi khả dụng
+                                {listing.sessions.length} sessions available
                               </span>
                             </div>
                           )}
@@ -252,7 +252,7 @@ export function HostListingsPage() {
                           <span className="text-sm font-bold">
                             ${listing.price}
                             <span className="text-xs text-muted-foreground font-normal">
-                              /người
+                              /person
                             </span>
                           </span>
                         </div>

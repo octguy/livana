@@ -54,7 +54,7 @@ export const useInterestStore = create<InterestState>((set, get) => ({
       );
       return response;
     } catch (error) {
-      console.error("Lấy tất cả sở thích thất bại:", error);
+      console.error("Failed to get all interests:", error);
       throw error;
     } finally {
       set({ loading: false });
@@ -68,7 +68,7 @@ export const useInterestStore = create<InterestState>((set, get) => ({
       get().setListInterests(response.data || []);
       return response;
     } catch (error) {
-      console.error("Lấy tất cả sở thích thất bại:", error);
+      console.error("Failed to get all interests:", error);
       throw error;
     } finally {
       set({ loading: false });
@@ -79,11 +79,11 @@ export const useInterestStore = create<InterestState>((set, get) => ({
     try {
       set({ loading: true });
       const response = await userService.getUserInterests();
-      // console.log("Lấy sở thích người dùng response:", response);
+      // console.log("Get user interests response:", response);
       get().setUserInterests(response.data);
       return response;
     } catch (error) {
-      console.error("Lấy sở thích người dùng thất bại:", error);
+      console.error("Failed to get user interests:", error);
       throw error;
     } finally {
       set({ loading: false });
@@ -94,7 +94,7 @@ export const useInterestStore = create<InterestState>((set, get) => ({
     try {
       const response = await userService.updateUserInterests(interestIds);
       get().setUserInterests(response.data);
-      console.log("Cập nhật sở thích người dùng response:", response);
+      console.log("Update user interests response:", response);
       return response;
     } catch (error) {
       console.error("Error updating user interests:", error);

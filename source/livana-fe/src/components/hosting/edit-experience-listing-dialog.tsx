@@ -98,7 +98,7 @@ export function EditExperienceListingDialog({
       const paginatedData = response.data as any;
       setCategories(paginatedData.content || []);
     } catch (error) {
-      toast.error("Không thể tải danh mục trải nghiệm");
+      toast.error("Failed to load experience categories");
       console.error(error);
     } finally {
       setLoadingData(false);
@@ -138,9 +138,11 @@ export function EditExperienceListingDialog({
       }
 
       setImages((prev) => [...prev, ...newImages]);
-      toast.success(`Đã tải lên ${files.length} ảnh`);
+      toast.success(
+        `Uploaded ${files.length} image${files.length > 1 ? "s" : ""}`
+      );
     } catch (error) {
-      toast.error("Không thể tải ảnh lên");
+      toast.error("Failed to upload images");
       console.error(error);
     } finally {
       setUploadingImages(false);
@@ -152,19 +154,19 @@ export function EditExperienceListingDialog({
 
   const handleSubmit = async () => {
     if (!title.trim()) {
-      toast.error("Vui lòng nhập tiêu đề");
+      toast.error("Please enter a title");
       return;
     }
     if (!price || parseFloat(price) <= 0) {
-      toast.error("Vui lòng nhập giá hợp lệ");
+      toast.error("Please enter a valid price");
       return;
     }
     if (!categoryId) {
-      toast.error("Vui lòng chọn danh mục");
+      toast.error("Please select a category");
       return;
     }
     if (images.length === 0) {
-      toast.error("Vui lòng thêm ít nhất một ảnh");
+      toast.error("Please add at least one image");
       return;
     }
 
@@ -190,11 +192,11 @@ export function EditExperienceListingDialog({
           order: img.order,
         })),
       });
-      toast.success("Cập nhật trải nghiệm thành công");
+      toast.success("Experience updated successfully");
       onSuccess();
       onOpenChange(false);
     } catch (error) {
-      toast.error("Không thể cập nhật trải nghiệm");
+      toast.error("Failed to update experience");
       console.error(error);
     } finally {
       setLoading(false);
@@ -205,7 +207,7 @@ export function EditExperienceListingDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Chỉnh sửa trải nghiệm</DialogTitle>
+          <DialogTitle className="text-2xl">Edit experience</DialogTitle>
         </DialogHeader>
 
         {loadingData ? (
@@ -217,7 +219,7 @@ export function EditExperienceListingDialog({
             <div className="space-y-6 py-4">
               {/* Images Section */}
               <div className="space-y-2">
-                <Label>Hình ảnh</Label>
+                <Label>Images</Label>
                 <div className="grid grid-cols-4 gap-2">
                   {images.map((img, index) => (
                     <div
@@ -226,7 +228,7 @@ export function EditExperienceListingDialog({
                     >
                       <img
                         src={img.url}
-                        alt={`Ảnh ${index + 1}`}
+                        alt={`Image ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
                       <button
@@ -253,7 +255,7 @@ export function EditExperienceListingDialog({
                     ) : (
                       <>
                         <Upload className="h-6 w-6 text-gray-400" />
-                        <span className="text-xs text-gray-500">Thêm ảnh</span>
+                        <span className="text-xs text-gray-500">Add image</span>
                       </>
                     )}
                   </button>
@@ -272,23 +274,23 @@ export function EditExperienceListingDialog({
 
               {/* Title */}
               <div className="space-y-2">
-                <Label htmlFor="title">Tiêu đề</Label>
+                <Label htmlFor="title">Title</Label>
                 <Input
                   id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Nhập tiêu đề trải nghiệm"
+                  placeholder="Enter experience title"
                 />
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description">Mô tả</Label>
+                <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Mô tả về trải nghiệm của bạn"
+                  placeholder="Describe your experience"
                   rows={4}
                 />
               </div>
@@ -296,7 +298,7 @@ export function EditExperienceListingDialog({
               {/* Price and Capacity */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Giá (₫/người)</Label>
+                  <Label htmlFor="price">Price ($/person)</Label>
                   <Input
                     id="price"
                     type="number"
@@ -306,7 +308,7 @@ export function EditExperienceListingDialog({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="capacity">Số người tối đa</Label>
+                  <Label htmlFor="capacity">Maximum guests</Label>
                   <Input
                     id="capacity"
                     type="number"
@@ -319,21 +321,21 @@ export function EditExperienceListingDialog({
 
               {/* Address */}
               <div className="space-y-2">
-                <Label htmlFor="address">Địa chỉ</Label>
+                <Label htmlFor="address">Address</Label>
                 <Input
                   id="address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Nhập địa chỉ"
+                  placeholder="Enter address"
                 />
               </div>
 
               {/* Category */}
               <div className="space-y-2">
-                <Label>Danh mục trải nghiệm</Label>
+                <Label>Experience category</Label>
                 <Select value={categoryId} onValueChange={setCategoryId}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn danh mục" />
+                    <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((category) => (
@@ -353,14 +355,14 @@ export function EditExperienceListingDialog({
 
         <div className="flex justify-end gap-3 pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Hủy
+            Cancel
           </Button>
           <Button
             onClick={handleSubmit}
             disabled={loading || loadingData || uploadingImages}
           >
             {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            Lưu thay đổi
+            Save changes
           </Button>
         </div>
       </DialogContent>

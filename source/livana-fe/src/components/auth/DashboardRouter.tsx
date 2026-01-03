@@ -15,7 +15,7 @@ export function DashboardRouter() {
   if (!user || loading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        Đang tải trang...
+        Loading page...
       </div>
     );
   }

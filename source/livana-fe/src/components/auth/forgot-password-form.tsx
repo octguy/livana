@@ -17,7 +17,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
 const forgotPasswordRequestSchema = z.object({
-  email: z.email("Email không hợp lệ"),
+  email: z.email("Invalid email"),
 });
 
 type ForgotPasswordRequestValues = z.infer<typeof forgotPasswordRequestSchema>;
@@ -54,13 +54,13 @@ export function ForgotPasswordForm({
       // Prefer friendly message for 401, otherwise server message or generic
       const status = error?.response?.status ?? error?.status;
       if (status === 401 || status === 404) {
-        setForgotPasswordError("Email không tồn tại trong hệ thống.");
+        setForgotPasswordError("Email does not exist in the system.");
       } else if (status === 500) {
-        setForgotPasswordError("Lỗi máy chủ. Vui lòng thử lại sau.");
+        setForgotPasswordError("Server error. Please try again later.");
       } else if (error?.response?.data?.message) {
         setForgotPasswordError(String(error.response.data.message));
       } else {
-        setForgotPasswordError("Đăng nhập không thành công. Vui lòng thử lại.");
+        setForgotPasswordError("Request failed. Please try again.");
       }
     }
   };
@@ -69,9 +69,9 @@ export function ForgotPasswordForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="border-border">
         <CardHeader>
-          <CardTitle>Quên mật khẩu</CardTitle>
+          <CardTitle>Forgot Password</CardTitle>
           <CardDescription>
-            Nhập email của bạn để khôi phục mật khẩu
+            Enter your email to recover your password
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -108,16 +108,16 @@ export function ForgotPasswordForm({
                   {isSubmitting && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  {isSubmitting ? "Đang xử lý..." : "Khôi phục mật khẩu"}
+                  {isSubmitting ? "Processing..." : "Reset Password"}
                 </Button>
               </Field>
               <div className="text-center text-sm">
-                Chưa có tài khoản?{" "}
+                Don't have an account?{" "}
                 <a
                   href="/signup"
                   className="underline underline-offset-4 hover:text-primary"
                 >
-                  Đăng ký ngay
+                  Sign up now
                 </a>
               </div>
             </FieldGroup>

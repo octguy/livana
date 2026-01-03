@@ -11,10 +11,9 @@ export function ProfilePage() {
   return (
     <MainLayout>
       <div className="container max-w-4xl py-8">
-        <h1 className="text-3xl font-semibold mb-2">Hồ sơ của tôi</h1>
+        <h1 className="text-3xl font-semibold mb-2">My Profile</h1>
         <p className="text-muted-foreground">
-          Người dùng và chủ nhà có thể xem hồ sơ của bạn để xây dựng lòng tin
-          trong cộng đồng.
+          Users and hosts can view your profile to build trust in the community.
         </p>
 
         <ProfileAvatar />
@@ -24,7 +23,7 @@ export function ProfilePage() {
         {/* Action Button */}
         <div className="flex justify-end">
           <Button type="button" size="lg">
-            Lưu thay đổi
+            Save changes
           </Button>
         </div>
       </div>

@@ -34,7 +34,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { format } from "date-fns";
-import { vi } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,7 +58,7 @@ const getStatusBadge = (status: BookingStatus) => {
           variant="outline"
           className="bg-yellow-50 text-yellow-700 border-yellow-200"
         >
-          Chờ xác nhận
+          Pending
         </Badge>
       );
     case "CONFIRMED":
@@ -67,7 +67,7 @@ const getStatusBadge = (status: BookingStatus) => {
           variant="outline"
           className="bg-green-50 text-green-700 border-green-200"
         >
-          Đã xác nhận
+          Confirmed
         </Badge>
       );
     case "CANCELLED":
@@ -76,7 +76,7 @@ const getStatusBadge = (status: BookingStatus) => {
           variant="outline"
           className="bg-red-50 text-red-700 border-red-200"
         >
-          Đã hủy
+          Cancelled
         </Badge>
       );
     default:
@@ -85,15 +85,15 @@ const getStatusBadge = (status: BookingStatus) => {
 };
 
 const formatDateTime = (dateString: string) => {
-  return format(new Date(dateString), "HH:mm dd/MM/yyyy", { locale: vi });
+  return format(new Date(dateString), "HH:mm MM/dd/yyyy", { locale: enUS });
 };
 
 const formatDate = (dateString: string) => {
-  return format(new Date(dateString), "dd/MM/yyyy", { locale: vi });
+  return format(new Date(dateString), "MM/dd/yyyy", { locale: enUS });
 };
 
 const formatPrice = (value: number) => {
-  return new Intl.NumberFormat("vi-VN").format(value);
+  return new Intl.NumberFormat("en-US").format(value);
 };
 
 export function MyBookingsPage() {
@@ -158,7 +158,7 @@ export function MyBookingsPage() {
       setHomeBookings(homeResponse.data.data || []);
       setExperienceBookings(experienceResponse.data.data || []);
     } catch (error) {
-      toast.error("Không thể tải danh sách đặt chỗ");
+      toast.error("Unable to load bookings");
       console.error("Error fetching bookings:", error);
     } finally {
       setLoading(false);
@@ -169,10 +169,10 @@ export function MyBookingsPage() {
     setCancellingId(bookingId);
     try {
       await cancelHomeBooking(bookingId);
-      toast.success("Đã hủy đặt phòng thành công");
+      toast.success("Home booking cancelled successfully");
       fetchBookings();
     } catch (error) {
-      toast.error("Không thể hủy đặt phòng");
+      toast.error("Unable to cancel home booking");
       console.error("Error cancelling booking:", error);
     } finally {
       setCancellingId(null);
@@ -183,10 +183,10 @@ export function MyBookingsPage() {
     setCancellingId(bookingId);
     try {
       await cancelExperienceBooking(bookingId);
-      toast.success("Đã hủy đặt trải nghiệm thành công");
+      toast.success("Experience booking cancelled successfully");
       fetchBookings();
     } catch (error) {
-      toast.error("Không thể hủy đặt trải nghiệm");
+      toast.error("Unable to cancel experience booking");
       console.error("Error cancelling booking:", error);
     } finally {
       setCancellingId(null);
@@ -201,12 +201,12 @@ export function MyBookingsPage() {
       <div className="min-h-screen bg-background">
         <div className="container max-w-7xl mx-auto py-8 px-6">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Đặt chỗ của tôi</h1>
+            <h1 className="text-4xl font-bold mb-2">My Bookings</h1>
             <p className="text-muted-foreground">
-              {totalBookings} tổng số đặt chỗ
+              {totalBookings} total bookings
               {" • "}
-              {homeBookings.length} nhà ở{" • "}
-              {experienceBookings.length} trải nghiệm
+              {homeBookings.length} homes{" • "}
+              {experienceBookings.length} experiences
             </p>
           </div>
 
@@ -220,14 +220,14 @@ export function MyBookingsPage() {
             <TabsList className="mb-6">
               <TabsTrigger value="home" className="flex items-center gap-2">
                 <Home className="h-4 w-4" />
-                Nhà ở ({homeBookings.length})
+                Homes ({homeBookings.length})
               </TabsTrigger>
               <TabsTrigger
                 value="experience"
                 className="flex items-center gap-2"
               >
                 <Sparkles className="h-4 w-4" />
-                Trải nghiệm ({experienceBookings.length})
+                Experiences ({experienceBookings.length})
               </TabsTrigger>
             </TabsList>
 
@@ -240,7 +240,7 @@ export function MyBookingsPage() {
                 className="flex items-center gap-2"
               >
                 <List className="h-4 w-4" />
-                Tất cả (
+                All (
                 {activeTab === "home"
                   ? homeBookings.length
                   : experienceBookings.length}
@@ -255,7 +255,7 @@ export function MyBookingsPage() {
                 className="flex items-center gap-2"
               >
                 <Clock className="h-4 w-4" />
-                Chờ xác nhận (
+                Pending (
                 {activeTab === "home"
                   ? homeStatusCounts.PENDING
                   : experienceStatusCounts.PENDING}
@@ -272,7 +272,7 @@ export function MyBookingsPage() {
                 className="flex items-center gap-2"
               >
                 <CheckCircle className="h-4 w-4" />
-                Đã xác nhận (
+                Confirmed (
                 {activeTab === "home"
                   ? homeStatusCounts.CONFIRMED
                   : experienceStatusCounts.CONFIRMED}
@@ -289,7 +289,7 @@ export function MyBookingsPage() {
                 className="flex items-center gap-2"
               >
                 <Ban className="h-4 w-4" />
-                Đã hủy (
+                Cancelled (
                 {activeTab === "home"
                   ? homeStatusCounts.CANCELLED
                   : experienceStatusCounts.CANCELLED}
@@ -315,17 +315,17 @@ export function MyBookingsPage() {
                   <div className="max-w-md mx-auto">
                     <h2 className="text-2xl font-semibold mb-4">
                       {statusFilter === "ALL"
-                        ? "Bạn chưa có đặt chỗ nhà ở nào"
-                        : `Không có đặt chỗ nào với trạng thái này`}
+                        ? "You don't have any home bookings yet"
+                        : `No bookings with this status`}
                     </h2>
                     <p className="text-muted-foreground mb-6">
                       {statusFilter === "ALL"
-                        ? "Khám phá các địa điểm tuyệt vời và đặt chỗ ngay"
-                        : "Thử chọn trạng thái khác để xem đặt chỗ"}
+                        ? "Explore amazing places and book now"
+                        : "Try selecting a different status to view bookings"}
                     </p>
                     {statusFilter === "ALL" && (
                       <Button onClick={() => navigate("/")} size="lg">
-                        Khám phá nhà ở
+                        Explore homes
                       </Button>
                     )}
                   </div>
@@ -344,7 +344,7 @@ export function MyBookingsPage() {
                               {booking.homeListingTitle}
                             </CardTitle>
                             <p className="text-sm text-muted-foreground">
-                              Mã đặt chỗ: {booking.id.slice(0, 8)}...
+                              Booking ID: {booking.id.slice(0, 8)}...
                             </p>
                           </div>
                           {getStatusBadge(booking.status)}
@@ -356,7 +356,7 @@ export function MyBookingsPage() {
                             <Calendar className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">
-                                Nhận phòng
+                                Check-in
                               </p>
                               <p className="font-medium">
                                 {formatDateTime(booking.checkInTime)}
@@ -367,7 +367,7 @@ export function MyBookingsPage() {
                             <Calendar className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">
-                                Trả phòng
+                                Check-out
                               </p>
                               <p className="font-medium">
                                 {formatDateTime(booking.checkOutTime)}
@@ -378,25 +378,26 @@ export function MyBookingsPage() {
                             <Users className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">
-                                Số khách
+                                Guests
                               </p>
                               <p className="font-medium">
-                                {booking.guests} khách
+                                {booking.guests}{" "}
+                                {booking.guests === 1 ? "guest" : "guests"}
                               </p>
                             </div>
                           </div>
                           <div>
                             <p className="text-xs text-muted-foreground">
-                              Tổng tiền
+                              Total
                             </p>
                             <p className="font-bold text-lg">
-                              ₫{formatPrice(booking.totalPrice)}
+                              ${formatPrice(booking.totalPrice)}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center justify-between border-t pt-4">
                           <p className="text-sm text-muted-foreground">
-                            Đặt ngày: {formatDate(booking.createdAt)}
+                            Booked on: {formatDate(booking.createdAt)}
                           </p>
                           <div className="flex gap-2">
                             <Button
@@ -407,7 +408,7 @@ export function MyBookingsPage() {
                               }
                             >
                               <Eye className="h-4 w-4 mr-1" />
-                              Xem tin đăng
+                              View listing
                             </Button>
                             {booking.status !== "CANCELLED" && (
                               <AlertDialog>
@@ -418,28 +419,28 @@ export function MyBookingsPage() {
                                     disabled={cancellingId === booking.id}
                                   >
                                     <X className="h-4 w-4 mr-1" />
-                                    Hủy đặt
+                                    Cancel
                                   </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
                                     <AlertDialogTitle>
-                                      Xác nhận hủy đặt phòng?
+                                      Cancel home booking?
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Bạn có chắc chắn muốn hủy đặt phòng này?
-                                      Hành động này không thể hoàn tác.
+                                      Are you sure you want to cancel this
+                                      booking? This action cannot be undone.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Không</AlertDialogCancel>
+                                    <AlertDialogCancel>No</AlertDialogCancel>
                                     <AlertDialogAction
                                       onClick={() =>
                                         handleCancelHomeBooking(booking.id)
                                       }
                                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                     >
-                                      Xác nhận hủy
+                                      Confirm cancel
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
@@ -472,20 +473,20 @@ export function MyBookingsPage() {
                   <div className="max-w-md mx-auto">
                     <h2 className="text-2xl font-semibold mb-4">
                       {statusFilter === "ALL"
-                        ? "Bạn chưa có đặt chỗ trải nghiệm nào"
-                        : `Không có đặt chỗ nào với trạng thái này`}
+                        ? "You don't have any experience bookings yet"
+                        : `No bookings with this status`}
                     </h2>
                     <p className="text-muted-foreground mb-6">
                       {statusFilter === "ALL"
-                        ? "Khám phá các trải nghiệm độc đáo và đặt chỗ ngay"
-                        : "Thử chọn trạng thái khác để xem đặt chỗ"}
+                        ? "Explore unique experiences and book now"
+                        : "Try selecting a different status to view bookings"}
                     </p>
                     {statusFilter === "ALL" && (
                       <Button
                         onClick={() => navigate("/experiences")}
                         size="lg"
                       >
-                        Khám phá trải nghiệm
+                        Explore experiences
                       </Button>
                     )}
                   </div>
@@ -504,7 +505,7 @@ export function MyBookingsPage() {
                               {booking.experienceListingTitle}
                             </CardTitle>
                             <p className="text-sm text-muted-foreground">
-                              Mã đặt chỗ: {booking.id.slice(0, 8)}...
+                              Booking ID: {booking.id.slice(0, 8)}...
                             </p>
                           </div>
                           {getStatusBadge(booking.status)}
@@ -516,7 +517,7 @@ export function MyBookingsPage() {
                             <Calendar className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">
-                                Bắt đầu
+                                Start
                               </p>
                               <p className="font-medium">
                                 {formatDateTime(booking.sessionStartTime)}
@@ -527,7 +528,7 @@ export function MyBookingsPage() {
                             <Calendar className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">
-                                Kết thúc
+                                End
                               </p>
                               <p className="font-medium">
                                 {formatDateTime(booking.sessionEndTime)}
@@ -538,25 +539,26 @@ export function MyBookingsPage() {
                             <Users className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">
-                                Số người
+                                Participants
                               </p>
                               <p className="font-medium">
-                                {booking.quantity} người
+                                {booking.quantity}{" "}
+                                {booking.quantity === 1 ? "person" : "people"}
                               </p>
                             </div>
                           </div>
                           <div>
                             <p className="text-xs text-muted-foreground">
-                              Tổng tiền
+                              Total
                             </p>
                             <p className="font-bold text-lg">
-                              ₫{formatPrice(booking.totalPrice)}
+                              ${formatPrice(booking.totalPrice)}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center justify-between border-t pt-4">
                           <p className="text-sm text-muted-foreground">
-                            Đặt ngày: {formatDate(booking.createdAt)}
+                            Booked on: {formatDate(booking.createdAt)}
                           </p>
                           <div className="flex gap-2">
                             <Button
@@ -569,7 +571,7 @@ export function MyBookingsPage() {
                               }
                             >
                               <Eye className="h-4 w-4 mr-1" />
-                              Xem tin đăng
+                              View listing
                             </Button>
                             {booking.status !== "CANCELLED" && (
                               <AlertDialog>
@@ -580,21 +582,22 @@ export function MyBookingsPage() {
                                     disabled={cancellingId === booking.id}
                                   >
                                     <X className="h-4 w-4 mr-1" />
-                                    Hủy đặt
+                                    Cancel
                                   </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
                                     <AlertDialogTitle>
-                                      Xác nhận hủy đặt trải nghiệm?
+                                      Cancel experience booking?
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Bạn có chắc chắn muốn hủy đặt trải nghiệm
-                                      này? Hành động này không thể hoàn tác.
+                                      Are you sure you want to cancel this
+                                      experience booking? This action cannot be
+                                      undone.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Không</AlertDialogCancel>
+                                    <AlertDialogCancel>No</AlertDialogCancel>
                                     <AlertDialogAction
                                       onClick={() =>
                                         handleCancelExperienceBooking(
@@ -603,7 +606,7 @@ export function MyBookingsPage() {
                                       }
                                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                     >
-                                      Xác nhận hủy
+                                      Confirm cancel
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>

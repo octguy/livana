@@ -13,16 +13,16 @@ import { PASSWORD_REGEX } from "@/constant/regex";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
 const signUpSchema = z.object({
-  firstname: z.string().min(1, "Tên bắt buộc phải có"),
-  lastname: z.string().min(1, "Họ bắt buộc phải có"),
-  username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
-  email: z.email("Email không hợp lệ"),
+  firstname: z.string().min(1, "First name is required"),
+  lastname: z.string().min(1, "Last name is required"),
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.email("Invalid email"),
   password: z
     .string()
-    .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+    .min(8, "Password must be at least 8 characters")
     .regex(
       PASSWORD_REGEX,
-      "Mật khẩu phải có ít nhất một số, 1 chữ hoa, 1 chữ cái đặc biệt"
+      "Password must have at least one number, one uppercase letter, and one special character"
     ),
 });
 
@@ -63,13 +63,13 @@ export function SignupForm({
     } catch (error: any) {
       const status = error?.response?.status ?? error?.status;
       if (status === 409) {
-        setSignupError("Tên đăng nhập hoặc email đã tồn tại");
+        setSignupError("Username or email already exists");
       } else if (status === 500) {
-        setSignupError("Lỗi máy chủ. Vui lòng thử lại sau.");
+        setSignupError("Server error. Please try again later.");
       } else if (error?.response?.data?.message) {
         setSignupError(String(error.response.data.message));
       } else {
-        setSignupError("Đăng ký không thành công. Vui lòng thử lại.");
+        setSignupError("Sign up failed. Please try again.");
       }
     }
   };
@@ -86,13 +86,13 @@ export function SignupForm({
                   <img src="/public/vite.svg" alt="logo" />
                 </a>
 
-                <h1 className="text-2xl font-bold">Tạo tài khoản Livana</h1>
+                <h1 className="text-2xl font-bold">Create a Livana Account</h1>
                 <p className="text-muted-foreground text-balance">
-                  Chào mừng bạn! Hãy đăng ký để bắt đầu!
+                  Welcome! Sign up to get started!
                 </p>
               </div>
 
-              {/* họ & tên */}
+              {/* name fields */}
               <div className="grid grid-cols-2 gap-3">
                 {/* Show signup error above the name fields */}
                 {signupError && (
@@ -105,7 +105,7 @@ export function SignupForm({
 
                 <div className="space-y-2">
                   <Label htmlFor="lastname" className="block text-sm">
-                    Họ
+                    Last Name
                   </Label>
                   <Input
                     type="text"
@@ -126,7 +126,7 @@ export function SignupForm({
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="firstname" className="block text-sm">
-                    Tên
+                    First Name
                   </Label>
                   <Input
                     type="text"
@@ -149,7 +149,7 @@ export function SignupForm({
               {/* username */}
               <div className="flex flex-col gap-3">
                 <Label htmlFor="username" className="block text-sm">
-                  Tên đăng nhập
+                  Username
                 </Label>
                 <Input
                   type="text"
@@ -195,7 +195,7 @@ export function SignupForm({
               {/* password */}
               <div className="flex flex-col gap-3">
                 <Label htmlFor="password" className="block text-sm">
-                  Mật khẩu
+                  Password
                 </Label>
                 <div className="relative">
                   <Input
@@ -228,22 +228,23 @@ export function SignupForm({
                 )}
                 {/* Note about password requirements */}
                 <p className="text-xs text-muted-foreground">
-                  Mật khẩu phải có ít nhất một số, 1 chữ hoa, 1 chữ cái đặc biệt
+                  Password must have at least one number, one uppercase letter,
+                  and one special character
                 </p>
               </div>
 
-              {/* nút đăng ký */}
+              {/* sign up button */}
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Tạo tài khoản
+                Create Account
               </Button>
 
               <div className="text-center text-sm">
-                Đã có tài khoản?{" "}
+                Already have an account?{" "}
                 <a href="/login" className="underline underline-offset-4">
-                  Đăng nhập
+                  Login
                 </a>
               </div>
             </div>
@@ -258,8 +259,8 @@ export function SignupForm({
         </CardContent>
       </Card>
       <div className=" text-xs text-balance px-6 text-center *:[a]:hover:text-primary text-muted-foreground *:[a]:underline *:[a]:underline-offetset-4">
-        Bằng cách tiếp tục, bạn đồng ý với <a href="#">Điều khoản dịch vụ</a> và{" "}
-        <a href="#">Chính sách bảo mật</a> của chúng tôi.
+        By continuing, you agree to our <a href="#">Terms of Service</a> and{" "}
+        <a href="#">Privacy Policy</a>.
       </div>
     </div>
   );

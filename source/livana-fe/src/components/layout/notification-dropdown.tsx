@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Bell } from "lucide-react";
 import { format } from "date-fns";
-import { vi } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -52,38 +52,38 @@ export function NotificationDropdown() {
 
   const formatNotificationTime = (dateString: string) => {
     const date = new Date(dateString);
-    return format(date, "HH:mm dd/MM/yyyy", { locale: vi });
+    return format(date, "HH:mm MM/dd/yyyy", { locale: enUS });
   };
 
   const getTypeLabel = (type: NotificationResponse["type"]) => {
     switch (type) {
       case "BOOKING_HOME":
         return {
-          label: "Đặt phòng",
+          label: "Booking",
           bgColor: "bg-blue-100",
           textColor: "text-blue-700",
         };
       case "BOOKING_EXPERIENCE":
         return {
-          label: "Trải nghiệm",
+          label: "Experience",
           bgColor: "bg-purple-100",
           textColor: "text-purple-700",
         };
       case "BOOKING_CONFIRMED":
         return {
-          label: "Xác nhận",
+          label: "Confirmed",
           bgColor: "bg-green-100",
           textColor: "text-green-700",
         };
       case "BOOKING_CANCELLED":
         return {
-          label: "Hủy bỏ",
+          label: "Cancelled",
           bgColor: "bg-red-100",
           textColor: "text-red-700",
         };
       default:
         return {
-          label: "Hệ thống",
+          label: "System",
           bgColor: "bg-gray-100",
           textColor: "text-gray-700",
         };
@@ -104,7 +104,7 @@ export function NotificationDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">
         <DropdownMenuLabel className="flex items-center justify-between">
-          <span>Thông báo</span>
+          <span>Notifications</span>
           <div className="flex items-center gap-2">
             <span
               className={`h-2 w-2 rounded-full ${
@@ -118,7 +118,7 @@ export function NotificationDropdown() {
                 className="text-xs h-6"
                 onClick={() => markAllAsRead()}
               >
-                Đánh dấu đã đọc
+                Mark all as read
               </Button>
             )}
           </div>
@@ -127,7 +127,7 @@ export function NotificationDropdown() {
 
         {notifications.length === 0 ? (
           <div className="p-4 text-center text-muted-foreground text-sm">
-            Không có thông báo mới
+            No new notifications
           </div>
         ) : (
           <div className="max-h-80 overflow-y-auto">

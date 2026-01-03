@@ -53,7 +53,7 @@ import type {
   PeriodType,
 } from "@/types/response/dashboardResponse";
 import { format, subDays, subMonths, startOfMonth, endOfMonth } from "date-fns";
-import { vi } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -79,7 +79,7 @@ export function DashboardOverview() {
       setStats(response.data);
     } catch (error) {
       console.error("Failed to fetch stats:", error);
-      toast.error("Không thể tải thống kê");
+      toast.error("Failed to load statistics");
     } finally {
       setLoading(false);
     }
@@ -127,43 +127,43 @@ export function DashboardOverview() {
   }, [period, dateRange]);
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("vi-VN", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "VND",
+      currency: "USD",
       maximumFractionDigits: 0,
     }).format(value);
   };
 
   const formatNumber = (value: number) => {
-    return new Intl.NumberFormat("vi-VN").format(value);
+    return new Intl.NumberFormat("en-US").format(value);
   };
 
   const quickDateRanges = [
     {
-      label: "7 ngày qua",
+      label: "Last 7 days",
       getValue: () => ({ from: subDays(new Date(), 7), to: new Date() }),
     },
     {
-      label: "30 ngày qua",
+      label: "Last 30 days",
       getValue: () => ({ from: subDays(new Date(), 30), to: new Date() }),
     },
     {
-      label: "Tháng này",
+      label: "This month",
       getValue: () => ({
         from: startOfMonth(new Date()),
         to: endOfMonth(new Date()),
       }),
     },
     {
-      label: "3 tháng qua",
+      label: "Last 3 months",
       getValue: () => ({ from: subMonths(new Date(), 3), to: new Date() }),
     },
     {
-      label: "6 tháng qua",
+      label: "Last 6 months",
       getValue: () => ({ from: subMonths(new Date(), 6), to: new Date() }),
     },
     {
-      label: "12 tháng qua",
+      label: "Last 12 months",
       getValue: () => ({ from: subMonths(new Date(), 12), to: new Date() }),
     },
   ];
@@ -198,37 +198,37 @@ export function DashboardOverview() {
 
   const statsCards = [
     {
-      title: "Tổng người dùng",
+      title: "Total Users",
       value: stats?.totalUsers || 0,
-      subValue: `+${stats?.newUsersToday || 0} hôm nay`,
+      subValue: `+${stats?.newUsersToday || 0} today`,
       icon: Users,
       color: "text-blue-600",
       bgColor: "bg-blue-100",
     },
     {
-      title: "Tổng Listings",
+      title: "Total Listings",
       value: stats?.totalListings || 0,
-      subValue: `${stats?.totalHomeListings || 0} nhà • ${
+      subValue: `${stats?.totalHomeListings || 0} homes • ${
         stats?.totalExperienceListings || 0
-      } trải nghiệm`,
+      } experiences`,
       icon: Home,
       color: "text-emerald-600",
       bgColor: "bg-emerald-100",
     },
     {
-      title: "Tổng đặt chỗ",
+      title: "Total Bookings",
       value: stats?.totalBookings || 0,
-      subValue: `${stats?.totalHomeBookings || 0} nhà • ${
+      subValue: `${stats?.totalHomeBookings || 0} homes • ${
         stats?.totalExperienceBookings || 0
-      } trải nghiệm`,
+      } experiences`,
       icon: BarChart3,
       color: "text-purple-600",
       bgColor: "bg-purple-100",
     },
     {
-      title: "Tổng doanh thu",
+      title: "Total Revenue",
       value: formatCurrency(stats?.totalRevenue || 0),
-      subValue: `Nhà: ${formatCurrency(stats?.totalHomeRevenue || 0)}`,
+      subValue: `Homes: ${formatCurrency(stats?.totalHomeRevenue || 0)}`,
       icon: DollarSign,
       color: "text-amber-600",
       bgColor: "bg-amber-100",
@@ -247,24 +247,24 @@ export function DashboardOverview() {
   const bookingComparisonData =
     comparisonStats?.bookingComparison.map((item) => ({
       name: item.label,
-      "Nhà ở": item.homeValue,
-      "Trải nghiệm": item.experienceValue,
+      Homes: item.homeValue,
+      Experiences: item.experienceValue,
     })) || [];
 
   // Prepare chart data for revenue comparison
   const revenueComparisonData =
     comparisonStats?.revenueComparison.map((item) => ({
       name: item.label,
-      "Nhà ở": item.homeValue,
-      "Trải nghiệm": item.experienceValue,
+      Homes: item.homeValue,
+      Experiences: item.experienceValue,
     })) || [];
 
   // Prepare chart data for listing comparison
   const listingComparisonData =
     comparisonStats?.listingComparison.map((item) => ({
       name: item.label,
-      "Nhà ở": item.homeValue,
-      "Trải nghiệm": item.experienceValue,
+      Homes: item.homeValue,
+      Experiences: item.experienceValue,
     })) || [];
 
   return (
@@ -308,10 +308,8 @@ export function DashboardOverview() {
         <CardHeader className="pb-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <CardTitle className="text-lg">Biểu đồ thống kê</CardTitle>
-              <CardDescription>
-                Theo dõi tăng trưởng và so sánh dữ liệu
-              </CardDescription>
+              <CardTitle className="text-lg">Statistics Charts</CardTitle>
+              <CardDescription>Track growth and compare data</CardDescription>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Select
@@ -319,12 +317,12 @@ export function DashboardOverview() {
                 onValueChange={(v) => setPeriod(v as PeriodType)}
               >
                 <SelectTrigger className="w-[120px]">
-                  <SelectValue placeholder="Kỳ" />
+                  <SelectValue placeholder="Period" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="DAY">Theo ngày</SelectItem>
-                  <SelectItem value="MONTH">Theo tháng</SelectItem>
-                  <SelectItem value="YEAR">Theo năm</SelectItem>
+                  <SelectItem value="DAY">By day</SelectItem>
+                  <SelectItem value="MONTH">By month</SelectItem>
+                  <SelectItem value="YEAR">By year</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -334,11 +332,11 @@ export function DashboardOverview() {
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateRange.from && dateRange.to ? (
                       <>
-                        {format(dateRange.from, "dd/MM/yyyy")} -{" "}
-                        {format(dateRange.to, "dd/MM/yyyy")}
+                        {format(dateRange.from, "MMM d, yyyy")} -{" "}
+                        {format(dateRange.to, "MMM d, yyyy")}
                       </>
                     ) : (
-                      "Chọn khoảng thời gian"
+                      "Select date range"
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -366,7 +364,7 @@ export function DashboardOverview() {
                       }
                     }}
                     numberOfMonths={2}
-                    locale={vi}
+                    locale={enUS}
                   />
                 </PopoverContent>
               </Popover>
@@ -390,15 +388,15 @@ export function DashboardOverview() {
             <TabsList>
               <TabsTrigger value="growth">
                 <LineChartIcon className="h-4 w-4 mr-2" />
-                Tăng trưởng
+                Growth
               </TabsTrigger>
               <TabsTrigger value="bookings">
                 <BarChart3 className="h-4 w-4 mr-2" />
-                Đặt chỗ
+                Bookings
               </TabsTrigger>
               <TabsTrigger value="revenue">
                 <DollarSign className="h-4 w-4 mr-2" />
-                Doanh thu
+                Revenue
               </TabsTrigger>
               <TabsTrigger value="listings">
                 <Home className="h-4 w-4 mr-2" />
@@ -420,7 +418,7 @@ export function DashboardOverview() {
                       dataKey="users"
                       stroke="#3b82f6"
                       strokeWidth={2}
-                      name="Người dùng mới"
+                      name="New users"
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -436,8 +434,8 @@ export function DashboardOverview() {
                     <YAxis fontSize={12} />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="Nhà ở" fill="#10b981" />
-                    <Bar dataKey="Trải nghiệm" fill="#8b5cf6" />
+                    <Bar dataKey="Homes" fill="#10b981" />
+                    <Bar dataKey="Experiences" fill="#8b5cf6" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -461,8 +459,8 @@ export function DashboardOverview() {
                       }
                     />
                     <Legend />
-                    <Bar dataKey="Nhà ở" fill="#f59e0b" />
-                    <Bar dataKey="Trải nghiệm" fill="#ec4899" />
+                    <Bar dataKey="Homes" fill="#f59e0b" />
+                    <Bar dataKey="Experiences" fill="#ec4899" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -477,8 +475,8 @@ export function DashboardOverview() {
                     <YAxis fontSize={12} />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="Nhà ở" fill="#06b6d4" />
-                    <Bar dataKey="Trải nghiệm" fill="#f97316" />
+                    <Bar dataKey="Homes" fill="#06b6d4" />
+                    <Bar dataKey="Experiences" fill="#f97316" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -493,26 +491,26 @@ export function DashboardOverview() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Home className="h-5 w-5 text-emerald-600" />
-              Thống kê Nhà ở
+              Home Statistics
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Tổng listings</span>
+              <span className="text-muted-foreground">Total listings</span>
               <span className="font-semibold">
                 {formatNumber(stats?.totalHomeListings || 0)}
               </span>
             </div>
             <Separator />
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Tổng đặt chỗ</span>
+              <span className="text-muted-foreground">Total bookings</span>
               <span className="font-semibold">
                 {formatNumber(stats?.totalHomeBookings || 0)}
               </span>
             </div>
             <Separator />
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Tổng doanh thu</span>
+              <span className="text-muted-foreground">Total revenue</span>
               <span className="font-semibold text-emerald-600">
                 {formatCurrency(stats?.totalHomeRevenue || 0)}
               </span>
@@ -524,26 +522,26 @@ export function DashboardOverview() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Compass className="h-5 w-5 text-purple-600" />
-              Thống kê Trải nghiệm
+              Experience Statistics
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Tổng listings</span>
+              <span className="text-muted-foreground">Total listings</span>
               <span className="font-semibold">
                 {formatNumber(stats?.totalExperienceListings || 0)}
               </span>
             </div>
             <Separator />
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Tổng đặt chỗ</span>
+              <span className="text-muted-foreground">Total bookings</span>
               <span className="font-semibold">
                 {formatNumber(stats?.totalExperienceBookings || 0)}
               </span>
             </div>
             <Separator />
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Tổng doanh thu</span>
+              <span className="text-muted-foreground">Total revenue</span>
               <span className="font-semibold text-purple-600">
                 {formatCurrency(stats?.totalExperienceRevenue || 0)}
               </span>

@@ -19,7 +19,7 @@ import {
 import { createExperienceBooking } from "@/services/experienceBookingService";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { vi } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 
 interface ExperienceBookingDialogProps {
   open: boolean;
@@ -53,12 +53,12 @@ export function ExperienceBookingDialog({
 
   const handleSubmit = async () => {
     if (parseInt(quantity) < 1) {
-      toast.error("Vui lòng chọn số lượng người tham gia");
+      toast.error("Please select the number of participants");
       return;
     }
 
     if (parseInt(quantity) > availableSlots) {
-      toast.error("Số lượng người vượt quá chỗ trống còn lại");
+      toast.error("Number of participants exceeds available slots");
       return;
     }
 
@@ -69,7 +69,7 @@ export function ExperienceBookingDialog({
         quantity: parseInt(quantity),
       });
 
-      toast.success("Đặt trải nghiệm thành công!");
+      toast.success("Experience booking successful!");
       onOpenChange(false);
       if (onBookingSuccess) onBookingSuccess();
     } catch (error: unknown) {
@@ -77,7 +77,7 @@ export function ExperienceBookingDialog({
         response?: { data?: { message?: string } };
       };
       const errorMessage =
-        axiosError?.response?.data?.message || "Không thể đặt trải nghiệm";
+        axiosError?.response?.data?.message || "Unable to book experience";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -88,7 +88,7 @@ export function ExperienceBookingDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Đặt trải nghiệm</DialogTitle>
+          <DialogTitle>Book Experience</DialogTitle>
           <DialogDescription>{experienceTitle}</DialogDescription>
         </DialogHeader>
 
@@ -96,29 +96,29 @@ export function ExperienceBookingDialog({
           {/* Session Time Info */}
           <div className="space-y-2 p-4 bg-muted rounded-lg">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Ngày:</span>
+              <span className="text-muted-foreground">Date:</span>
               <span className="font-medium">
-                {format(new Date(sessionStartTime), "dd/MM/yyyy", {
-                  locale: vi,
+                {format(new Date(sessionStartTime), "MM/dd/yyyy", {
+                  locale: enUS,
                 })}
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Thời gian:</span>
+              <span className="text-muted-foreground">Time:</span>
               <span className="font-medium">
                 {format(new Date(sessionStartTime), "HH:mm")} -{" "}
                 {format(new Date(sessionEndTime), "HH:mm")}
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Chỗ trống:</span>
-              <span className="font-medium">{availableSlots} chỗ</span>
+              <span className="text-muted-foreground">Available slots:</span>
+              <span className="font-medium">{availableSlots} slots</span>
             </div>
           </div>
 
           {/* Number of Participants */}
           <div className="space-y-2">
-            <Label>Số lượng người tham gia</Label>
+            <Label>Number of participants</Label>
             <Select value={quantity} onValueChange={setQuantity}>
               <SelectTrigger>
                 <SelectValue />
@@ -129,7 +129,7 @@ export function ExperienceBookingDialog({
                   (_, i) => i + 1
                 ).map((num) => (
                   <SelectItem key={num} value={num.toString()}>
-                    {num} người
+                    {num} {num === 1 ? "person" : "people"}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -140,30 +140,31 @@ export function ExperienceBookingDialog({
           <div className="space-y-2 pt-4 border-t">
             <div className="flex justify-between text-sm">
               <span>
-                ${pricePerPerson} x {quantity} người
+                ${pricePerPerson} x {quantity}{" "}
+                {parseInt(quantity) === 1 ? "person" : "people"}
               </span>
               <span>${calculateTotal()}</span>
             </div>
             <div className="flex justify-between font-semibold text-lg">
-              <span>Tổng cộng</span>
+              <span>Total</span>
               <span>${calculateTotal()}</span>
             </div>
           </div>
 
           <p className="text-xs text-muted-foreground">
-            Bạn sẽ nhận được xác nhận đặt chỗ qua email sau khi thanh toán.
+            You will receive a booking confirmation via email after payment.
           </p>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Hủy
+            Cancel
           </Button>
           <Button
             onClick={handleSubmit}
             disabled={loading || availableSlots === 0}
           >
-            {loading ? "Đang xử lý..." : "Xác nhận đặt chỗ"}
+            {loading ? "Processing..." : "Confirm booking"}
           </Button>
         </DialogFooter>
       </DialogContent>

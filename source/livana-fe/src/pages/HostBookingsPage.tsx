@@ -35,7 +35,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { format } from "date-fns";
-import { vi } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -59,7 +59,7 @@ const getStatusBadge = (status: BookingStatus) => {
           variant="outline"
           className="bg-yellow-50 text-yellow-700 border-yellow-200"
         >
-          Chờ xác nhận
+          Pending
         </Badge>
       );
     case "CONFIRMED":
@@ -68,7 +68,7 @@ const getStatusBadge = (status: BookingStatus) => {
           variant="outline"
           className="bg-green-50 text-green-700 border-green-200"
         >
-          Đã xác nhận
+          Confirmed
         </Badge>
       );
     case "CANCELLED":
@@ -77,7 +77,7 @@ const getStatusBadge = (status: BookingStatus) => {
           variant="outline"
           className="bg-red-50 text-red-700 border-red-200"
         >
-          Đã hủy
+          Cancelled
         </Badge>
       );
     default:
@@ -86,15 +86,15 @@ const getStatusBadge = (status: BookingStatus) => {
 };
 
 const formatDateTime = (dateString: string) => {
-  return format(new Date(dateString), "HH:mm dd/MM/yyyy", { locale: vi });
+  return format(new Date(dateString), "HH:mm MM/dd/yyyy", { locale: enUS });
 };
 
 const formatDate = (dateString: string) => {
-  return format(new Date(dateString), "dd/MM/yyyy", { locale: vi });
+  return format(new Date(dateString), "MM/dd/yyyy", { locale: enUS });
 };
 
 const formatPrice = (value: number) => {
-  return new Intl.NumberFormat("vi-VN").format(value);
+  return new Intl.NumberFormat("en-US").format(value);
 };
 
 export function HostBookingsPage() {
@@ -159,7 +159,7 @@ export function HostBookingsPage() {
       setHomeBookings(homeResponse.data.data || []);
       setExperienceBookings(experienceResponse.data.data || []);
     } catch (error) {
-      toast.error("Không thể tải danh sách đặt chỗ");
+      toast.error("Unable to load bookings");
       console.error("Error fetching bookings:", error);
     } finally {
       setLoading(false);
@@ -170,10 +170,10 @@ export function HostBookingsPage() {
     setConfirmingId(bookingId);
     try {
       await confirmHomeBooking(bookingId);
-      toast.success("Đã xác nhận đặt phòng thành công");
+      toast.success("Home booking confirmed successfully");
       fetchBookings();
     } catch (error) {
-      toast.error("Không thể xác nhận đặt phòng");
+      toast.error("Unable to confirm home booking");
       console.error("Error confirming booking:", error);
     } finally {
       setConfirmingId(null);
@@ -184,10 +184,10 @@ export function HostBookingsPage() {
     setConfirmingId(bookingId);
     try {
       await confirmExperienceBooking(bookingId);
-      toast.success("Đã xác nhận đặt trải nghiệm thành công");
+      toast.success("Experience booking confirmed successfully");
       fetchBookings();
     } catch (error) {
-      toast.error("Không thể xác nhận đặt trải nghiệm");
+      toast.error("Unable to confirm experience booking");
       console.error("Error confirming booking:", error);
     } finally {
       setConfirmingId(null);
@@ -208,9 +208,9 @@ export function HostBookingsPage() {
       <div className="min-h-screen bg-background">
         <div className="container max-w-7xl mx-auto py-8 px-6">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Đơn đặt chỗ</h1>
+            <h1 className="text-4xl font-bold mb-2">Bookings</h1>
             <p className="text-muted-foreground">
-              Quản lý các đơn đặt chỗ cho tin đăng của bạn
+              Manage bookings for your listings
             </p>
           </div>
 
@@ -219,7 +219,7 @@ export function HostBookingsPage() {
             <Card>
               <CardContent className="pt-6">
                 <div className="text-2xl font-bold">{totalBookings}</div>
-                <p className="text-sm text-muted-foreground">Tổng đơn đặt</p>
+                <p className="text-sm text-muted-foreground">Total bookings</p>
               </CardContent>
             </Card>
             <Card>
@@ -227,15 +227,15 @@ export function HostBookingsPage() {
                 <div className="text-2xl font-bold text-yellow-600">
                   {pendingBookings}
                 </div>
-                <p className="text-sm text-muted-foreground">Chờ xác nhận</p>
+                <p className="text-sm text-muted-foreground">Pending</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="pt-6">
                 <div className="text-2xl font-bold text-green-600">
-                  ₫{formatPrice(totalRevenue)}
+                  ${formatPrice(totalRevenue)}
                 </div>
-                <p className="text-sm text-muted-foreground">Tổng doanh thu</p>
+                <p className="text-sm text-muted-foreground">Total revenue</p>
               </CardContent>
             </Card>
           </div>
@@ -250,14 +250,14 @@ export function HostBookingsPage() {
             <TabsList className="mb-6">
               <TabsTrigger value="home" className="flex items-center gap-2">
                 <Home className="h-4 w-4" />
-                Nhà ở ({homeBookings.length})
+                Homes ({homeBookings.length})
               </TabsTrigger>
               <TabsTrigger
                 value="experience"
                 className="flex items-center gap-2"
               >
                 <Sparkles className="h-4 w-4" />
-                Trải nghiệm ({experienceBookings.length})
+                Experiences ({experienceBookings.length})
               </TabsTrigger>
             </TabsList>
 
@@ -270,7 +270,7 @@ export function HostBookingsPage() {
                 className="flex items-center gap-2"
               >
                 <List className="h-4 w-4" />
-                Tất cả (
+                All (
                 {activeTab === "home"
                   ? homeBookings.length
                   : experienceBookings.length}
@@ -285,7 +285,7 @@ export function HostBookingsPage() {
                 className="flex items-center gap-2"
               >
                 <Clock className="h-4 w-4" />
-                Chờ xác nhận (
+                Pending (
                 {activeTab === "home"
                   ? homeStatusCounts.PENDING
                   : experienceStatusCounts.PENDING}
@@ -302,7 +302,7 @@ export function HostBookingsPage() {
                 className="flex items-center gap-2"
               >
                 <CheckCircle className="h-4 w-4" />
-                Đã xác nhận (
+                Confirmed (
                 {activeTab === "home"
                   ? homeStatusCounts.CONFIRMED
                   : experienceStatusCounts.CONFIRMED}
@@ -319,7 +319,7 @@ export function HostBookingsPage() {
                 className="flex items-center gap-2"
               >
                 <Ban className="h-4 w-4" />
-                Đã hủy (
+                Cancelled (
                 {activeTab === "home"
                   ? homeStatusCounts.CANCELLED
                   : experienceStatusCounts.CANCELLED}
@@ -345,20 +345,20 @@ export function HostBookingsPage() {
                   <div className="max-w-md mx-auto">
                     <h2 className="text-2xl font-semibold mb-4">
                       {statusFilter === "ALL"
-                        ? "Chưa có đơn đặt phòng nào"
-                        : "Không có đơn đặt nào với trạng thái này"}
+                        ? "No home bookings yet"
+                        : "No bookings with this status"}
                     </h2>
                     <p className="text-muted-foreground mb-6">
                       {statusFilter === "ALL"
-                        ? "Khi khách đặt nhà ở của bạn, đơn đặt sẽ hiển thị ở đây"
-                        : "Thử chọn trạng thái khác để xem đơn đặt"}
+                        ? "When guests book your home, bookings will appear here"
+                        : "Try selecting a different status to view bookings"}
                     </p>
                     {statusFilter === "ALL" && (
                       <Button
                         onClick={() => navigate("/my-listings")}
                         size="lg"
                       >
-                        Xem tin đăng của tôi
+                        View my listings
                       </Button>
                     )}
                   </div>
@@ -377,7 +377,7 @@ export function HostBookingsPage() {
                               {booking.homeListingTitle}
                             </CardTitle>
                             <p className="text-sm text-muted-foreground">
-                              Mã đơn: {booking.id.slice(0, 8)}...
+                              Booking ID: {booking.id.slice(0, 8)}...
                             </p>
                           </div>
                           {getStatusBadge(booking.status)}
@@ -392,7 +392,7 @@ export function HostBookingsPage() {
                               {booking.customerName}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              Khách hàng
+                              Customer
                             </p>
                           </div>
                         </div>
@@ -402,7 +402,7 @@ export function HostBookingsPage() {
                             <Calendar className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">
-                                Nhận phòng
+                                Check-in
                               </p>
                               <p className="font-medium">
                                 {formatDateTime(booking.checkInTime)}
@@ -413,7 +413,7 @@ export function HostBookingsPage() {
                             <Calendar className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">
-                                Trả phòng
+                                Check-out
                               </p>
                               <p className="font-medium">
                                 {formatDateTime(booking.checkOutTime)}
@@ -424,34 +424,33 @@ export function HostBookingsPage() {
                             <Users className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">
-                                Số khách
+                                Guests
                               </p>
                               <p className="font-medium">
-                                {booking.guests} khách
+                                {booking.guests}{" "}
+                                {booking.guests === 1 ? "guest" : "guests"}
                               </p>
                             </div>
                           </div>
                           <div>
                             <p className="text-xs text-muted-foreground">
-                              Tổng tiền
+                              Total
                             </p>
                             <p className="font-bold text-lg">
-                              ₫{formatPrice(booking.totalPrice)}
+                              ${formatPrice(booking.totalPrice)}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center justify-between border-t pt-4">
                           <div>
                             <p className="text-sm text-muted-foreground">
-                              Đặt ngày: {formatDate(booking.createdAt)}
+                              Booked on: {formatDate(booking.createdAt)}
                             </p>
                             <Badge
                               variant={booking.isPaid ? "default" : "secondary"}
                               className="mt-1"
                             >
-                              {booking.isPaid
-                                ? "Đã thanh toán"
-                                : "Chưa thanh toán"}
+                              {booking.isPaid ? "Paid" : "Unpaid"}
                             </Badge>
                           </div>
                           <div className="flex gap-2">
@@ -465,31 +464,31 @@ export function HostBookingsPage() {
                                   >
                                     <Check className="h-4 w-4 mr-1" />
                                     {confirmingId === booking.id
-                                      ? "Đang xác nhận..."
-                                      : "Xác nhận"}
+                                      ? "Confirming..."
+                                      : "Confirm"}
                                   </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
                                     <AlertDialogTitle>
-                                      Xác nhận đơn đặt phòng?
+                                      Confirm home booking?
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Bạn có chắc chắn muốn xác nhận đơn đặt
-                                      phòng này? Khách hàng sẽ nhận được thông
-                                      báo xác nhận.
+                                      Are you sure you want to confirm this
+                                      booking? The customer will receive a
+                                      confirmation notification.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
                                     <AlertDialogCancel>
-                                      Hủy bỏ
+                                      Cancel
                                     </AlertDialogCancel>
                                     <AlertDialogAction
                                       onClick={() =>
                                         handleConfirmHomeBooking(booking.id)
                                       }
                                     >
-                                      Xác nhận đặt phòng
+                                      Confirm booking
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
@@ -503,7 +502,7 @@ export function HostBookingsPage() {
                               }
                             >
                               <Eye className="h-4 w-4 mr-1" />
-                              Xem tin đăng
+                              View listing
                             </Button>
                           </div>
                         </div>
@@ -532,20 +531,20 @@ export function HostBookingsPage() {
                   <div className="max-w-md mx-auto">
                     <h2 className="text-2xl font-semibold mb-4">
                       {statusFilter === "ALL"
-                        ? "Chưa có đơn đặt trải nghiệm nào"
-                        : "Không có đơn đặt nào với trạng thái này"}
+                        ? "No experience bookings yet"
+                        : "No bookings with this status"}
                     </h2>
                     <p className="text-muted-foreground mb-6">
                       {statusFilter === "ALL"
-                        ? "Khi khách đặt trải nghiệm của bạn, đơn đặt sẽ hiển thị ở đây"
-                        : "Thử chọn trạng thái khác để xem đơn đặt"}
+                        ? "When guests book your experience, bookings will appear here"
+                        : "Try selecting a different status to view bookings"}
                     </p>
                     {statusFilter === "ALL" && (
                       <Button
                         onClick={() => navigate("/my-listings")}
                         size="lg"
                       >
-                        Xem tin đăng của tôi
+                        View my listings
                       </Button>
                     )}
                   </div>
@@ -564,7 +563,7 @@ export function HostBookingsPage() {
                               {booking.experienceListingTitle}
                             </CardTitle>
                             <p className="text-sm text-muted-foreground">
-                              Mã đơn: {booking.id.slice(0, 8)}...
+                              Booking ID: {booking.id.slice(0, 8)}...
                             </p>
                           </div>
                           {getStatusBadge(booking.status)}
@@ -579,7 +578,7 @@ export function HostBookingsPage() {
                               {booking.customerName}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              Khách hàng
+                              Customer
                             </p>
                           </div>
                         </div>
@@ -589,7 +588,7 @@ export function HostBookingsPage() {
                             <Calendar className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">
-                                Bắt đầu
+                                Start
                               </p>
                               <p className="font-medium">
                                 {formatDateTime(booking.sessionStartTime)}
@@ -600,7 +599,7 @@ export function HostBookingsPage() {
                             <Calendar className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">
-                                Kết thúc
+                                End
                               </p>
                               <p className="font-medium">
                                 {formatDateTime(booking.sessionEndTime)}
@@ -611,34 +610,33 @@ export function HostBookingsPage() {
                             <Users className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-xs text-muted-foreground">
-                                Số người
+                                Participants
                               </p>
                               <p className="font-medium">
-                                {booking.quantity} người
+                                {booking.quantity}{" "}
+                                {booking.quantity === 1 ? "person" : "people"}
                               </p>
                             </div>
                           </div>
                           <div>
                             <p className="text-xs text-muted-foreground">
-                              Tổng tiền
+                              Total
                             </p>
                             <p className="font-bold text-lg">
-                              ₫{formatPrice(booking.totalPrice)}
+                              ${formatPrice(booking.totalPrice)}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center justify-between border-t pt-4">
                           <div>
                             <p className="text-sm text-muted-foreground">
-                              Đặt ngày: {formatDate(booking.createdAt)}
+                              Booked on: {formatDate(booking.createdAt)}
                             </p>
                             <Badge
                               variant={booking.isPaid ? "default" : "secondary"}
                               className="mt-1"
                             >
-                              {booking.isPaid
-                                ? "Đã thanh toán"
-                                : "Chưa thanh toán"}
+                              {booking.isPaid ? "Paid" : "Unpaid"}
                             </Badge>
                           </div>
                           <div className="flex gap-2">
@@ -652,24 +650,24 @@ export function HostBookingsPage() {
                                   >
                                     <Check className="h-4 w-4 mr-1" />
                                     {confirmingId === booking.id
-                                      ? "Đang xác nhận..."
-                                      : "Xác nhận"}
+                                      ? "Confirming..."
+                                      : "Confirm"}
                                   </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
                                     <AlertDialogTitle>
-                                      Xác nhận đơn đặt trải nghiệm?
+                                      Confirm experience booking?
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Bạn có chắc chắn muốn xác nhận đơn đặt
-                                      trải nghiệm này? Khách hàng sẽ nhận được
-                                      thông báo xác nhận.
+                                      Are you sure you want to confirm this
+                                      experience booking? The customer will
+                                      receive a confirmation notification.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
                                     <AlertDialogCancel>
-                                      Hủy bỏ
+                                      Cancel
                                     </AlertDialogCancel>
                                     <AlertDialogAction
                                       onClick={() =>
@@ -678,7 +676,7 @@ export function HostBookingsPage() {
                                         )
                                       }
                                     >
-                                      Xác nhận đặt trải nghiệm
+                                      Confirm booking
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
@@ -694,7 +692,7 @@ export function HostBookingsPage() {
                               }
                             >
                               <Eye className="h-4 w-4 mr-1" />
-                              Xem tin đăng
+                              View listing
                             </Button>
                           </div>
                         </div>

@@ -128,7 +128,7 @@ export function EditHomeListingDialog({
       setAmenities(amenData.content || []);
       setFacilities(facData.content || []);
     } catch (error) {
-      toast.error("Không thể tải dữ liệu");
+      toast.error("Failed to load data");
       console.error(error);
     } finally {
       setLoadingData(false);
@@ -200,9 +200,11 @@ export function EditHomeListingDialog({
       }
 
       setImages((prev) => [...prev, ...newImages]);
-      toast.success(`Đã tải lên ${files.length} ảnh`);
+      toast.success(
+        `Uploaded ${files.length} image${files.length > 1 ? "s" : ""}`
+      );
     } catch (error) {
-      toast.error("Không thể tải ảnh lên");
+      toast.error("Failed to upload images");
       console.error(error);
     } finally {
       setUploadingImages(false);
@@ -214,15 +216,15 @@ export function EditHomeListingDialog({
 
   const handleSubmit = async () => {
     if (!title.trim()) {
-      toast.error("Vui lòng nhập tiêu đề");
+      toast.error("Please enter a title");
       return;
     }
     if (!price || parseFloat(price) <= 0) {
-      toast.error("Vui lòng nhập giá hợp lệ");
+      toast.error("Please enter a valid price");
       return;
     }
     if (images.length === 0) {
-      toast.error("Vui lòng thêm ít nhất một ảnh");
+      toast.error("Please add at least one image");
       return;
     }
 
@@ -250,11 +252,11 @@ export function EditHomeListingDialog({
           order: img.order,
         })),
       });
-      toast.success("Cập nhật tin đăng thành công");
+      toast.success("Listing updated successfully");
       onSuccess();
       onOpenChange(false);
     } catch (error) {
-      toast.error("Không thể cập nhật tin đăng");
+      toast.error("Failed to update listing");
       console.error(error);
     } finally {
       setLoading(false);
@@ -265,9 +267,7 @@ export function EditHomeListingDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px] max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle className="text-2xl">
-            Chỉnh sửa tin đăng nhà ở
-          </DialogTitle>
+          <DialogTitle className="text-2xl">Edit home listing</DialogTitle>
         </DialogHeader>
 
         {loadingData ? (
@@ -279,7 +279,7 @@ export function EditHomeListingDialog({
             <div className="space-y-6 py-4">
               {/* Images Section */}
               <div className="space-y-2">
-                <Label>Hình ảnh</Label>
+                <Label>Images</Label>
                 <div className="grid grid-cols-4 gap-2">
                   {images.map((img, index) => (
                     <div
@@ -288,7 +288,7 @@ export function EditHomeListingDialog({
                     >
                       <img
                         src={img.url}
-                        alt={`Ảnh ${index + 1}`}
+                        alt={`Image ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
                       <button
@@ -315,7 +315,7 @@ export function EditHomeListingDialog({
                     ) : (
                       <>
                         <Upload className="h-6 w-6 text-gray-400" />
-                        <span className="text-xs text-gray-500">Thêm ảnh</span>
+                        <span className="text-xs text-gray-500">Add image</span>
                       </>
                     )}
                   </button>
@@ -334,23 +334,23 @@ export function EditHomeListingDialog({
 
               {/* Title */}
               <div className="space-y-2">
-                <Label htmlFor="title">Tiêu đề</Label>
+                <Label htmlFor="title">Title</Label>
                 <Input
                   id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Nhập tiêu đề tin đăng"
+                  placeholder="Enter listing title"
                 />
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description">Mô tả</Label>
+                <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Mô tả về nơi ở của bạn"
+                  placeholder="Describe your place"
                   rows={4}
                 />
               </div>
@@ -358,7 +358,7 @@ export function EditHomeListingDialog({
               {/* Price and Capacity */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Giá (₫/đêm)</Label>
+                  <Label htmlFor="price">Price ($/night)</Label>
                   <Input
                     id="price"
                     type="number"
@@ -368,7 +368,7 @@ export function EditHomeListingDialog({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="capacity">Số khách tối đa</Label>
+                  <Label htmlFor="capacity">Maximum guests</Label>
                   <Input
                     id="capacity"
                     type="number"
@@ -381,24 +381,24 @@ export function EditHomeListingDialog({
 
               {/* Address */}
               <div className="space-y-2">
-                <Label htmlFor="address">Địa chỉ</Label>
+                <Label htmlFor="address">Address</Label>
                 <Input
                   id="address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Nhập địa chỉ"
+                  placeholder="Enter address"
                 />
               </div>
 
               {/* Property Type */}
               <div className="space-y-2">
-                <Label>Loại nhà</Label>
+                <Label>Property type</Label>
                 <Select
                   value={propertyTypeId}
                   onValueChange={setPropertyTypeId}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn loại nhà" />
+                    <SelectValue placeholder="Select property type" />
                   </SelectTrigger>
                   <SelectContent>
                     {propertyTypes.map((type) => (
@@ -415,7 +415,7 @@ export function EditHomeListingDialog({
 
               {/* Amenities */}
               <div className="space-y-2">
-                <Label>Tiện nghi</Label>
+                <Label>Amenities</Label>
                 <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border rounded-lg p-3">
                   {amenities.map((amenity) => (
                     <div
@@ -441,7 +441,7 @@ export function EditHomeListingDialog({
 
               {/* Facilities */}
               <div className="space-y-2">
-                <Label>Cơ sở vật chất</Label>
+                <Label>Facilities</Label>
                 <div className="space-y-2 max-h-40 overflow-y-auto border rounded-lg p-3">
                   {facilities.map((facility) => (
                     <div
@@ -489,14 +489,14 @@ export function EditHomeListingDialog({
 
         <div className="flex justify-end gap-3 pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Hủy
+            Cancel
           </Button>
           <Button
             onClick={handleSubmit}
             disabled={loading || loadingData || uploadingImages}
           >
             {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            Lưu thay đổi
+            Save changes
           </Button>
         </div>
       </DialogContent>

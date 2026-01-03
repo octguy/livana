@@ -31,7 +31,7 @@ export function HostingDialog({ open, onOpenChange }: HostingDialogProps) {
       <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
           <DialogTitle className="text-2xl">
-            Chọn loại listing của bạn
+            Choose your listing type
           </DialogTitle>
         </DialogHeader>
 
@@ -42,21 +42,21 @@ export function HostingDialog({ open, onOpenChange }: HostingDialogProps) {
               onClick={() => handleSelectListingType("homes")}
             >
               <Home className="h-12 w-12" />
-              <span className="text-2xl font-semibold">Nhà</span>
+              <span className="text-2xl font-semibold">Homes</span>
             </Card>
             <Card
               className="h-48 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all hover:shadow-lg hover:border-foreground/50 border-2"
               onClick={() => handleSelectListingType("experiences")}
             >
               <Compass className="h-12 w-12" />
-              <span className="text-2xl font-semibold">Trải nghiệm</span>
+              <span className="text-2xl font-semibold">Experiences</span>
             </Card>
           </div>
         </div>
 
         <div className="flex justify-end">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Hủy
+            Cancel
           </Button>
         </div>
       </DialogContent>

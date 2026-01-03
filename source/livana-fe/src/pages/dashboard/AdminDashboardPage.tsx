@@ -68,51 +68,51 @@ const AdminDashboardPage = () => {
   }[] = [
     {
       id: "overview",
-      label: "Tổng quan",
+      label: "Overview",
       icon: LayoutDashboard,
-      description: "Xem tổng quan hệ thống",
+      description: "View system overview",
     },
     {
       id: "listings",
-      label: "Quản lý Listings",
+      label: "Manage Listings",
       icon: Building2,
-      description: "Quản lý tất cả listings",
+      description: "Manage all listings",
     },
     {
       id: "ratings",
-      label: "Đánh giá",
+      label: "Reviews",
       icon: Star,
-      description: "Quản lý đánh giá listings",
+      description: "Manage listing reviews",
     },
     {
       id: "interests",
-      label: "Sở thích",
+      label: "Interests",
       icon: Tags,
-      description: "Quản lý sở thích người dùng",
+      description: "Manage user interests",
     },
     {
       id: "experiences",
-      label: "Danh mục trải nghiệm",
+      label: "Experience Categories",
       icon: Compass,
-      description: "Quản lý danh mục trải nghiệm",
+      description: "Manage experience categories",
     },
     {
       id: "properties",
-      label: "Loại bất động sản",
+      label: "Property Types",
       icon: Home,
-      description: "Quản lý loại bất động sản",
+      description: "Manage property types",
     },
     {
       id: "facilities",
-      label: "Tiện nghi",
+      label: "Facilities",
       icon: Wrench,
-      description: "Quản lý tiện nghi cơ sở",
+      description: "Manage facilities",
     },
     {
       id: "amenities",
-      label: "Đồ dùng",
+      label: "Amenities",
       icon: Sparkles,
-      description: "Quản lý đồ dùng phòng",
+      description: "Manage room amenities",
     },
   ];
 
@@ -147,7 +147,7 @@ const AdminDashboardPage = () => {
                   <div>
                     <h2 className="font-semibold">Admin Panel</h2>
                     <p className="text-xs text-muted-foreground">
-                      Quản lý hệ thống
+                      System Management
                     </p>
                   </div>
                 )}
@@ -247,13 +247,13 @@ const AdminDashboardPage = () => {
                     ) : (
                       <>
                         <PanelLeftClose className="h-5 w-5 mr-2" />
-                        Thu gọn
+                        Collapse
                       </>
                     )}
                   </Button>
                 </TooltipTrigger>
                 {sidebarCollapsed && (
-                  <TooltipContent side="right">Mở rộng sidebar</TooltipContent>
+                  <TooltipContent side="right">Expand sidebar</TooltipContent>
                 )}
               </Tooltip>
             </div>
@@ -292,7 +292,7 @@ const AdminDashboardPage = () => {
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm">
                   <Activity className="h-4 w-4 mr-2" />
-                  Trạng thái hệ thống
+                  System Status
                 </Button>
               </div>
             </header>

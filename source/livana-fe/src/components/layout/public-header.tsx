@@ -61,13 +61,13 @@ export function PublicHeader() {
           </a>
           <nav className="hidden md:flex items-center gap-6">
             <a href="/" className="text-sm font-medium hover:text-primary">
-              Trang chủ
+              Home
             </a>
             <a
               href="/experiences"
               className="text-sm font-medium hover:text-primary"
             >
-              Trải nghiệm
+              Experiences
             </a>
           </nav>
         </div>
@@ -83,7 +83,7 @@ export function PublicHeader() {
                   onClick={() => setHostingDialogOpen(true)}
                 >
                   <Home className="mr-2 h-4 w-4" />
-                  Trở thành chủ nhà
+                  Become a host
                 </Button>
                 <ChatIcon />
                 <NotificationDropdown />
@@ -109,30 +109,30 @@ export function PublicHeader() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                       <User className="mr-2 h-4 w-4" />
-                      Bảng điều khiển
+                      Dashboard
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/profile")}>
                       <User className="mr-2 h-4 w-4" />
-                      Hồ sơ
+                      Profile
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/my-listings")}>
                       <ListChecks className="mr-2 h-4 w-4" />
-                      Tin đăng của tôi
+                      My Listings
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/my-bookings")}>
                       <CalendarCheck className="mr-2 h-4 w-4" />
-                      Đặt chỗ của tôi
+                      My Bookings
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => navigate("/host-bookings")}
                     >
                       <ClipboardList className="mr-2 h-4 w-4" />
-                      Đơn đặt chỗ
+                      Host Bookings
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
-                      Đăng xuất
+                      Log out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -144,10 +144,10 @@ export function PublicHeader() {
                   size="sm"
                   onClick={() => navigate("/login")}
                 >
-                  Đăng nhập
+                  Log in
                 </Button>
                 <Button size="sm" onClick={() => navigate("/signup")}>
-                  Đăng ký
+                  Sign up
                 </Button>
               </>
             )}
@@ -174,14 +174,14 @@ export function PublicHeader() {
                   className="text-base font-medium hover:text-primary py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Trang chủ
+                  Home
                 </a>
                 <a
                   href="/experiences"
                   className="text-base font-medium hover:text-primary py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Trải nghiệm
+                  Experiences
                 </a>
                 <div className="border-t pt-4 mt-4 flex flex-col gap-3">
                   {user ? (
@@ -212,7 +212,7 @@ export function PublicHeader() {
                         }}
                       >
                         <User className="mr-2 h-4 w-4" />
-                        Bảng điều khiển
+                        Dashboard
                       </Button>
                       <Button
                         variant="outline"
@@ -223,7 +223,7 @@ export function PublicHeader() {
                         }}
                       >
                         <User className="mr-2 h-4 w-4" />
-                        Hồ sơ
+                        Profile
                       </Button>
                       <Button
                         variant="outline"
@@ -234,7 +234,7 @@ export function PublicHeader() {
                         }}
                       >
                         <ListChecks className="mr-2 h-4 w-4" />
-                        Tin đăng của tôi
+                        My Listings
                       </Button>
                       <Button
                         variant="outline"
@@ -245,7 +245,7 @@ export function PublicHeader() {
                         }}
                       >
                         <CalendarCheck className="mr-2 h-4 w-4" />
-                        Đặt chỗ của tôi
+                        My Bookings
                       </Button>
                       <Button
                         variant="outline"
@@ -256,7 +256,7 @@ export function PublicHeader() {
                         }}
                       >
                         <ClipboardList className="mr-2 h-4 w-4" />
-                        Đơn đặt chỗ
+                        Host Bookings
                       </Button>
                       <Button
                         variant="destructive"
@@ -267,7 +267,7 @@ export function PublicHeader() {
                         }}
                       >
                         <LogOut className="mr-2 h-4 w-4" />
-                        Đăng xuất
+                        Log out
                       </Button>
                     </>
                   ) : (
@@ -280,7 +280,7 @@ export function PublicHeader() {
                           navigate("/login");
                         }}
                       >
-                        Đăng nhập
+                        Log in
                       </Button>
                       <Button
                         className="w-full"
@@ -289,7 +289,7 @@ export function PublicHeader() {
                           navigate("/signup");
                         }}
                       >
-                        Đăng ký
+                        Sign up
                       </Button>
                     </>
                   )}

@@ -30,13 +30,13 @@ export function Header() {
               href="/search"
               className="text-sm font-medium hover:text-primary"
             >
-              Tìm kiếm
+              Search
             </a>
             <a
               href="/bookings"
               className="text-sm font-medium hover:text-primary"
             >
-              Đặt phòng
+              Booking
             </a>
           </nav>
         </div>
@@ -48,7 +48,7 @@ export function Header() {
             className="hidden md:inline-flex"
             onClick={() => setHostingDialogOpen(true)}
           >
-            Chuyển sang hosting
+            Switch to hosting
           </Button>
           <ChatIcon />
           <Button variant="ghost" size="icon" className="md:hidden">

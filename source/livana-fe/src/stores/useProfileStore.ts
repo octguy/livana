@@ -13,13 +13,13 @@ export const useProfileStore = create<ProfileState>((set) => ({
     try {
       set({ loading: true });
       const response = await userService.update(updatedProfile);
-      console.log("Cập nhật hồ sơ response:", response);
+      console.log("Profile update response:", response);
       // await useAuthStore.getState().fetchMe();
-      toast.success("Cập nhật hồ sơ thành công!");
+      toast.success("Profile updated successfully!");
       return response;
     } catch (error) {
-      toast.error("Cập nhật hồ sơ không thành công. Vui lòng thử lại.");
-      console.error("Cập nhật hồ sơ thất bại:", error);
+      toast.error("Profile update failed. Please try again.");
+      console.error("Profile update failed:", error);
       throw error;
     } finally {
       set({ loading: false });
@@ -30,12 +30,12 @@ export const useProfileStore = create<ProfileState>((set) => ({
     try {
       set({ loading: true });
       const response = await cloudinaryService.uploadAvatar(file);
-      console.log("Tải ảnh đại diện response:", response);
-      toast.success("Cập nhật ảnh đại diện thành công!");
+      console.log("Avatar upload response:", response);
+      toast.success("Avatar updated successfully!");
       return response;
     } catch (error) {
-      toast.error("Cập nhật ảnh đại diện không thành công. Vui lòng thử lại.");
-      console.error("Cập nhật ảnh đại diện thất bại:", error);
+      toast.error("Avatar update failed. Please try again.");
+      console.error("Avatar update failed:", error);
       throw error;
     } finally {
       set({ loading: false });
@@ -46,12 +46,12 @@ export const useProfileStore = create<ProfileState>((set) => ({
     try {
       set({ loading: true });
       const response = await cloudinaryService.deleteAvatar();
-      console.log("Xóa ảnh đại diện response:", response);
-      toast.success("Xóa ảnh đại diện thành công!");
+      console.log("Avatar delete response:", response);
+      toast.success("Avatar deleted successfully!");
       return response;
     } catch (error) {
-      toast.error("Xóa ảnh đại diện không thành công. Vui lòng thử lại.");
-      console.error("Xóa ảnh đại diện thất bại:", error);
+      toast.error("Avatar deletion failed. Please try again.");
+      console.error("Avatar deletion failed:", error);
       throw error;
     } finally {
       set({ loading: false });

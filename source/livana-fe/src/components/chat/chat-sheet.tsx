@@ -111,7 +111,7 @@ export function ChatSheet({
     if (!file || !currentConversation) return;
 
     if (!file.type.startsWith("image/")) {
-      toast.error("Vui lòng chọn file hình ảnh");
+      toast.error("Please select an image file");
       return;
     }
 
@@ -127,7 +127,7 @@ export function ChatSheet({
         fileType: file.type,
       });
     } catch {
-      toast.error("Không thể tải lên hình ảnh");
+      toast.error("Unable to upload image");
     } finally {
       setUploading(false);
       if (imageInputRef.current) {
@@ -142,7 +142,7 @@ export function ChatSheet({
 
     // Check file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-      toast.error("File không được vượt quá 10MB");
+      toast.error("File must not exceed 10MB");
       return;
     }
 
@@ -158,7 +158,7 @@ export function ChatSheet({
         fileType: file.type,
       });
     } catch {
-      toast.error("Không thể tải lên file");
+      toast.error("Unable to upload file");
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -176,7 +176,7 @@ export function ChatSheet({
 
   const formatTime = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleTimeString("vi-VN", {
+    return date.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -189,11 +189,11 @@ export function ChatSheet({
     yesterday.setDate(yesterday.getDate() - 1);
 
     if (date.toDateString() === today.toDateString()) {
-      return "Hôm nay";
+      return "Today";
     } else if (date.toDateString() === yesterday.toDateString()) {
-      return "Hôm qua";
+      return "Yesterday";
     }
-    return date.toLocaleDateString("vi-VN", {
+    return date.toLocaleDateString("en-US", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -259,7 +259,7 @@ export function ChatSheet({
                   // Fallback if image fails to load
                   const target = e.target as HTMLImageElement;
                   target.style.display = "none";
-                  target.parentElement!.innerHTML = `<div class="flex items-center gap-2 px-3 py-2 bg-muted rounded-lg"><span class="text-sm">[Không thể tải hình ảnh]</span></div>`;
+                  target.parentElement!.innerHTML = `<div class="flex items-center gap-2 px-3 py-2 bg-muted rounded-lg"><span class="text-sm">[Unable to load image]</span></div>`;
                 }}
               />
             </div>
@@ -273,7 +273,7 @@ export function ChatSheet({
                   : "bg-muted rounded-bl-sm"
               )}
             >
-              <p className="text-sm">[Hình ảnh không khả dụng]</p>
+              <p className="text-sm">[Image unavailable]</p>
             </div>
           )}
           {msg.messageType === "FILE" && (
@@ -316,9 +316,9 @@ export function ChatSheet({
   const renderConversationList = () => (
     <div className="flex flex-col h-full">
       <SheetHeader className="border-b pb-4">
-        <SheetTitle>Tin nhắn</SheetTitle>
+        <SheetTitle>Messages</SheetTitle>
         <SheetDescription className="sr-only">
-          Danh sách cuộc trò chuyện của bạn
+          Your conversations
         </SheetDescription>
       </SheetHeader>
 
@@ -329,7 +329,7 @@ export function ChatSheet({
           </div>
         ) : conversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
-            <p>Chưa có cuộc trò chuyện nào</p>
+            <p>No conversations yet</p>
           </div>
         ) : (
           conversations.map((conv) => (
@@ -348,10 +348,10 @@ export function ChatSheet({
     <div className="flex flex-col h-full">
       {/* Hidden accessibility elements */}
       <SheetTitle className="sr-only">
-        Trò chuyện với {currentConversation?.participant.displayName}
+        Chat with {currentConversation?.participant.displayName}
       </SheetTitle>
       <SheetDescription className="sr-only">
-        Cuộc trò chuyện với {currentConversation?.participant.displayName}
+        Conversation with {currentConversation?.participant.displayName}
       </SheetDescription>
       {/* Header */}
       <div className="flex items-center gap-3 border-b pb-4">
@@ -385,7 +385,7 @@ export function ChatSheet({
           </div>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-            <p>Bắt đầu cuộc trò chuyện</p>
+            <p>Start a conversation</p>
           </div>
         ) : (
           <>
@@ -446,7 +446,7 @@ export function ChatSheet({
             <Paperclip className="h-5 w-5" />
           </Button>
           <Input
-            placeholder="Nhập tin nhắn..."
+            placeholder="Type a message..."
             value={messageInput}
             onChange={(e) => setMessageInput(e.target.value)}
             onKeyDown={handleKeyDown}

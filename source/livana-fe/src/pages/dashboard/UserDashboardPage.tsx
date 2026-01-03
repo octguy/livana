@@ -12,12 +12,10 @@ const UserDashboardPage = () => {
   const handleTest = async () => {
     try {
       const response = await api.get("/dummy/hello", { withCredentials: true });
-      toast.success("Test API thành công! Kiểm tra console để biết chi tiết.");
+      toast.success("API test successful! Check console for details.");
       console.log("Test API response:", response.data);
     } catch (error) {
-      toast.error(
-        "Test API không thành công. Kiểm tra console để biết chi tiết."
-      );
+      toast.error("API test failed. Check console for details.");
       console.error("Test API error:", error);
     }
   };

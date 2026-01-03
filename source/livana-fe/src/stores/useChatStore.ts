@@ -92,7 +92,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       set({ conversations: response.data || [] });
     } catch (error) {
       console.error("Failed to fetch conversations:", error);
-      toast.error("Không thể tải danh sách cuộc trò chuyện");
+      toast.error("Unable to load conversations");
     } finally {
       set({ loading: false });
     }
@@ -119,7 +119,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       return conversation;
     } catch (error) {
       console.error("Failed to get or create conversation:", error);
-      toast.error("Không thể tạo cuộc trò chuyện");
+      toast.error("Unable to create conversation");
       return null;
     } finally {
       set({ loading: false });
@@ -141,7 +141,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       set({ messages: response.data || [] });
     } catch (error) {
       console.error("Failed to fetch messages:", error);
-      toast.error("Không thể tải tin nhắn");
+      toast.error("Unable to load messages");
     } finally {
       set({ loading: false });
     }
@@ -168,8 +168,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 message.messageType === "TEXT"
                   ? message.content
                   : message.messageType === "IMAGE"
-                  ? "[Hình ảnh]"
-                  : "[Tệp đính kèm]",
+                  ? "[Image]"
+                  : "[Attachment]",
               lastMessageAt: message.createdAt,
             };
           }
@@ -192,7 +192,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       return message;
     } catch (error) {
       console.error("Failed to send message:", error);
-      toast.error("Không thể gửi tin nhắn");
+      toast.error("Unable to send message");
       return null;
     } finally {
       set({ sendingMessage: false });
@@ -247,8 +247,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 message.messageType === "TEXT"
                   ? message.content
                   : message.messageType === "IMAGE"
-                  ? "[Hình ảnh]"
-                  : "[Tệp đính kèm]",
+                  ? "[Image]"
+                  : "[Attachment]",
               lastMessageAt: message.createdAt,
               unreadCount: isViewingConversation
                 ? conv.unreadCount
@@ -284,7 +284,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     // Show toast notification if not viewing this conversation
     if (!isViewingConversation) {
       toast.info(
-        `${message.senderName}: ${message.content || "[Tệp đính kèm]"}`,
+        `${message.senderName}: ${message.content || "[Attachment]"}`,
         {
           duration: 3000,
         }

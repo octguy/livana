@@ -25,12 +25,12 @@ export function ChatButton({
 
   const handleClick = () => {
     if (!user) {
-      toast.error("Vui lòng đăng nhập để nhắn tin");
+      toast.error("Please log in to send messages");
       return;
     }
 
     if (user.id === hostId) {
-      toast.error("Bạn không thể nhắn tin cho chính mình");
+      toast.error("You cannot message yourself");
       return;
     }
 
@@ -46,7 +46,7 @@ export function ChatButton({
         onClick={handleClick}
       >
         <MessageCircle className="h-4 w-4 mr-2" />
-        {children || "Liên hệ chủ nhà"}
+        {children || "Contact host"}
       </Button>
 
       <ChatSheet

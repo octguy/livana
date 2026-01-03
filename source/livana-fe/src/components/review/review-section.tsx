@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { vi } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import type { ListingRatingSummary } from "@/types/response/reviewResponse";
 import { Star, MessageSquare, Send } from "lucide-react";
 import {
@@ -62,7 +62,7 @@ export function ReviewSection({
 
   const handleSubmitReview = async () => {
     if (rating === 0) {
-      toast.error("Vui lòng chọn số sao đánh giá");
+      toast.error("Please select a star rating");
       return;
     }
 
@@ -74,7 +74,7 @@ export function ReviewSection({
         comment: comment.trim() || undefined,
         reviewType,
       });
-      toast.success("Đánh giá thành công!");
+      toast.success("Review submitted successfully!");
       setShowReviewDialog(false);
       setRating(0);
       setComment("");
@@ -82,14 +82,14 @@ export function ReviewSection({
       onReviewSubmitted();
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || "Không thể gửi đánh giá");
+      toast.error(err.response?.data?.message || "Failed to submit review");
     } finally {
       setSubmitting(false);
     }
   };
 
   const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "dd/MM/yyyy", { locale: vi });
+    return format(new Date(dateString), "MMM d, yyyy", { locale: enUS });
   };
 
   return (
@@ -98,7 +98,7 @@ export function ReviewSection({
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5" />
-            Đánh giá
+            Reviews
           </CardTitle>
           {ratingSummary && ratingSummary.totalReviews > 0 && (
             <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export function ReviewSection({
                 {ratingSummary.averageRating}
               </span>
               <span className="text-muted-foreground">
-                ({ratingSummary.totalReviews} đánh giá)
+                ({ratingSummary.totalReviews} reviews)
               </span>
             </div>
           )}
@@ -132,28 +132,28 @@ export function ReviewSection({
                     disabled={checkingReview}
                   >
                     <Star className="h-4 w-4 mr-2" />
-                    Viết đánh giá
+                    Write a review
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Đánh giá của bạn</DialogTitle>
+                    <DialogTitle>Your review</DialogTitle>
                     <DialogDescription>
-                      Chia sẻ trải nghiệm của bạn để giúp những người khác
+                      Share your experience to help others
                     </DialogDescription>
                   </DialogHeader>
 
                   {hasReviewed ? (
                     <div className="text-center py-4">
                       <p className="text-muted-foreground">
-                        Bạn đã đánh giá địa điểm này rồi.
+                        You have already reviewed this place.
                       </p>
                     </div>
                   ) : (
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium">
-                          Đánh giá sao
+                          Star rating
                         </label>
                         <div className="flex justify-center py-2">
                           <StarRating
@@ -164,23 +164,23 @@ export function ReviewSection({
                           />
                         </div>
                         <p className="text-center text-sm text-muted-foreground">
-                          {rating === 0 && "Chọn số sao"}
-                          {rating === 1 && "Rất tệ"}
-                          {rating === 2 && "Tệ"}
-                          {rating === 3 && "Bình thường"}
-                          {rating === 4 && "Tốt"}
-                          {rating === 5 && "Tuyệt vời"}
+                          {rating === 0 && "Select stars"}
+                          {rating === 1 && "Very poor"}
+                          {rating === 2 && "Poor"}
+                          {rating === 3 && "Average"}
+                          {rating === 4 && "Good"}
+                          {rating === 5 && "Excellent"}
                         </p>
                       </div>
 
                       <div className="space-y-2">
                         <label className="text-sm font-medium">
-                          Nhận xét (không bắt buộc)
+                          Comment (optional)
                         </label>
                         <Textarea
                           value={comment}
                           onChange={(e) => setComment(e.target.value)}
-                          placeholder="Chia sẻ trải nghiệm của bạn..."
+                          placeholder="Share your experience..."
                           rows={4}
                           maxLength={1000}
                         />
@@ -195,11 +195,11 @@ export function ReviewSection({
                         disabled={submitting || rating === 0}
                       >
                         {submitting ? (
-                          "Đang gửi..."
+                          "Submitting..."
                         ) : (
                           <>
                             <Send className="h-4 w-4 mr-2" />
-                            Gửi đánh giá
+                            Submit review
                           </>
                         )}
                       </Button>
@@ -210,9 +210,9 @@ export function ReviewSection({
             ) : (
               <p className="text-muted-foreground text-sm">
                 <a href="/login" className="text-primary underline">
-                  Đăng nhập
+                  Log in
                 </a>{" "}
-                để viết đánh giá
+                to write a review
               </p>
             )}
           </div>
@@ -256,9 +256,9 @@ export function ReviewSection({
         ) : (
           <div className="text-center py-8">
             <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground/50" />
-            <p className="mt-2 text-muted-foreground">Chưa có đánh giá nào</p>
+            <p className="mt-2 text-muted-foreground">No reviews yet</p>
             <p className="text-sm text-muted-foreground">
-              Hãy là người đầu tiên đánh giá!
+              Be the first to leave a review!
             </p>
           </div>
         )}

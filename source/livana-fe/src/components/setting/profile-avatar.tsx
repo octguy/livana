@@ -32,9 +32,9 @@ export function ProfileAvatar() {
       };
 
       toast.promise(uploadPromise(), {
-        loading: "Đang tải ảnh lên...",
-        success: "Cập nhật ảnh đại diện thành công!",
-        error: "Cập nhật ảnh đại diện thất bại. Vui lòng thử lại.",
+        loading: "Uploading image...",
+        success: "Profile photo updated successfully!",
+        error: "Failed to update profile photo. Please try again.",
         position: "top-center",
       });
     }
@@ -47,9 +47,9 @@ export function ProfileAvatar() {
     };
 
     toast.promise(deletePromise(), {
-      loading: "Đang xóa ảnh đại diện...",
-      success: "Xóa ảnh đại diện thành công!",
-      error: "Xóa ảnh đại diện thất bại. Vui lòng thử lại.",
+      loading: "Removing profile photo...",
+      success: "Profile photo removed successfully!",
+      error: "Failed to remove profile photo. Please try again.",
       position: "top-center",
     });
   };
@@ -77,11 +77,11 @@ export function ProfileAvatar() {
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={handleAvatarClick}>
               <Upload className="mr-2 h-4 w-4" />
-              Chọn ảnh mới
+              Choose new photo
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleDeleteAvatar}>
               <Trash2 className="mr-2 h-4 w-4" />
-              Xóa ảnh đại diện
+              Remove photo
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -94,9 +94,9 @@ export function ProfileAvatar() {
         />
       </div>
       <div className="flex-1">
-        <h2 className="text-xl font-semibold mb-4">Ảnh đại diện</h2>
+        <h2 className="text-xl font-semibold mb-4">Profile Photo</h2>
         <p className="text-sm text-muted-foreground">
-          Nhấn vào biểu tượng máy ảnh để thay đổi ảnh đại diện của bạn
+          Click the camera icon to change your profile photo
         </p>
       </div>
     </div>

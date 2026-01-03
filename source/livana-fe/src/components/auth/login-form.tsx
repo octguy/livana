@@ -13,13 +13,13 @@ import { PASSWORD_REGEX } from "@/constant/regex";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
 const loginSchema = z.object({
-  username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
+  username: z.string().min(3, "Username must be at least 3 characters"),
   password: z
     .string()
-    .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+    .min(8, "Password must be at least 8 characters")
     .regex(
       PASSWORD_REGEX,
-      "Mật khẩu phải có ít nhất một số, 1 chữ hoa, 1 chữ cái đặc biệt"
+      "Password must have at least one number, one uppercase letter, and one special character"
     ),
 });
 
@@ -69,13 +69,13 @@ export function LoginForm({
       // Prefer friendly message for 401, otherwise server message or generic
       const status = error?.response?.status ?? error?.status;
       if (status === 401 || status === 404) {
-        setLoginError("Thông tin đăng nhập sai");
+        setLoginError("Invalid login credentials");
       } else if (status === 500) {
-        setLoginError("Lỗi máy chủ. Vui lòng thử lại sau.");
+        setLoginError("Server error. Please try again later.");
       } else if (error?.response?.data?.message) {
         setLoginError(String(error.response.data.message));
       } else {
-        setLoginError("Đăng nhập không thành công. Vui lòng thử lại.");
+        setLoginError("Login failed. Please try again.");
       }
     }
   };
@@ -92,9 +92,9 @@ export function LoginForm({
                   <img src="/public/vite.svg" alt="logo" />
                 </a>
 
-                <h1 className="text-2xl font-bold">Đăng nhập Livana</h1>
+                <h1 className="text-2xl font-bold">Login to Livana</h1>
                 <p className="text-muted-foreground text-balance">
-                  Chào mừng trở lại! Vui lòng đăng nhập để tiếp tục.
+                  Welcome back! Please login to continue.
                 </p>
               </div>
 
@@ -108,7 +108,7 @@ export function LoginForm({
                 )}
 
                 <Label htmlFor="username" className="block text-sm">
-                  Tên đăng nhập
+                  Username
                 </Label>
                 <Input
                   type="text"
@@ -132,13 +132,13 @@ export function LoginForm({
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password" className="block text-sm">
-                    Mật khẩu
+                    Password
                   </Label>
                   <a
                     href="/forgot-password"
                     className="text-sm hover:text-primary"
                   >
-                    Quên mật khẩu?
+                    Forgot password?
                   </a>
                 </div>
                 <div className="relative">
@@ -172,22 +172,23 @@ export function LoginForm({
                 )}
                 {/* Note about password requirements */}
                 <p className="text-xs text-muted-foreground">
-                  Mật khẩu phải có ít nhất một số, 1 chữ hoa, 1 chữ cái đặc biệt
+                  Password must have at least one number, one uppercase letter,
+                  and one special character
                 </p>
               </div>
 
-              {/* nút đăng ký */}
+              {/* login button */}
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Đăng nhập
+                Login
               </Button>
 
               <div className="text-center text-sm">
-                Chưa có tài khoản?{" "}
+                Don't have an account?{" "}
                 <a href="/signup" className="underline underline-offset-4">
-                  Đăng ký
+                  Sign up
                 </a>
               </div>
             </div>
@@ -195,15 +196,15 @@ export function LoginForm({
           <div className="bg-muted relative hidden md:block">
             <img
               src="/placeholder.png"
-              alt="Hình ảnh"
+              alt="Image"
               className="absolute top-1/2 -translate-y-1/2 object-cover"
             />
           </div>
         </CardContent>
       </Card>
       <div className=" text-xs text-balance px-6 text-center *:[a]:hover:text-primary text-muted-foreground *:[a]:underline *:[a]:underline-offetset-4">
-        Bằng cách tiếp tục, bạn đồng ý với <a href="#">Điều khoản dịch vụ</a> và{" "}
-        <a href="#">Chính sách bảo mật</a> của chúng tôi.
+        By continuing, you agree to our <a href="#">Terms of Service</a> and{" "}
+        <a href="#">Privacy Policy</a>.
       </div>
     </div>
   );

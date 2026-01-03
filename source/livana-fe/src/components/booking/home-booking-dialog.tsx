@@ -64,12 +64,12 @@ export function HomeBookingDialog({
 
   const handleSubmit = async () => {
     if (!checkInDate || !checkOutDate) {
-      toast.error("Vui lòng chọn ngày nhận và trả phòng");
+      toast.error("Please select check-in and check-out dates");
       return;
     }
 
     if (checkOutDate <= checkInDate) {
-      toast.error("Ngày trả phòng phải sau ngày nhận phòng");
+      toast.error("Check-out date must be after check-in date");
       return;
     }
 
@@ -87,7 +87,7 @@ export function HomeBookingDialog({
         guests: parseInt(guests),
       });
 
-      toast.success("Đặt phòng thành công!");
+      toast.success("Booking successful!");
       onOpenChange(false);
       if (onBookingSuccess) onBookingSuccess();
     } catch (error: unknown) {
@@ -95,7 +95,7 @@ export function HomeBookingDialog({
         response?: { data?: { message?: string } };
       };
       const errorMessage =
-        axiosError?.response?.data?.message || "Không thể đặt phòng";
+        axiosError?.response?.data?.message || "Failed to book";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -106,14 +106,14 @@ export function HomeBookingDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Đặt phòng</DialogTitle>
+          <DialogTitle>Book your stay</DialogTitle>
           <DialogDescription>{listingTitle}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
           {/* Check-in Date */}
           <div className="space-y-2">
-            <Label>Ngày nhận phòng</Label>
+            <Label>Check-in date</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -125,8 +125,8 @@ export function HomeBookingDialog({
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {checkInDate
-                    ? format(checkInDate, "dd/MM/yyyy")
-                    : "Chọn ngày"}
+                    ? format(checkInDate, "MMM d, yyyy")
+                    : "Select date"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -143,7 +143,7 @@ export function HomeBookingDialog({
 
           {/* Check-out Date */}
           <div className="space-y-2">
-            <Label>Ngày trả phòng</Label>
+            <Label>Check-out date</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -155,8 +155,8 @@ export function HomeBookingDialog({
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {checkOutDate
-                    ? format(checkOutDate, "dd/MM/yyyy")
-                    : "Chọn ngày"}
+                    ? format(checkOutDate, "MMM d, yyyy")
+                    : "Select date"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -173,7 +173,7 @@ export function HomeBookingDialog({
 
           {/* Number of Guests */}
           <div className="space-y-2">
-            <Label>Số lượng khách</Label>
+            <Label>Number of guests</Label>
             <Select value={guests} onValueChange={setGuests}>
               <SelectTrigger>
                 <SelectValue />
@@ -182,7 +182,7 @@ export function HomeBookingDialog({
                 {Array.from({ length: maxGuests }, (_, i) => i + 1).map(
                   (num) => (
                     <SelectItem key={num} value={num.toString()}>
-                      {num} khách
+                      {num} guest{num > 1 ? "s" : ""}
                     </SelectItem>
                   )
                 )}
@@ -195,12 +195,13 @@ export function HomeBookingDialog({
             <div className="space-y-2 pt-4 border-t">
               <div className="flex justify-between text-sm">
                 <span>
-                  ${pricePerNight} x {calculateNights()} đêm
+                  ${pricePerNight} x {calculateNights()} night
+                  {calculateNights() > 1 ? "s" : ""}
                 </span>
                 <span>${calculateTotal()}</span>
               </div>
               <div className="flex justify-between font-semibold text-lg">
-                <span>Tổng cộng</span>
+                <span>Total</span>
                 <span>${calculateTotal()}</span>
               </div>
             </div>
@@ -209,10 +210,10 @@ export function HomeBookingDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Hủy
+            Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? "Đang xử lý..." : "Xác nhận đặt phòng"}
+            {loading ? "Processing..." : "Confirm booking"}
           </Button>
         </DialogFooter>
       </DialogContent>

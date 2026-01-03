@@ -40,10 +40,10 @@ export function ProfileInterests() {
   return (
     <>
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">Sở thích của tôi</h2>
+        <h2 className="text-xl font-semibold mb-2">My Interests</h2>
         <p className="text-sm text-muted-foreground mb-6">
-          Tìm điểm chung với người dùng và chủ nhà khác bằng cách thêm sở thích
-          vào hồ sơ của bạn.
+          Find common ground with other users and hosts by adding interests to
+          your profile.
         </p>
 
         <div className="flex flex-wrap gap-3 mb-4">
@@ -70,7 +70,7 @@ export function ProfileInterests() {
             onClick={() => setDialogOpen(true)}
           >
             <Heart className="h-4 w-4 mr-2" />
-            Sửa sở thích
+            Edit interests
           </Button>
         </div>
       </div>

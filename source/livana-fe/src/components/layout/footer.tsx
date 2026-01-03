@@ -7,16 +7,16 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Support Section */}
           <div>
-            <h3 className="font-semibold mb-4">Hỗ trợ</h3>
+            <h3 className="font-semibold mb-4">Support</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
                 <a href="/help" className="hover:underline">
-                  Trung tâm trợ giúp
+                  Help Center
                 </a>
               </li>
               <li>
                 <a href="/safety" className="hover:underline">
-                  Hỗ trợ an toàn
+                  Safety support
                 </a>
               </li>
               <li>
@@ -26,22 +26,22 @@ export function Footer() {
               </li>
               <li>
                 <a href="/anti-discrimination" className="hover:underline">
-                  Chống phân biệt đối xử
+                  Anti-discrimination
                 </a>
               </li>
               <li>
                 <a href="/disability" className="hover:underline">
-                  Hỗ trợ người khuyết tật
+                  Disability support
                 </a>
               </li>
               <li>
                 <a href="/cancellation" className="hover:underline">
-                  Tùy chọn hủy
+                  Cancellation options
                 </a>
               </li>
               <li>
                 <a href="/report" className="hover:underline">
-                  Báo cáo vấn đề
+                  Report a concern
                 </a>
               </li>
             </ul>
@@ -49,41 +49,41 @@ export function Footer() {
 
           {/* Hosting Section */}
           <div>
-            <h3 className="font-semibold mb-4">Cho thuê</h3>
+            <h3 className="font-semibold mb-4">Hosting</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
                 <a href="/host" className="hover:underline">
-                  Cho thuê nhà
+                  Host your home
                 </a>
               </li>
               <li>
                 <a href="/experience" className="hover:underline">
-                  Trải nghiệm Livana
+                  Livana Experiences
                 </a>
               </li>
               <li>
                 <a href="/service" className="hover:underline">
-                  Dịch vụ Livana
+                  Livana Services
                 </a>
               </li>
               <li>
                 <a href="/aircover-hosts" className="hover:underline">
-                  AirCover cho chủ nhà
+                  AirCover for hosts
                 </a>
               </li>
               <li>
                 <a href="/resources" className="hover:underline">
-                  Tài nguyên cho thuê
+                  Hosting resources
                 </a>
               </li>
               <li>
                 <a href="/forum" className="hover:underline">
-                  Diễn đàn cộng đồng
+                  Community forum
                 </a>
               </li>
               <li>
                 <a href="/responsible" className="hover:underline">
-                  Cho thuê có trách nhiệm
+                  Responsible hosting
                 </a>
               </li>
             </ul>
@@ -95,27 +95,27 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
                 <a href="/newsroom" className="hover:underline">
-                  Phòng tin tức
+                  Newsroom
                 </a>
               </li>
               <li>
                 <a href="/careers" className="hover:underline">
-                  Nghề nghiệp
+                  Careers
                 </a>
               </li>
               <li>
                 <a href="/investors" className="hover:underline">
-                  Nhà đầu tư
+                  Investors
                 </a>
               </li>
               <li>
                 <a href="/gift-cards" className="hover:underline">
-                  Thẻ quà tặng
+                  Gift cards
                 </a>
               </li>
               <li>
                 <a href="/emergency" className="hover:underline">
-                  Livana.org khẩn cấp
+                  Livana.org emergency
                 </a>
               </li>
             </ul>
@@ -127,22 +127,22 @@ export function Footer() {
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span>© 2025 Livana, Inc.</span>
             <a href="/terms" className="hover:underline">
-              Điều khoản
+              Terms
             </a>
             <a href="/privacy" className="hover:underline">
-              Quyền riêng tư
+              Privacy
             </a>
             <a href="/sitemap" className="hover:underline">
-              Sơ đồ trang web
+              Sitemap
             </a>
           </div>
 
           <div className="flex items-center gap-4">
             <button className="flex items-center gap-2 text-sm font-medium hover:underline">
               <Globe className="h-4 w-4" />
-              Tiếng Việt (VN)
+              English (US)
             </button>
-            <button className="text-sm font-medium hover:underline">VND</button>
+            <button className="text-sm font-medium hover:underline">USD</button>
             <div className="flex gap-3">
               <a href="#" className="hover:opacity-70">
                 <Facebook className="h-5 w-5" />

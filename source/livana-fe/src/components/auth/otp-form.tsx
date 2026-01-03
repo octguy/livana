@@ -42,12 +42,12 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
     e.preventDefault();
 
     if (!email) {
-      setVerifyError("Email không hợp lệ. Vui lòng đăng ký lại.");
+      setVerifyError("Invalid email. Please register again.");
       return;
     }
 
     if (otpValue.length !== 6) {
-      setVerifyError("Vui lòng nhập đầy đủ 6 chữ số");
+      setVerifyError("Please enter all 6 digits");
       return;
     }
 
@@ -63,15 +63,15 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
     } catch (error: any) {
       const status = error?.response?.status ?? error?.status;
       if (status === 400) {
-        setVerifyError("Mã xác thực không hợp lệ hoặc đã hết hạn");
+        setVerifyError("Invalid or expired verification code");
       } else if (status === 404) {
-        setVerifyError("Không tìm thấy yêu cầu xác thực");
+        setVerifyError("Verification request not found");
       } else if (status === 500) {
-        setVerifyError("Lỗi máy chủ. Vui lòng thử lại sau.");
+        setVerifyError("Server error. Please try again later.");
       } else if (error?.response?.data?.message) {
         setVerifyError(String(error.response.data.message));
       } else {
-        setVerifyError("Xác thực không thành công. Vui lòng thử lại.");
+        setVerifyError("Verification failed. Please try again.");
       }
     } finally {
       setIsSubmitting(false);
@@ -80,7 +80,7 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
 
   const handleResendCode = async () => {
     if (!email) {
-      setVerifyError("Email không hợp lệ. Vui lòng đăng ký lại.");
+      setVerifyError("Invalid email. Please register again.");
       return;
     }
 
@@ -89,18 +89,18 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
       setVerifyError(null);
       setResendSuccess(null);
       await resendVerificationCode(email);
-      setResendSuccess("Mã xác thực mới đã được gửi đến email của bạn");
+      setResendSuccess("A new verification code has been sent to your email");
       setOtpValue("");
       console.log("Resend code functionality is not implemented yet.");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const status = error?.response?.status ?? error?.status;
       if (status === 429) {
-        setVerifyError("Vui lòng đợi trước khi gửi lại mã");
+        setVerifyError("Please wait before requesting a new code");
       } else if (status === 500) {
-        setVerifyError("Lỗi máy chủ. Vui lòng thử lại sau.");
+        setVerifyError("Server error. Please try again later.");
       } else {
-        setVerifyError("Không thể gửi lại mã. Vui lòng thử lại.");
+        setVerifyError("Unable to resend code. Please try again.");
       }
     } finally {
       setIsResending(false);
@@ -127,11 +127,11 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
               </div>
               <span className="sr-only">Acme Inc.</span>
             </a>
-            <h1 className="text-xl font-bold">Xác thực tài khoản</h1>
+            <h1 className="text-xl font-bold">Verify Your Account</h1>
             <FieldDescription>
               {email
-                ? `Chúng tôi đã gửi mã 6 chữ số đến ${email}`
-                : "Vui lòng nhập mã xác thực 6 chữ số"}
+                ? `We sent a 6-digit code to ${email}`
+                : "Please enter the 6-digit verification code"}
             </FieldDescription>
           </div>
 
@@ -151,7 +151,7 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
 
           <Field>
             <FieldLabel htmlFor="otp" className="sr-only">
-              Mã xác thực
+              Verification Code
             </FieldLabel>
             <InputOTP
               maxLength={6}
@@ -174,7 +174,7 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
               </InputOTPGroup>
             </InputOTP>
             <FieldDescription className="text-center">
-              Không nhận được mã?{" "}
+              Didn't receive a code?{" "}
               <button
                 type="button"
                 onClick={handleResendCode}
@@ -184,10 +184,10 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
                 {isResending ? (
                   <span className="inline-flex items-center">
                     <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                    Đang gửi...
+                    Sending...
                   </span>
                 ) : (
-                  "Gửi lại"
+                  "Resend"
                 )}
               </button>
             </FieldDescription>
@@ -200,19 +200,19 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Xác thực
+              Verify
             </Button>
           </Field>
           <FieldDescription className="text-center">
             <a href="/login" className="underline underline-offset-4">
-              Quay lại đăng nhập
+              Back to login
             </a>
           </FieldDescription>
         </FieldGroup>
       </form>
       <FieldDescription className="px-6 text-center">
-        Bằng cách tiếp tục, bạn đồng ý với <a href="#">Điều khoản dịch vụ</a> và{" "}
-        <a href="#">Chính sách bảo mật</a> của chúng tôi.
+        By continuing, you agree to our <a href="#">Terms of Service</a> and{" "}
+        <a href="#">Privacy Policy</a>.
       </FieldDescription>
     </div>
   );

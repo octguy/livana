@@ -122,8 +122,8 @@ export const cloudinaryService = {
       });
       return response.data;
     } catch (error) {
-      console.error("Lỗi khi tải ảnh lên Cloudinary:", error);
-      toast.error("Lỗi khi tải ảnh đại diện. Vui lòng thử lại.");
+      console.error("Error uploading image to Cloudinary:", error);
+      toast.error("Error uploading avatar. Please try again.");
       throw error;
     }
   },
@@ -135,8 +135,8 @@ export const cloudinaryService = {
       });
       return response.data;
     } catch (error) {
-      console.error("Lỗi khi xóa ảnh đại diện:", error);
-      toast.error("Lỗi khi xóa ảnh đại diện. Vui lòng thử lại.");
+      console.error("Error deleting avatar:", error);
+      toast.error("Error deleting avatar. Please try again.");
       throw error;
     }
   },

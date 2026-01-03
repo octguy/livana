@@ -22,15 +22,15 @@ const resetPasswordRequestSchema = z
   .object({
     password: z
       .string()
-      .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+      .min(8, "Password must be at least 8 characters")
       .regex(
         PASSWORD_REGEX,
-        "Mật khẩu phải có ít nhất một số, 1 chữ hoa, 1 chữ cái đặc biệt"
+        "Password must have at least one number, one uppercase letter, and one special character"
       ),
-    confirmPassword: z.string().min(1, "Vui lòng xác nhận mật khẩu"),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Mật khẩu xác nhận không khớp",
+    message: "Passwords do not match",
     path: ["confirmPassword"],
   });
 
@@ -75,16 +75,14 @@ export function ResetPasswordForm({
         const status = error?.response?.status ?? error?.status;
         if (status === 400 || status === 404) {
           setResetPasswordError(
-            "Đặt lại mật khẩu không thành công. Vui lòng kiểm tra email của bạn."
+            "Password reset failed. Please check your email."
           );
         } else if (status === 500) {
-          setResetPasswordError("Lỗi máy chủ. Vui lòng thử lại sau.");
+          setResetPasswordError("Server error. Please try again later.");
         } else if (error?.response?.data?.message) {
           setResetPasswordError(String(error.response.data.message));
         } else {
-          setResetPasswordError(
-            "Đặt lại mật khẩu không thành công. Vui lòng thử lại."
-          );
+          setResetPasswordError("Password reset failed. Please try again.");
         }
       }
     }
@@ -94,10 +92,8 @@ export function ResetPasswordForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="border-border">
         <CardHeader>
-          <CardTitle>Quên mật khẩu</CardTitle>
-          <CardDescription>
-            Nhập email của bạn để khôi phục mật khẩu
-          </CardDescription>
+          <CardTitle>Reset Password</CardTitle>
+          <CardDescription>Enter your new password</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -110,7 +106,7 @@ export function ResetPasswordForm({
               {/* password */}
               <div className="flex flex-col gap-3">
                 <FieldLabel htmlFor="password" className="block text-sm">
-                  Mật khẩu
+                  Password
                 </FieldLabel>
                 <div className="relative">
                   <Input
@@ -143,13 +139,14 @@ export function ResetPasswordForm({
                 )}
                 {/* Note about password requirements */}
                 <p className="text-xs text-muted-foreground">
-                  Mật khẩu phải có ít nhất một số, 1 chữ hoa, 1 chữ cái đặc biệt
+                  Password must have at least one number, one uppercase letter,
+                  and one special character
                 </p>
               </div>
               {/* confirm password */}
               <div className="flex flex-col gap-3">
                 <FieldLabel htmlFor="confirmPassword" className="block text-sm">
-                  Xác nhận mật khẩu
+                  Confirm Password
                 </FieldLabel>
                 <div className="relative">
                   <Input
@@ -186,16 +183,16 @@ export function ResetPasswordForm({
                   {isSubmitting && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  {isSubmitting ? "Đang xử lý..." : "Khôi phục mật khẩu"}
+                  {isSubmitting ? "Processing..." : "Reset Password"}
                 </Button>
               </Field>
               <div className="text-center text-sm">
-                Đã có tài khoản?{" "}
+                Already have an account?{" "}
                 <a
                   href="/login"
                   className="underline underline-offset-4 hover:text-primary"
                 >
-                  Đăng nhập
+                  Login
                 </a>
               </div>
             </FieldGroup>

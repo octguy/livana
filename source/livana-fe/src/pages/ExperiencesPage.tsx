@@ -31,7 +31,7 @@ export function ExperiencesPage() {
         const response = await getAllExperienceListings();
         setListings(response.data || []);
       } catch (error) {
-        toast.error("Không thể tải danh sách trải nghiệm");
+        toast.error("Unable to load experiences list");
         console.error("Error fetching experience listings:", error);
       } finally {
         setLoading(false);
@@ -56,12 +56,12 @@ export function ExperiencesPage() {
       });
       setSearchResults(response.data || []);
       if (response.data?.length === 0) {
-        toast.info("Không tìm thấy trải nghiệm nào trong khu vực này");
+        toast.info("No experiences found in this area");
       } else {
-        toast.success(`Tìm thấy ${response.data?.length} trải nghiệm`);
+        toast.success(`Found ${response.data?.length} experiences`);
       }
     } catch (error) {
-      toast.error("Tìm kiếm thất bại");
+      toast.error("Search failed");
       console.error("Error searching listings:", error);
     } finally {
       setSearching(false);
@@ -87,16 +87,15 @@ export function ExperiencesPage() {
         <div className="container">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              Khám phá trải nghiệm độc đáo
+              Discover unique experiences
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-8">
-              Tìm những hoạt động và trải nghiệm khó quên được tổ chức bởi người
-              dân địa phương
+              Find unforgettable activities and experiences hosted by locals
             </p>
             <LocationSearchBar
               onSearch={handleSearch}
               loading={searching}
-              placeholder="Bạn muốn trải nghiệm gì? Tìm theo địa điểm..."
+              placeholder="What do you want to experience? Search by location..."
               className="max-w-2xl mx-auto"
             />
           </div>
@@ -108,14 +107,14 @@ export function ExperiencesPage() {
         <div className="container">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold">
-              {isSearchMode ? "Kết quả tìm kiếm" : "Trải nghiệm nổi bật"}
+              {isSearchMode ? "Search results" : "Featured experiences"}
             </h2>
             {isSearchMode && (
               <button
                 onClick={clearSearch}
                 className="text-sm text-primary hover:underline"
               >
-                Xóa tìm kiếm
+                Clear search
               </button>
             )}
           </div>
@@ -136,8 +135,8 @@ export function ExperiencesPage() {
             <div className="text-center py-20">
               <p className="text-xl text-muted-foreground">
                 {isSearchMode
-                  ? "Không tìm thấy trải nghiệm nào trong khu vực này"
-                  : "Chưa có trải nghiệm nào"}
+                  ? "No experiences found in this area"
+                  : "No experiences yet"}
               </p>
             </div>
           ) : (
@@ -163,7 +162,7 @@ export function ExperiencesPage() {
                       ) : (
                         <div className="w-full h-full bg-muted flex items-center justify-center">
                           <span className="text-muted-foreground">
-                            Không có ảnh
+                            No image
                           </span>
                         </div>
                       )}
@@ -196,13 +195,15 @@ export function ExperiencesPage() {
 
                         <div className="flex items-center gap-1">
                           <Users className="h-3 w-3 flex-shrink-0" />
-                          <span>Tối đa {listing.capacity} người</span>
+                          <span>Maximum {listing.capacity} people</span>
                         </div>
 
                         {listing.sessions && listing.sessions.length > 0 && (
                           <div className="flex items-center gap-1">
                             <Calendar className="h-3 w-3 flex-shrink-0" />
-                            <span>{listing.sessions.length} buổi khả dụng</span>
+                            <span>
+                              {listing.sessions.length} sessions available
+                            </span>
                           </div>
                         )}
                       </div>
@@ -211,7 +212,7 @@ export function ExperiencesPage() {
                         <span className="text-sm font-bold">
                           ${listing.price}
                           <span className="text-xs text-muted-foreground font-normal">
-                            /người
+                            /person
                           </span>
                         </span>
                       </div>
@@ -224,7 +225,7 @@ export function ExperiencesPage() {
                               .toUpperCase()}
                           </div>
                           <span className="text-xs text-muted-foreground">
-                            Tổ chức bởi {listing.host.hostDisplayName}
+                            Hosted by {listing.host.hostDisplayName}
                           </span>
                         </div>
                       )}

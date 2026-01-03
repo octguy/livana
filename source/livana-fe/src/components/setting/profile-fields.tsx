@@ -11,12 +11,12 @@ import { useProfileStore } from "@/stores/useProfileStore";
 import type { UpdateProfileRequest } from "@/types/request/updateProfileRequest";
 
 const profileSchema = z.object({
-  firstName: z.string().min(1, "Họ là bắt buộc"),
-  lastName: z.string().min(1, "Tên là bắt buộc"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
   phone: z
     .string()
-    .min(10, "Số điện thoại phải có ít nhất 10 số")
-    .regex(/^[0-9]+$/, "Số điện thoại chỉ chứa chữ số"),
+    .min(10, "Phone number must be at least 10 digits")
+    .regex(/^[0-9]+$/, "Phone number can only contain digits"),
   bio: z.string().optional(),
 });
 
@@ -65,11 +65,11 @@ export function ProfileFields() {
         phoneNumber: data.phone,
         bio: data.bio,
       };
-      console.log("Cập nhật hồ sơ với dữ liệu:", updatedData);
+      console.log("Updating profile with data:", updatedData);
       await update(updatedData);
       await useAuthStore.getState().fetchMe();
     } catch (error) {
-      console.error("Lỗi khi cập nhật hồ sơ:", error);
+      console.error("Error updating profile:", error);
     }
   };
 
@@ -79,8 +79,8 @@ export function ProfileFields() {
         <div>
           <ProfileField
             icon={User}
-            label="Họ"
-            placeholder="Nguyễn"
+            label="First Name"
+            placeholder="John"
             {...register("firstName")}
           />
           {errors.firstName && (
@@ -92,8 +92,8 @@ export function ProfileFields() {
         <div>
           <ProfileField
             icon={User}
-            label="Tên"
-            placeholder="Văn A"
+            label="Last Name"
+            placeholder="Doe"
             {...register("lastName")}
           />
           {errors.lastName && (
@@ -108,9 +108,9 @@ export function ProfileFields() {
         <div>
           <ProfileField
             icon={Phone}
-            label="Số điện thoại"
+            label="Phone Number"
             type="tel"
-            placeholder="0123456789"
+            placeholder="1234567890"
             {...register("phone")}
           />
           {errors.phone && (
@@ -122,10 +122,10 @@ export function ProfileFields() {
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <User className="h-5 w-5 text-muted-foreground" />
-          <label className="text-sm font-medium">Tiểu sử</label>
+          <label className="text-sm font-medium">Bio</label>
         </div>
         <Textarea
-          placeholder="Giới thiệu về bản thân..."
+          placeholder="Tell us about yourself..."
           className="w-full min-h-[100px]"
           {...register("bio")}
         />
@@ -135,7 +135,7 @@ export function ProfileFields() {
       </div>
 
       <Button type="submit" className="w-full md:w-auto">
-        Cập nhật hồ sơ
+        Update profile
       </Button>
     </form>
   );
