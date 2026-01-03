@@ -52,6 +52,10 @@ public class HomeListingServiceImpl implements IHomeListingService {
     private final HomeAmenityRepository homeAmenityRepository;
 
     private final ListingImageRepository listingImageRepository;
+    
+    private final ReviewRepository reviewRepository;
+    
+    private final HomeBookingRepository homeBookingRepository;
 
     public HomeListingServiceImpl(HomeListingRepository homeListingRepository,
                                   PropertyTypeRepository propertyTypeRepository,
@@ -60,7 +64,9 @@ public class HomeListingServiceImpl implements IHomeListingService {
                                   HomeFacilityRepository homeFacilityRepository,
                                   HomeAmenityRepository homeAmenityRepository,
                                   ListingImageRepository listingImageRepository,
-                                  UserProfileRepository userProfileRepository) {
+                                  UserProfileRepository userProfileRepository,
+                                  ReviewRepository reviewRepository,
+                                  HomeBookingRepository homeBookingRepository) {
         this.userProfileRepository = userProfileRepository;
         this.homeFacilityRepository = homeFacilityRepository;
         this.homeAmenityRepository = homeAmenityRepository;
@@ -69,6 +75,8 @@ public class HomeListingServiceImpl implements IHomeListingService {
         this.propertyTypeRepository = propertyTypeRepository;
         this.homeListingRepository = homeListingRepository;
         this.listingImageRepository = listingImageRepository;
+        this.reviewRepository = reviewRepository;
+        this.homeBookingRepository = homeBookingRepository;
     }
 
     @Override
@@ -472,7 +480,9 @@ public class HomeListingServiceImpl implements IHomeListingService {
                     return new ResourceNotFoundException("Home listing not found");
                 });
         
-        // Delete related data first
+        // Delete related data first (cascade delete)
+        homeBookingRepository.deleteByHomeListingId(id);
+        reviewRepository.deleteByListingId(id);
         homeFacilityRepository.deleteByListingId(id);
         homeAmenityRepository.deleteByListingId(id);
         listingImageRepository.deleteByListingId(id);

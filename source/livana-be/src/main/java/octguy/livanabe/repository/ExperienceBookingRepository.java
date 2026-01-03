@@ -2,6 +2,7 @@ package octguy.livanabe.repository;
 
 import octguy.livanabe.entity.ExperienceBooking;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -20,6 +21,10 @@ public interface ExperienceBookingRepository extends JpaRepository<ExperienceBoo
     
     @Query("SELECT eb FROM ExperienceBooking eb WHERE eb.session.experienceListing.id = :experienceListingId ORDER BY eb.createdAt DESC")
     List<ExperienceBooking> findByExperienceListingId(@Param("experienceListingId") UUID experienceListingId);
+    
+    @Modifying
+    @Query("DELETE FROM ExperienceBooking eb WHERE eb.session.experienceListing.id = :experienceListingId")
+    void deleteByExperienceListingId(@Param("experienceListingId") UUID experienceListingId);
     
     @Query("SELECT eb FROM ExperienceBooking eb WHERE eb.session.experienceListing.host.id = :hostId ORDER BY eb.createdAt DESC")
     List<ExperienceBooking> findByHostId(@Param("hostId") UUID hostId);

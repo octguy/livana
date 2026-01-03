@@ -14,10 +14,12 @@ import octguy.livanabe.dto.response.ListingSearchResult;
 import octguy.livanabe.dto.response.SessionResponse;
 import octguy.livanabe.entity.*;
 import octguy.livanabe.exception.ResourceNotFoundException;
+import octguy.livanabe.repository.ExperienceBookingRepository;
 import octguy.livanabe.repository.ExperienceCategoryRepository;
 import octguy.livanabe.repository.ExperienceListingRepository;
 import octguy.livanabe.repository.ExperienceSessionRepository;
 import octguy.livanabe.repository.ListingImageRepository;
+import octguy.livanabe.repository.ReviewRepository;
 import octguy.livanabe.repository.UserProfileRepository;
 import octguy.livanabe.service.IExperienceListingService;
 import octguy.livanabe.utils.GeoUtils;
@@ -40,17 +42,23 @@ public class ExperienceListingServiceImpl implements IExperienceListingService {
     private final ListingImageRepository listingImageRepository;
     private final ExperienceSessionRepository experienceSessionRepository;
     private final UserProfileRepository userProfileRepository;
+    private final ReviewRepository reviewRepository;
+    private final ExperienceBookingRepository experienceBookingRepository;
 
     public ExperienceListingServiceImpl(ExperienceListingRepository experienceListingRepository,
                                         ExperienceCategoryRepository experienceCategoryRepository,
                                         ListingImageRepository listingImageRepository,
                                         ExperienceSessionRepository experienceSessionRepository,
-                                        UserProfileRepository userProfileRepository) {
+                                        UserProfileRepository userProfileRepository,
+                                        ReviewRepository reviewRepository,
+                                        ExperienceBookingRepository experienceBookingRepository) {
         this.experienceListingRepository = experienceListingRepository;
         this.experienceCategoryRepository = experienceCategoryRepository;
         this.listingImageRepository = listingImageRepository;
         this.experienceSessionRepository = experienceSessionRepository;
         this.userProfileRepository = userProfileRepository;
+        this.reviewRepository = reviewRepository;
+        this.experienceBookingRepository = experienceBookingRepository;
     }
 
     @Override
@@ -455,7 +463,9 @@ public class ExperienceListingServiceImpl implements IExperienceListingService {
                     return new ResourceNotFoundException("Experience listing not found: " + id);
                 });
         
-        // Delete related data first
+        // Delete related data first (cascade delete)
+        experienceBookingRepository.deleteByExperienceListingId(id);
+        reviewRepository.deleteByListingId(id);
         experienceSessionRepository.deleteByExperienceListingId(id);
         listingImageRepository.deleteByListingId(id);
         

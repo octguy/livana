@@ -3,6 +3,7 @@ package octguy.livanabe.repository;
 import octguy.livanabe.entity.Review;
 import octguy.livanabe.enums.ReviewType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -29,4 +30,8 @@ public interface ReviewRepository extends JpaRepository<Review, UUID> {
     Long countByListingId(@Param("listingId") UUID listingId);
     
     List<Review> findByListingIdAndReviewTypeOrderByCreatedAtDesc(UUID listingId, ReviewType reviewType);
+    
+    @Modifying
+    @Query("DELETE FROM Review r WHERE r.listing.id = :listingId")
+    void deleteByListingId(@Param("listingId") UUID listingId);
 }

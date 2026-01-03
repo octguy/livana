@@ -2,6 +2,7 @@ package octguy.livanabe.repository;
 
 import octguy.livanabe.entity.HomeBooking;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,10 @@ public interface HomeBookingRepository extends JpaRepository<HomeBooking, UUID> 
     List<HomeBooking> findByCustomerId(UUID customerId);
     
     List<HomeBooking> findByHomeListingId(UUID homeListingId);
+    
+    @Modifying
+    @Query("DELETE FROM HomeBooking hb WHERE hb.homeListing.id = :homeListingId")
+    void deleteByHomeListingId(@Param("homeListingId") UUID homeListingId);
     
     @Query("SELECT hb FROM HomeBooking hb WHERE hb.homeListing.host.id = :hostId ORDER BY hb.createdAt DESC")
     List<HomeBooking> findByHostId(@Param("hostId") UUID hostId);
