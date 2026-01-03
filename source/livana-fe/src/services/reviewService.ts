@@ -6,6 +6,16 @@ import type {
 } from "@/types/response/reviewResponse";
 import type { CreateReviewRequest } from "@/types/request/reviewRequest";
 
+export interface PaginatedResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+}
+
 export const reviewService = {
   // Create a new review
   createReview: async (request: CreateReviewRequest) => {
@@ -53,6 +63,26 @@ export const reviewService = {
   deleteReview: async (reviewId: string) => {
     const response = await api.delete<ApiResponse<void>>(
       `/reviews/${reviewId}`
+    );
+    return response.data;
+  },
+
+  // Admin functions
+  getAllReviewsPaginated: async (
+    page: number = 0,
+    size: number = 10,
+    sortBy: string = "createdAt",
+    sortDir: string = "desc"
+  ) => {
+    const response = await api.get<
+      ApiResponse<PaginatedResponse<ReviewResponse>>
+    >("/reviews/admin/paginated", { params: { page, size, sortBy, sortDir } });
+    return response.data;
+  },
+
+  adminDeleteReview: async (reviewId: string) => {
+    const response = await api.delete<ApiResponse<void>>(
+      `/reviews/admin/${reviewId}`
     );
     return response.data;
   },

@@ -5,3 +5,4 @@ export { FacilityManagement } from "./facility-management";
 export { AmenityManagement } from "./amenity-management";
 export { DashboardOverview } from "./dashboard-overview";
 export { ListingManagement } from "./listing-management";
+export { RatingsManagement } from "./ratings-management";

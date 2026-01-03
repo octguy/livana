@@ -21,6 +21,8 @@ import octguy.livanabe.repository.UserRepository;
 import octguy.livanabe.service.INotificationService;
 import octguy.livanabe.service.IReviewService;
 import octguy.livanabe.utils.SecurityUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -135,6 +137,26 @@ public class ReviewServiceImpl implements IReviewService {
     @Override
     public boolean hasUserReviewedListing(UUID listingId, UUID reviewerId) {
         return reviewRepository.existsByListingIdAndReviewerId(listingId, reviewerId);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReviewResponse> getAllReviewsPaginated(Pageable pageable) {
+        log.info("Fetching all reviews paginated");
+        Page<Review> reviews = reviewRepository.findAll(pageable);
+        return reviews.map(this::convertToResponse);
+    }
+    
+    @Override
+    @Transactional
+    public void adminDeleteReview(UUID reviewId) {
+        log.info("Admin deleting review with id {}", reviewId);
+        
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
+        
+        reviewRepository.delete(review);
+        log.info("Successfully deleted review with id {}", reviewId);
     }
 
     private void sendReviewNotificationToHost(BaseListing listing, User reviewer, Review review) {

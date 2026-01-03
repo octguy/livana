@@ -3,6 +3,8 @@ package octguy.livanabe.service;
 import octguy.livanabe.dto.request.CreateReviewRequest;
 import octguy.livanabe.dto.response.ListingRatingSummary;
 import octguy.livanabe.dto.response.ReviewResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,4 +22,9 @@ public interface IReviewService {
     void deleteReview(UUID reviewId);
     
     boolean hasUserReviewedListing(UUID listingId, UUID reviewerId);
+    
+    // Admin methods
+    Page<ReviewResponse> getAllReviewsPaginated(Pageable pageable);
+    
+    void adminDeleteReview(UUID reviewId);
 }

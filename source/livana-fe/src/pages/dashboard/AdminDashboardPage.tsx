@@ -24,6 +24,7 @@ import {
   AmenityManagement,
   DashboardOverview,
   ListingManagement,
+  RatingsManagement,
 } from "@/components/admin";
 import { useAuthStore } from "@/stores/useAuthStore";
 import {
@@ -39,6 +40,7 @@ import {
   Activity,
   Settings,
   Building2,
+  Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -46,6 +48,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 type SectionId =
   | "overview"
   | "listings"
+  | "ratings"
   | "interests"
   | "experiences"
   | "properties"
@@ -74,6 +77,12 @@ const AdminDashboardPage = () => {
       label: "Quản lý Listings",
       icon: Building2,
       description: "Quản lý tất cả listings",
+    },
+    {
+      id: "ratings",
+      label: "Đánh giá",
+      icon: Star,
+      description: "Quản lý đánh giá listings",
     },
     {
       id: "interests",
@@ -294,6 +303,7 @@ const AdminDashboardPage = () => {
                 {activeSection === "overview" && <DashboardOverview />}
 
                 {activeSection === "listings" && <ListingManagement />}
+                {activeSection === "ratings" && <RatingsManagement />}
                 {activeSection === "interests" && <InterestManagement />}
                 {activeSection === "experiences" && (
                   <ExperienceCategoryManagement />
