@@ -142,88 +142,96 @@ export function ExperiencesPage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-              {displayListings.map((listing: ExperienceListingResponse & { distanceKm?: number }) => (
-                <Card
-                  key={listing.listingId}
-                  className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() =>
-                    navigate(`/experience-listings/${listing.listingId}`)
-                  }
-                >
-                  <div className="aspect-square relative overflow-hidden">
-                    {listing.images && listing.images.length > 0 ? (
-                      <img
-                        src={listing.images[0].image.url}
-                        alt={listing.title}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-muted flex items-center justify-center">
-                        <span className="text-muted-foreground">
-                          Không có ảnh
-                        </span>
-                      </div>
-                    )}
-                    {listing.distanceKm !== undefined && (
-                      <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
-                        <Navigation className="h-3 w-3" />
-                        {listing.distanceKm} km
-                      </div>
-                    )}
-                  </div>
-                  <CardContent className="p-3">
-                    <div className="mb-1">
-                      <h3 className="font-semibold text-sm line-clamp-1">
-                        {listing.title}
-                      </h3>
-                      {listing.experienceCategory && (
-                        <p className="text-xs text-primary font-medium">
-                          {listing.experienceCategory.name}
-                        </p>
+              {displayListings.map(
+                (
+                  listing: ExperienceListingResponse & { distanceKm?: number }
+                ) => (
+                  <Card
+                    key={listing.listingId}
+                    className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                    onClick={() =>
+                      navigate(`/experience-listings/${listing.listingId}`)
+                    }
+                  >
+                    <div className="aspect-square relative overflow-hidden">
+                      {listing.images && listing.images.length > 0 ? (
+                        <img
+                          src={listing.images[0].image.url}
+                          alt={listing.title}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-muted flex items-center justify-center">
+                          <span className="text-muted-foreground">
+                            Không có ảnh
+                          </span>
+                        </div>
+                      )}
+                      {listing.distanceKm !== undefined && (
+                        <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
+                          <Navigation className="h-3 w-3" />
+                          {listing.distanceKm} km
+                        </div>
                       )}
                     </div>
-
-                    <div className="space-y-0.5 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3 flex-shrink-0" />
-                        <span className="line-clamp-1">{listing.address}</span>
+                    <CardContent className="p-3">
+                      <div className="mb-1">
+                        <h3 className="font-semibold text-sm line-clamp-1">
+                          {listing.title}
+                        </h3>
+                        {listing.experienceCategory && (
+                          <p className="text-xs text-primary font-medium">
+                            {listing.experienceCategory.name}
+                          </p>
+                        )}
                       </div>
 
-                      <div className="flex items-center gap-1">
-                        <Users className="h-3 w-3 flex-shrink-0" />
-                        <span>Tối đa {listing.capacity} người</span>
-                      </div>
-
-                      {listing.sessions && listing.sessions.length > 0 && (
+                      <div className="space-y-0.5 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3 flex-shrink-0" />
-                          <span>{listing.sessions.length} buổi khả dụng</span>
+                          <MapPin className="h-3 w-3 flex-shrink-0" />
+                          <span className="line-clamp-1">
+                            {listing.address}
+                          </span>
                         </div>
-                      )}
-                    </div>
 
-                    <div className="mt-2 pt-2 border-t">
-                      <span className="text-sm font-bold">
-                        ${listing.price}
-                        <span className="text-xs text-muted-foreground font-normal">
-                          /người
-                        </span>
-                      </span>
-                    </div>
-
-                    {listing.host && (
-                      <div className="mt-2 flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
-                          {listing.host.hostDisplayName.charAt(0).toUpperCase()}
+                        <div className="flex items-center gap-1">
+                          <Users className="h-3 w-3 flex-shrink-0" />
+                          <span>Tối đa {listing.capacity} người</span>
                         </div>
-                        <span className="text-xs text-muted-foreground">
-                          Tổ chức bởi {listing.host.hostDisplayName}
+
+                        {listing.sessions && listing.sessions.length > 0 && (
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3 flex-shrink-0" />
+                            <span>{listing.sessions.length} buổi khả dụng</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-2 pt-2 border-t">
+                        <span className="text-sm font-bold">
+                          ${listing.price}
+                          <span className="text-xs text-muted-foreground font-normal">
+                            /người
+                          </span>
                         </span>
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+
+                      {listing.host && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
+                            {listing.host.hostDisplayName
+                              .charAt(0)
+                              .toUpperCase()}
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            Tổ chức bởi {listing.host.hostDisplayName}
+                          </span>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )
+              )}
             </div>
           )}
         </div>

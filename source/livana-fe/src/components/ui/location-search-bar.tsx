@@ -50,7 +50,8 @@ export function LocationSearchBar({
   const [results, setResults] = useState<NominatimResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<SearchLocation | null>(null);
+  const [selectedLocation, setSelectedLocation] =
+    useState<SearchLocation | null>(null);
   const [radiusKm, setRadiusKm] = useState(50);
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
@@ -61,7 +62,10 @@ export function LocationSearchBar({
   // Handle click outside to close results
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setShowResults(false);
       }
     };
@@ -153,7 +157,7 @@ export function LocationSearchBar({
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        
+
         // Reverse geocode to get address
         try {
           const response = await fetch(
@@ -165,13 +169,13 @@ export function LocationSearchBar({
             }
           );
           const data = await response.json();
-          
+
           const location: SearchLocation = {
             latitude,
             longitude,
             displayName: data.display_name || "Current Location",
           };
-          
+
           setSelectedLocation(location);
           setQuery(data.display_name?.split(",")[0] || "Current Location");
         } catch {
@@ -207,7 +211,9 @@ export function LocationSearchBar({
             className="pl-10 pr-20"
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-            {searching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+            {searching && (
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            )}
             {query && (
               <button
                 onClick={handleClear}
@@ -235,7 +241,9 @@ export function LocationSearchBar({
                   className="w-full px-4 py-2 text-left hover:bg-muted flex items-start gap-2"
                 >
                   <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
-                  <span className="text-sm line-clamp-2">{result.display_name}</span>
+                  <span className="text-sm line-clamp-2">
+                    {result.display_name}
+                  </span>
                 </button>
               ))}
             </div>
@@ -305,11 +313,7 @@ export function LocationSearchBar({
           disabled={!selectedLocation || loading}
           className="shrink-0"
         >
-          {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            "Search"
-          )}
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
         </Button>
       </div>
 
