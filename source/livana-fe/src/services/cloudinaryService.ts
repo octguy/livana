@@ -144,7 +144,8 @@ export const cloudinaryService = {
   // Delete image from Cloudinary using backend endpoint
   deleteImage: async (publicId: string): Promise<void> => {
     try {
-      await api.delete(`/cloudinary/images/${encodeURIComponent(publicId)}`, {
+      await api.delete(`/cloudinary/image`, {
+        params: { publicId },
         withCredentials: true,
       });
     } catch (error) {

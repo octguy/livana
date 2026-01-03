@@ -45,7 +45,23 @@ public class CloudinaryController {
     }
 
     @DeleteMapping("/images/{publicId}")
-    public ResponseEntity<ApiResponse<Void>> deleteImage(@PathVariable String publicId) {
+    public ResponseEntity<ApiResponse<Void>> deleteImage(@PathVariable("publicId") String publicId) {
+        // Decode the publicId in case it was double-encoded
+        String decodedPublicId = java.net.URLDecoder.decode(publicId, java.nio.charset.StandardCharsets.UTF_8);
+        cloudinaryService.deleteImage(decodedPublicId);
+
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Image deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/image")
+    public ResponseEntity<ApiResponse<Void>> deleteImageByParam(@RequestParam String publicId) {
         cloudinaryService.deleteImage(publicId);
 
         ApiResponse<Void> response = new ApiResponse<>(
