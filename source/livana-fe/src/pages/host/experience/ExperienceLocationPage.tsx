@@ -174,7 +174,7 @@ export function ExperienceLocationPage() {
           Share your experience's address so guests know where they'll be going.
         </p>
 
-        <div className="relative mb-6">
+        <div className="relative mb-6 z-50">
           <Input
             type="text"
             placeholder="Search for an address..."
@@ -202,7 +202,7 @@ export function ExperienceLocationPage() {
         </div>
 
         {!isLoadingLocation && (
-          <div className="mb-6">
+          <div className="mb-6 relative z-0">
             <div className="w-full h-[400px] rounded-xl overflow-hidden border-2 border-gray-200">
               <MapContainer
                 center={markerPosition}
