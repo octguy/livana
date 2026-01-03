@@ -2,8 +2,10 @@ package octguy.livanabe.controller;
 
 import jakarta.validation.Valid;
 import octguy.livanabe.dto.request.CreateExperienceListingRequest;
+import octguy.livanabe.dto.request.LocationSearchRequest;
 import octguy.livanabe.dto.request.UpdateExperienceListingRequest;
 import octguy.livanabe.dto.response.ExperienceListingResponse;
+import octguy.livanabe.dto.response.ListingSearchResult;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.service.IExperienceListingService;
 import org.springframework.http.HttpStatus;
@@ -98,6 +100,37 @@ public class ExperienceListingController {
                 HttpStatus.OK,
                 "Experience listing updated successfully",
                 listing,
+                null
+        );
+
+        return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<ListingSearchResult<ExperienceListingResponse>>>> searchByLocation(
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
+            @RequestParam(required = false, defaultValue = "50") Double radiusKm,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) Integer minCapacity,
+            @RequestParam(required = false) String experienceCategoryId
+    ) {
+        LocationSearchRequest request = new LocationSearchRequest();
+        request.setLatitude(latitude);
+        request.setLongitude(longitude);
+        request.setRadiusKm(radiusKm);
+        request.setMinPrice(minPrice);
+        request.setMaxPrice(maxPrice);
+        request.setMinCapacity(minCapacity);
+        request.setExperienceCategoryId(experienceCategoryId);
+        
+        List<ListingSearchResult<ExperienceListingResponse>> results = experienceListingService.searchByLocation(request);
+
+        ApiResponse<List<ListingSearchResult<ExperienceListingResponse>>> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Experience listings search completed successfully",
+                results,
                 null
         );
 

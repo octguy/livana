@@ -1,8 +1,10 @@
 package octguy.livanabe.service;
 
 import octguy.livanabe.dto.request.CreateHomeListingRequest;
+import octguy.livanabe.dto.request.LocationSearchRequest;
 import octguy.livanabe.dto.request.UpdateHomeListingRequest;
 import octguy.livanabe.dto.response.HomeListingResponse;
+import octguy.livanabe.dto.response.ListingSearchResult;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,4 +20,6 @@ public interface IHomeListingService {
     HomeListingResponse getHomeListingById(UUID id);
 
     List<HomeListingResponse> getHomeListingsByHostId(UUID hostId);
+    
+    List<ListingSearchResult<HomeListingResponse>> searchByLocation(LocationSearchRequest request);
 }

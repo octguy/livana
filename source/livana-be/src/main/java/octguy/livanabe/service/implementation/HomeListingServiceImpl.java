@@ -7,18 +7,22 @@ import octguy.livanabe.dto.dto.ImageOrderResponse;
 import octguy.livanabe.dto.dto.ListingHostDto;
 import octguy.livanabe.dto.request.CreateHomeListingRequest;
 import octguy.livanabe.dto.request.HomeFacilityRequest;
+import octguy.livanabe.dto.request.LocationSearchRequest;
 import octguy.livanabe.dto.request.UpdateHomeListingRequest;
 import octguy.livanabe.dto.response.CloudinaryResponse;
 import octguy.livanabe.dto.response.HomeListingResponse;
+import octguy.livanabe.dto.response.ListingSearchResult;
 import octguy.livanabe.entity.*;
 import octguy.livanabe.exception.ResourceNotFoundException;
 import octguy.livanabe.repository.*;
-import octguy.livanabe.service.ICloudinaryService;
 import octguy.livanabe.service.IHomeListingService;
+import octguy.livanabe.utils.GeoUtils;
 import octguy.livanabe.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -405,5 +409,45 @@ public class HomeListingServiceImpl implements IHomeListingService {
                 .facilities(facilityDtos)
                 .images(imageResponses)
                 .build();
+    }
+    
+    @Override
+    public List<ListingSearchResult<HomeListingResponse>> searchByLocation(LocationSearchRequest request) {
+        // Get bounding box for initial filtering
+        double[] bbox = GeoUtils.getBoundingBox(
+                request.getLatitude(), 
+                request.getLongitude(), 
+                request.getRadiusKm()
+        );
+        
+        // Parse optional filters
+        BigDecimal minPrice = request.getMinPrice() != null ? BigDecimal.valueOf(request.getMinPrice()) : null;
+        BigDecimal maxPrice = request.getMaxPrice() != null ? BigDecimal.valueOf(request.getMaxPrice()) : null;
+        UUID propertyTypeId = request.getPropertyTypeId() != null ? UUID.fromString(request.getPropertyTypeId()) : null;
+        
+        // Query with bounding box and filters
+        List<HomeListing> listings = homeListingRepository.findByLocationWithFilters(
+                bbox[0], bbox[1], bbox[2], bbox[3],
+                minPrice, maxPrice,
+                request.getMinCapacity(),
+                propertyTypeId
+        );
+        
+        // Calculate precise distance and filter by actual radius
+        List<ListingSearchResult<HomeListingResponse>> results = new java.util.ArrayList<>();
+        for (HomeListing listing : listings) {
+            double distance = GeoUtils.calculateDistance(
+                    request.getLatitude(), request.getLongitude(),
+                    listing.getLatitude(), listing.getLongitude()
+            );
+            if (distance <= request.getRadiusKm()) {
+                results.add(ListingSearchResult.<HomeListingResponse>builder()
+                        .listing(convertToResponse(listing))
+                        .distanceKm(Math.round(distance * 100.0) / 100.0)
+                        .build());
+            }
+        }
+        results.sort(Comparator.comparingDouble(ListingSearchResult::getDistanceKm));
+        return results;
     }
 }

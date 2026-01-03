@@ -138,3 +138,28 @@ export const updateHomeListing = async (
 
   return response.data;
 };
+
+export interface LocationSearchParams {
+  latitude: number;
+  longitude: number;
+  radiusKm?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  minCapacity?: number;
+  propertyTypeId?: string;
+}
+
+export interface ListingSearchResult<T> {
+  listing: T;
+  distanceKm: number;
+}
+
+export const searchHomeListingsByLocation = async (
+  params: LocationSearchParams
+): Promise<ApiResponse<ListingSearchResult<HomeListingResponse>[]>> => {
+  const response = await api.get<
+    ApiResponse<ListingSearchResult<HomeListingResponse>[]>
+  >("/listings/homes/search", { params });
+
+  return response.data;
+};

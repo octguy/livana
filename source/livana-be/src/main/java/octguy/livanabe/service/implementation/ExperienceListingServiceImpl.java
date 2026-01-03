@@ -1,15 +1,16 @@
 package octguy.livanabe.service.implementation;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import octguy.livanabe.dto.dto.ImageOrderDto;
 import octguy.livanabe.dto.dto.ImageOrderResponse;
 import octguy.livanabe.dto.dto.ListingHostDto;
 import octguy.livanabe.dto.request.CreateExperienceListingRequest;
+import octguy.livanabe.dto.request.LocationSearchRequest;
 import octguy.livanabe.dto.request.UpdateExperienceListingRequest;
 import octguy.livanabe.dto.response.CloudinaryResponse;
 import octguy.livanabe.dto.response.ExperienceCategoryResponse;
 import octguy.livanabe.dto.response.ExperienceListingResponse;
+import octguy.livanabe.dto.response.ListingSearchResult;
 import octguy.livanabe.dto.response.SessionResponse;
 import octguy.livanabe.entity.*;
 import octguy.livanabe.exception.ResourceNotFoundException;
@@ -18,12 +19,13 @@ import octguy.livanabe.repository.ExperienceListingRepository;
 import octguy.livanabe.repository.ExperienceSessionRepository;
 import octguy.livanabe.repository.ListingImageRepository;
 import octguy.livanabe.repository.UserProfileRepository;
-import octguy.livanabe.service.ICloudinaryService;
 import octguy.livanabe.service.IExperienceListingService;
+import octguy.livanabe.utils.GeoUtils;
 import octguy.livanabe.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -390,5 +392,45 @@ public class ExperienceListingServiceImpl implements IExperienceListingService {
                 .status(session.getSessionStatus().name())
                 .createdAt(session.getCreatedAt())
                 .build();
+    }
+    
+    @Override
+    public List<ListingSearchResult<ExperienceListingResponse>> searchByLocation(LocationSearchRequest request) {
+        // Get bounding box for initial filtering
+        double[] bbox = GeoUtils.getBoundingBox(
+                request.getLatitude(), 
+                request.getLongitude(), 
+                request.getRadiusKm()
+        );
+        
+        // Parse optional filters
+        BigDecimal minPrice = request.getMinPrice() != null ? BigDecimal.valueOf(request.getMinPrice()) : null;
+        BigDecimal maxPrice = request.getMaxPrice() != null ? BigDecimal.valueOf(request.getMaxPrice()) : null;
+        UUID categoryId = request.getExperienceCategoryId() != null ? UUID.fromString(request.getExperienceCategoryId()) : null;
+        
+        // Query with bounding box and filters
+        List<ExperienceListing> listings = experienceListingRepository.findByLocationWithFilters(
+                bbox[0], bbox[1], bbox[2], bbox[3],
+                minPrice, maxPrice,
+                request.getMinCapacity(),
+                categoryId
+        );
+        
+        // Calculate precise distance and filter by actual radius
+        List<ListingSearchResult<ExperienceListingResponse>> results = new java.util.ArrayList<>();
+        for (ExperienceListing listing : listings) {
+            double distance = GeoUtils.calculateDistance(
+                    request.getLatitude(), request.getLongitude(),
+                    listing.getLatitude(), listing.getLongitude()
+            );
+            if (distance <= request.getRadiusKm()) {
+                results.add(ListingSearchResult.<ExperienceListingResponse>builder()
+                        .listing(convertToResponse(listing))
+                        .distanceKm(Math.round(distance * 100.0) / 100.0)
+                        .build());
+            }
+        }
+        results.sort(Comparator.comparingDouble(ListingSearchResult::getDistanceKm));
+        return results;
     }
 }

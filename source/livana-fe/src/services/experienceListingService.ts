@@ -104,3 +104,28 @@ export const updateExperienceListing = async (
 
   return response.data;
 };
+
+export interface LocationSearchParams {
+  latitude: number;
+  longitude: number;
+  radiusKm?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  minCapacity?: number;
+  experienceCategoryId?: string;
+}
+
+export interface ListingSearchResult<T> {
+  listing: T;
+  distanceKm: number;
+}
+
+export const searchExperienceListingsByLocation = async (
+  params: LocationSearchParams
+): Promise<ApiResponse<ListingSearchResult<ExperienceListingResponse>[]>> => {
+  const response = await api.get<
+    ApiResponse<ListingSearchResult<ExperienceListingResponse>[]>
+  >("/listings/experiences/search", { params });
+
+  return response.data;
+};

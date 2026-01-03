@@ -2,16 +2,28 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { PublicHeader } from "@/components/layout/public-header.tsx";
 import { Footer } from "@/components/layout/footer";
-import { getAllHomeListings } from "@/services/homeListingService";
+import {
+  getAllHomeListings,
+  searchHomeListingsByLocation,
+  type ListingSearchResult,
+} from "@/services/homeListingService";
 import type { HomeListingResponse } from "@/types/response/homeListingResponse";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Users } from "lucide-react";
+import { MapPin, Users, Navigation } from "lucide-react";
 import { toast } from "sonner";
+import {
+  LocationSearchBar,
+  type SearchFilters,
+} from "@/components/ui/location-search-bar";
 
 export function HomePage() {
   const navigate = useNavigate();
   const [listings, setListings] = useState<HomeListingResponse[]>([]);
+  const [searchResults, setSearchResults] = useState<
+    ListingSearchResult<HomeListingResponse>[] | null
+  >(null);
   const [loading, setLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -29,6 +41,43 @@ export function HomePage() {
     fetchListings();
   }, []);
 
+  const handleSearch = async (filters: SearchFilters) => {
+    if (!filters.location) return;
+
+    setSearching(true);
+    try {
+      const response = await searchHomeListingsByLocation({
+        latitude: filters.location.latitude,
+        longitude: filters.location.longitude,
+        radiusKm: filters.radiusKm,
+        minPrice: filters.minPrice,
+        maxPrice: filters.maxPrice,
+        minCapacity: filters.minCapacity,
+      });
+      setSearchResults(response.data || []);
+      if (response.data?.length === 0) {
+        toast.info("No listings found in this area");
+      } else {
+        toast.success(`Found ${response.data?.length} listings`);
+      }
+    } catch (error) {
+      toast.error("Search failed");
+      console.error("Error searching listings:", error);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchResults(null);
+  };
+
+  // Determine which listings to display
+  const displayListings = searchResults
+    ? searchResults.map((r) => ({ ...r.listing, distanceKm: r.distanceKm }))
+    : listings;
+  const isSearchMode = searchResults !== null;
+
   return (
     <div className="min-h-screen flex flex-col">
       <PublicHeader />
@@ -43,16 +92,12 @@ export function HomePage() {
             <p className="text-lg md:text-xl text-muted-foreground mb-8">
               Find unique stays and experiences around the world
             </p>
-            <div className="flex gap-4 justify-center">
-              <input
-                type="text"
-                placeholder="Where are you going?"
-                className="px-6 py-3 rounded-lg border border-input bg-background w-full max-w-md"
-              />
-              <button className="px-8 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90">
-                Search
-              </button>
-            </div>
+            <LocationSearchBar
+              onSearch={handleSearch}
+              loading={searching}
+              placeholder="Where are you going?"
+              className="max-w-2xl mx-auto"
+            />
           </div>
         </div>
       </section>
@@ -60,9 +105,21 @@ export function HomePage() {
       {/* Listings Section */}
       <section className="py-16 flex-1">
         <div className="container">
-          <h2 className="text-3xl font-bold mb-8">Featured Stays</h2>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold">
+              {isSearchMode ? "Search Results" : "Featured Stays"}
+            </h2>
+            {isSearchMode && (
+              <button
+                onClick={clearSearch}
+                className="text-sm text-primary hover:underline"
+              >
+                Clear search
+              </button>
+            )}
+          </div>
 
-          {loading ? (
+          {loading || searching ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
               {[...Array(8)].map((_, i) => (
                 <Card key={i} className="overflow-hidden animate-pulse">
@@ -74,15 +131,17 @@ export function HomePage() {
                 </Card>
               ))}
             </div>
-          ) : listings.length === 0 ? (
+          ) : displayListings.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-xl text-muted-foreground">
-                No listings available at the moment
+                {isSearchMode
+                  ? "No listings found in this area"
+                  : "No listings available at the moment"}
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-              {listings.map((listing) => (
+              {displayListings.map((listing: HomeListingResponse & { distanceKm?: number }) => (
                 <Card
                   key={listing.listingId}
                   className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
@@ -98,6 +157,12 @@ export function HomePage() {
                     ) : (
                       <div className="w-full h-full bg-muted flex items-center justify-center">
                         <span className="text-muted-foreground">No image</span>
+                      </div>
+                    )}
+                    {listing.distanceKm !== undefined && (
+                      <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
+                        <Navigation className="h-3 w-3" />
+                        {listing.distanceKm} km
                       </div>
                     )}
                   </div>

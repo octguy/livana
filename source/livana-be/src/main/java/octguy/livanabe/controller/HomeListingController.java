@@ -2,8 +2,10 @@ package octguy.livanabe.controller;
 
 import jakarta.validation.Valid;
 import octguy.livanabe.dto.request.CreateHomeListingRequest;
+import octguy.livanabe.dto.request.LocationSearchRequest;
 import octguy.livanabe.dto.request.UpdateHomeListingRequest;
 import octguy.livanabe.dto.response.HomeListingResponse;
+import octguy.livanabe.dto.response.ListingSearchResult;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.service.IHomeListingService;
 import org.springframework.http.HttpStatus;
@@ -94,6 +96,37 @@ public class HomeListingController {
                 HttpStatus.OK,
                 "Home listing updated successfully",
                 homeListing,
+                null
+        );
+
+        return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<ListingSearchResult<HomeListingResponse>>>> searchByLocation(
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
+            @RequestParam(required = false, defaultValue = "50") Double radiusKm,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) Integer minCapacity,
+            @RequestParam(required = false) String propertyTypeId
+    ) {
+        LocationSearchRequest request = new LocationSearchRequest();
+        request.setLatitude(latitude);
+        request.setLongitude(longitude);
+        request.setRadiusKm(radiusKm);
+        request.setMinPrice(minPrice);
+        request.setMaxPrice(maxPrice);
+        request.setMinCapacity(minCapacity);
+        request.setPropertyTypeId(propertyTypeId);
+        
+        List<ListingSearchResult<HomeListingResponse>> results = homeListingService.searchByLocation(request);
+
+        ApiResponse<List<ListingSearchResult<HomeListingResponse>>> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Home listings search completed successfully",
+                results,
                 null
         );
 
