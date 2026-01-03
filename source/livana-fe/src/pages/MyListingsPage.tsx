@@ -3,13 +3,15 @@ import { useNavigate } from "react-router";
 import { PublicHeader } from "@/components/layout/public-header.tsx";
 import { Footer } from "@/components/layout/footer";
 import { HostingDialog } from "@/components/hosting/hosting-dialog";
+import { EditHomeListingDialog } from "@/components/hosting/edit-home-listing-dialog";
+import { EditExperienceListingDialog } from "@/components/hosting/edit-experience-listing-dialog";
 import { getHomeListingsByHostId } from "@/services/homeListingService";
 import { getExperienceListingsByHostId } from "@/services/experienceListingService";
 import type { HomeListingResponse } from "@/types/response/homeListingResponse";
 import type { ExperienceListingResponse } from "@/types/response/experienceListingResponse";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Users, Plus, Home, Sparkles } from "lucide-react";
+import { MapPin, Users, Plus, Home, Sparkles, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -27,27 +29,35 @@ export function MyListingsPage() {
   const [showHostingDialog, setShowHostingDialog] = useState(false);
   const [activeTab, setActiveTab] = useState<ListingType>("home");
 
+  // Edit dialog state
+  const [editingHomeListing, setEditingHomeListing] =
+    useState<HomeListingResponse | null>(null);
+  const [editingExperienceListing, setEditingExperienceListing] =
+    useState<ExperienceListingResponse | null>(null);
+
+  const fetchListings = async () => {
+    if (!user?.id) return;
+
+    try {
+      const [homeResponse, experienceResponse] = await Promise.all([
+        getHomeListingsByHostId(user.id),
+        getExperienceListingsByHostId(user.id),
+      ]);
+      setHomeListings(homeResponse.data || []);
+      setExperienceListings(experienceResponse.data || []);
+    } catch (error) {
+      toast.error("Không thể tải tin đăng của bạn");
+      console.error("Error fetching listings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!user?.id) {
       navigate("/login");
       return;
     }
-
-    const fetchListings = async () => {
-      try {
-        const [homeResponse, experienceResponse] = await Promise.all([
-          getHomeListingsByHostId(user.id),
-          getExperienceListingsByHostId(user.id),
-        ]);
-        setHomeListings(homeResponse.data || []);
-        setExperienceListings(experienceResponse.data || []);
-      } catch (error) {
-        toast.error("Không thể tải tin đăng của bạn");
-        console.error("Error fetching listings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
     fetchListings();
   }, [user, navigate]);
@@ -134,9 +144,21 @@ export function MyListingsPage() {
                   {homeListings.map((listing) => (
                     <Card
                       key={listing.listingId}
-                      className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                      className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group relative"
                       onClick={() => navigate(`/listings/${listing.listingId}`)}
                     >
+                      {/* Edit Button */}
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 bg-white/90 hover:bg-white shadow-md"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingHomeListing(listing);
+                        }}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
                       <div className="aspect-square relative overflow-hidden">
                         {listing.images && listing.images.length > 0 ? (
                           <img
@@ -220,11 +242,23 @@ export function MyListingsPage() {
                   {experienceListings.map((listing) => (
                     <Card
                       key={listing.listingId}
-                      className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                      className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group relative"
                       onClick={() =>
                         navigate(`/experience-listings/${listing.listingId}`)
                       }
                     >
+                      {/* Edit Button */}
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 bg-white/90 hover:bg-white shadow-md"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingExperienceListing(listing);
+                        }}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
                       <div className="aspect-square relative overflow-hidden">
                         {listing.images && listing.images.length > 0 ? (
                           <img
@@ -289,6 +323,22 @@ export function MyListingsPage() {
         open={showHostingDialog}
         onOpenChange={setShowHostingDialog}
       />
+      {editingHomeListing && (
+        <EditHomeListingDialog
+          open={!!editingHomeListing}
+          onOpenChange={(open) => !open && setEditingHomeListing(null)}
+          listing={editingHomeListing}
+          onSuccess={fetchListings}
+        />
+      )}
+      {editingExperienceListing && (
+        <EditExperienceListingDialog
+          open={!!editingExperienceListing}
+          onOpenChange={(open) => !open && setEditingExperienceListing(null)}
+          listing={editingExperienceListing}
+          onSuccess={fetchListings}
+        />
+      )}
     </>
   );
 }

@@ -2,6 +2,7 @@ package octguy.livanabe.controller;
 
 import jakarta.validation.Valid;
 import octguy.livanabe.dto.request.CreateExperienceListingRequest;
+import octguy.livanabe.dto.request.UpdateExperienceListingRequest;
 import octguy.livanabe.dto.response.ExperienceListingResponse;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.service.IExperienceListingService;
@@ -80,6 +81,23 @@ public class ExperienceListingController {
                 HttpStatus.OK,
                 "Experience listings for host retrieved successfully",
                 listings,
+                null
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<ExperienceListingResponse>> updateExperienceListing(
+            @PathVariable UUID id,
+            @Valid @ModelAttribute UpdateExperienceListingRequest request
+    ) {
+        ExperienceListingResponse listing = experienceListingService.updateExperienceListing(id, request);
+
+        ApiResponse<ExperienceListingResponse> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Experience listing updated successfully",
+                listing,
                 null
         );
 

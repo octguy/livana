@@ -6,6 +6,7 @@ import octguy.livanabe.dto.dto.ImageOrderDto;
 import octguy.livanabe.dto.dto.ImageOrderResponse;
 import octguy.livanabe.dto.dto.ListingHostDto;
 import octguy.livanabe.dto.request.CreateExperienceListingRequest;
+import octguy.livanabe.dto.request.UpdateExperienceListingRequest;
 import octguy.livanabe.dto.response.CloudinaryResponse;
 import octguy.livanabe.dto.response.ExperienceCategoryResponse;
 import octguy.livanabe.dto.response.ExperienceListingResponse;
@@ -99,6 +100,54 @@ public class ExperienceListingServiceImpl implements IExperienceListingService {
         }
 
         return convertToResponsesBatch(listings);
+    }
+
+    @Override
+    @Transactional
+    public ExperienceListingResponse updateExperienceListing(UUID id, UpdateExperienceListingRequest request) {
+        log.info("Updating experience listing with id {}", id);
+        
+        // Get current user and verify ownership
+        User currentUser = SecurityUtils.getCurrentUser();
+        
+        ExperienceListing listing = experienceListingRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Experience listing not found with id {}", id);
+                    return new ResourceNotFoundException("Experience listing not found: " + id);
+                });
+        
+        // Verify the current user is the owner
+        if (!listing.getHost().getId().equals(currentUser.getId())) {
+            log.error("User {} is not the owner of listing {}", currentUser.getId(), id);
+            throw new RuntimeException("You are not authorized to update this listing");
+        }
+        
+        // Update category if changed
+        if (request.getExperienceCategoryId() != null) {
+            ExperienceCategory category = experienceCategoryRepository.findById(request.getExperienceCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Experience category not found: " + request.getExperienceCategoryId()));
+            listing.setExperienceCategory(category);
+        }
+        
+        // Update basic fields
+        listing.setTitle(request.getTitle());
+        listing.setDescription(request.getDescription());
+        listing.setCapacity(request.getCapacity());
+        listing.setAddress(request.getAddress());
+        listing.setLatitude(request.getLatitude());
+        listing.setLongitude(request.getLongitude());
+        listing.setBasePrice(request.getPrice());
+        
+        ExperienceListing savedListing = experienceListingRepository.save(listing);
+        
+        // Update images - delete existing and create new
+        if (request.getImages() != null && !request.getImages().isEmpty()) {
+            listingImageRepository.deleteByListingId(savedListing.getId());
+            createListingImages(savedListing, request.getImages());
+        }
+        
+        return convertToResponse(savedListing);
     }
 
 //    @Override

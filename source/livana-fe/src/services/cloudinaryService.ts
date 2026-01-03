@@ -140,4 +140,28 @@ export const cloudinaryService = {
       throw error;
     }
   },
+
+  // Delete image from Cloudinary using backend endpoint
+  deleteImage: async (publicId: string): Promise<void> => {
+    try {
+      await api.delete(`/cloudinary/images/${encodeURIComponent(publicId)}`, {
+        withCredentials: true,
+      });
+    } catch (error) {
+      console.error("Error deleting image from Cloudinary:", error);
+      throw error;
+    }
+  },
+
+  // Delete multiple images from Cloudinary
+  deleteImages: async (publicIds: string[]): Promise<void> => {
+    try {
+      await Promise.all(
+        publicIds.map((id) => cloudinaryService.deleteImage(id))
+      );
+    } catch (error) {
+      console.error("Error deleting images from Cloudinary:", error);
+      throw error;
+    }
+  },
 };

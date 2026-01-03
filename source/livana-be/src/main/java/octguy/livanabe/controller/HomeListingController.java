@@ -2,6 +2,7 @@ package octguy.livanabe.controller;
 
 import jakarta.validation.Valid;
 import octguy.livanabe.dto.request.CreateHomeListingRequest;
+import octguy.livanabe.dto.request.UpdateHomeListingRequest;
 import octguy.livanabe.dto.response.HomeListingResponse;
 import octguy.livanabe.entity.ApiResponse;
 import octguy.livanabe.service.IHomeListingService;
@@ -76,6 +77,23 @@ public class HomeListingController {
                 HttpStatus.OK,
                 "Host's home listings retrieved successfully",
                 homeListings,
+                null
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<HomeListingResponse>> updateHomeListing(
+            @PathVariable UUID id,
+            @Valid @ModelAttribute UpdateHomeListingRequest request
+    ) {
+        HomeListingResponse homeListing = homeListingService.updateHomeListing(id, request);
+
+        ApiResponse<HomeListingResponse> response = new ApiResponse<>(
+                HttpStatus.OK,
+                "Home listing updated successfully",
+                homeListing,
                 null
         );
 

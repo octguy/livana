@@ -7,9 +7,11 @@ import octguy.livanabe.dto.dto.ImageOrderResponse;
 import octguy.livanabe.dto.dto.ListingHostDto;
 import octguy.livanabe.dto.request.CreateHomeListingRequest;
 import octguy.livanabe.dto.request.HomeFacilityRequest;
+import octguy.livanabe.dto.request.UpdateHomeListingRequest;
 import octguy.livanabe.dto.response.CloudinaryResponse;
 import octguy.livanabe.dto.response.HomeListingResponse;
 import octguy.livanabe.entity.*;
+import octguy.livanabe.exception.ResourceNotFoundException;
 import octguy.livanabe.repository.*;
 import octguy.livanabe.service.ICloudinaryService;
 import octguy.livanabe.service.IHomeListingService;
@@ -131,6 +133,70 @@ public class HomeListingServiceImpl implements IHomeListingService {
         return homeListings.stream()
                 .map(this::convertToResponse)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public HomeListingResponse updateHomeListing(UUID id, UpdateHomeListingRequest request) {
+        log.info("Updating home listing with id {}", id);
+        
+        // Get current user and verify ownership
+        User currentUser = SecurityUtils.getCurrentUser();
+        
+        HomeListing homeListing = homeListingRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Home listing not found with id {}", id);
+                    return new ResourceNotFoundException("Home listing not found");
+                });
+        
+        // Verify the current user is the owner
+        if (!homeListing.getHost().getId().equals(currentUser.getId())) {
+            log.error("User {} is not the owner of listing {}", currentUser.getId(), id);
+            throw new RuntimeException("You are not authorized to update this listing");
+        }
+        
+        // Update property type if changed
+        if (request.getPropertyTypeId() != null) {
+            PropertyType propertyType = propertyTypeRepository.findById(request.getPropertyTypeId())
+                    .orElseThrow(() -> {
+                        log.error("Property type not found with id {}", request.getPropertyTypeId());
+                        return new ResourceNotFoundException("Property type not found");
+                    });
+            homeListing.setPropertyType(propertyType);
+        }
+        
+        // Update basic fields
+        homeListing.setTitle(request.getTitle());
+        homeListing.setDescription(request.getDescription());
+        homeListing.setCapacity(request.getCapacity());
+        homeListing.setAddress(request.getAddress());
+        homeListing.setLatitude(request.getLatitude());
+        homeListing.setLongitude(request.getLongitude());
+        homeListing.setBasePrice(request.getPrice());
+        
+        HomeListing savedListing = homeListingRepository.save(homeListing);
+        
+        // Update facilities - delete existing and create new
+        if (request.getFacilityRequests() != null) {
+            homeFacilityRepository.deleteByListingId(savedListing.getId());
+            List<Facility> facilities = validateFacilities(request.getFacilityRequests());
+            createHomeFacilities(savedListing, request.getFacilityRequests(), facilities);
+        }
+        
+        // Update amenities - delete existing and create new
+        if (request.getAmenityIds() != null) {
+            homeAmenityRepository.deleteByListingId(savedListing.getId());
+            List<Amenity> amenities = validateAmenities(request.getAmenityIds());
+            createHomeAmenities(savedListing, amenities);
+        }
+        
+        // Update images - delete existing and create new
+        if (request.getImages() != null && !request.getImages().isEmpty()) {
+            listingImageRepository.deleteByListingId(savedListing.getId());
+            createListingImage(savedListing, request.getImages());
+        }
+        
+        return convertToResponse(savedListing);
     }
 
     private void createHomeFacilities(HomeListing homeListing, List<HomeFacilityRequest> requests, List<Facility> facilities) {
