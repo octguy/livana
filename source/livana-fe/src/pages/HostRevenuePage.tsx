@@ -391,7 +391,11 @@ export function HostRevenuePage() {
 
                   <TabsContent value="bookings" className="space-y-4">
                     <div className="h-[350px]">
-                      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                      <ResponsiveContainer
+                        width="100%"
+                        height="100%"
+                        minWidth={0}
+                      >
                         <LineChart data={bookingChartData}>
                           <CartesianGrid strokeDasharray="3 3" />
                           <XAxis dataKey="name" fontSize={12} />
@@ -417,7 +421,11 @@ export function HostRevenuePage() {
 
                   <TabsContent value="revenue" className="space-y-4">
                     <div className="h-[350px]">
-                      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                      <ResponsiveContainer
+                        width="100%"
+                        height="100%"
+                        minWidth={0}
+                      >
                         <BarChart data={revenueChartData}>
                           <CartesianGrid strokeDasharray="3 3" />
                           <XAxis dataKey="name" fontSize={12} />
