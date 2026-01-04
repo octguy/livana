@@ -8,6 +8,7 @@ import {
   ListChecks,
   CalendarCheck,
   ClipboardList,
+  TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
@@ -128,6 +129,10 @@ export function PublicHeader() {
                     >
                       <ClipboardList className="mr-2 h-4 w-4" />
                       Host Bookings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/host-revenue")}>
+                      <TrendingUp className="mr-2 h-4 w-4" />
+                      Revenue
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout}>
@@ -257,6 +262,17 @@ export function PublicHeader() {
                       >
                         <ClipboardList className="mr-2 h-4 w-4" />
                         Host Bookings
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate("/host-revenue");
+                        }}
+                      >
+                        <TrendingUp className="mr-2 h-4 w-4" />
+                        Revenue
                       </Button>
                       <Button
                         variant="destructive"

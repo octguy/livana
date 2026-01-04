@@ -25,6 +25,7 @@ import {
   DashboardOverview,
   ListingManagement,
   RatingsManagement,
+  UserManagement,
 } from "@/components/admin";
 import { useAuthStore } from "@/stores/useAuthStore";
 import {
@@ -41,12 +42,14 @@ import {
   Settings,
   Building2,
   Star,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type SectionId =
   | "overview"
+  | "users"
   | "listings"
   | "ratings"
   | "interests"
@@ -71,6 +74,12 @@ const AdminDashboardPage = () => {
       label: "Overview",
       icon: LayoutDashboard,
       description: "View system overview",
+    },
+    {
+      id: "users",
+      label: "Users",
+      icon: Users,
+      description: "Manage users and roles",
     },
     {
       id: "listings",
@@ -302,6 +311,7 @@ const AdminDashboardPage = () => {
               <div className="p-6">
                 {activeSection === "overview" && <DashboardOverview />}
 
+                {activeSection === "users" && <UserManagement />}
                 {activeSection === "listings" && <ListingManagement />}
                 {activeSection === "ratings" && <RatingsManagement />}
                 {activeSection === "interests" && <InterestManagement />}

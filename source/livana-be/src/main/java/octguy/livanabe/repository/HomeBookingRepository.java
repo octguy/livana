@@ -53,4 +53,17 @@ public interface HomeBookingRepository extends JpaRepository<HomeBooking, UUID> 
     
     @Query("SELECT COALESCE(SUM(hb.totalPrice), 0) FROM HomeBooking hb WHERE hb.status = 'CONFIRMED' AND hb.createdAt >= :startDate AND hb.createdAt < :endDate AND hb.deletedAt IS NULL")
     BigDecimal sumHomeRevenueBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    
+    // Host-specific revenue queries
+    @Query("SELECT COUNT(hb) FROM HomeBooking hb WHERE hb.homeListing.host.id = :hostId AND hb.deletedAt IS NULL")
+    Long countHomeBookingsByHostId(@Param("hostId") UUID hostId);
+    
+    @Query("SELECT COUNT(hb) FROM HomeBooking hb WHERE hb.homeListing.host.id = :hostId AND hb.createdAt >= :startDate AND hb.createdAt < :endDate AND hb.deletedAt IS NULL")
+    Long countHomeBookingsByHostIdBetween(@Param("hostId") UUID hostId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    
+    @Query("SELECT COALESCE(SUM(hb.totalPrice), 0) FROM HomeBooking hb WHERE hb.homeListing.host.id = :hostId AND hb.status = 'CONFIRMED' AND hb.deletedAt IS NULL")
+    BigDecimal sumHomeRevenueByHostId(@Param("hostId") UUID hostId);
+    
+    @Query("SELECT COALESCE(SUM(hb.totalPrice), 0) FROM HomeBooking hb WHERE hb.homeListing.host.id = :hostId AND hb.status = 'CONFIRMED' AND hb.createdAt >= :startDate AND hb.createdAt < :endDate AND hb.deletedAt IS NULL")
+    BigDecimal sumHomeRevenueByHostIdBetween(@Param("hostId") UUID hostId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

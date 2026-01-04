@@ -103,7 +103,8 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/api/v1/listings/homes/**",
                                 "/api/v1/listings/experiences/**",
-                                "/ws/**"
+                                "/ws/**",
+                                "/api/v1/payments/vnpay/callback"
                         ).permitAll()
                         
                         // ===== Public Reviews (GET listing reviews) =====

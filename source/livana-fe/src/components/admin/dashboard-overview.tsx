@@ -406,7 +406,7 @@ export function DashboardOverview() {
 
             <TabsContent value="growth" className="space-y-4">
               <div className="h-[350px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                   <LineChart data={userGrowthData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" fontSize={12} />
@@ -427,7 +427,7 @@ export function DashboardOverview() {
 
             <TabsContent value="bookings" className="space-y-4">
               <div className="h-[350px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                   <BarChart data={bookingComparisonData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" fontSize={12} />
@@ -443,7 +443,7 @@ export function DashboardOverview() {
 
             <TabsContent value="revenue" className="space-y-4">
               <div className="h-[350px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                   <BarChart data={revenueComparisonData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" fontSize={12} />
@@ -468,7 +468,7 @@ export function DashboardOverview() {
 
             <TabsContent value="listings" className="space-y-4">
               <div className="h-[350px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                   <BarChart data={listingComparisonData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" fontSize={12} />

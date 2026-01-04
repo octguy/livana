@@ -16,10 +16,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { createExperienceBooking } from "@/services/experienceBookingService";
+import { createVNPayPayment } from "@/services/paymentService";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
+import { CreditCard, Wallet } from "lucide-react";
+import { BookingType } from "@/types/request/createPaymentRequest";
 
 interface ExperienceBookingDialogProps {
   open: boolean;
@@ -46,6 +50,9 @@ export function ExperienceBookingDialog({
 }: ExperienceBookingDialogProps) {
   const [quantity, setQuantity] = useState("1");
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"vnpay" | "later">(
+    "vnpay"
+  );
 
   const calculateTotal = () => {
     return parseInt(quantity) * pricePerPerson;
@@ -64,10 +71,33 @@ export function ExperienceBookingDialog({
 
     setLoading(true);
     try {
-      await createExperienceBooking({
+      const bookingResult = await createExperienceBooking({
         sessionId,
         quantity: parseInt(quantity),
       });
+      const bookingData = bookingResult.data.data;
+
+      // If VNPay payment method selected, create payment and redirect
+      if (paymentMethod === "vnpay") {
+        try {
+          const paymentResult = await createVNPayPayment({
+            bookingId: bookingData.id,
+            bookingType: BookingType.EXPERIENCE,
+            amount: calculateTotal(),
+            orderInfo: `Payment for ${experienceTitle}`,
+          });
+          const paymentData = paymentResult.data.data;
+
+          // Redirect to VNPay
+          window.location.href = paymentData.paymentUrl;
+          return;
+        } catch {
+          toast.error("Failed to create payment. Your booking has been saved.");
+          onOpenChange(false);
+          if (onBookingSuccess) onBookingSuccess();
+          return;
+        }
+      }
 
       toast.success("Experience booking successful!");
       onOpenChange(false);
@@ -151,6 +181,49 @@ export function ExperienceBookingDialog({
             </div>
           </div>
 
+          {/* Payment Method */}
+          <div className="space-y-3 pt-4 border-t">
+            <Label>Payment method</Label>
+            <RadioGroup
+              value={paymentMethod}
+              onValueChange={(value) =>
+                setPaymentMethod(value as "vnpay" | "later")
+              }
+              className="space-y-2"
+            >
+              <div className="flex items-center space-x-3 rounded-lg border p-3 cursor-pointer hover:bg-muted/50">
+                <RadioGroupItem value="vnpay" id="vnpay" />
+                <Label
+                  htmlFor="vnpay"
+                  className="flex items-center gap-2 cursor-pointer flex-1"
+                >
+                  <CreditCard className="h-4 w-4" />
+                  <div>
+                    <p className="font-medium">Pay with VNPay</p>
+                    <p className="text-xs text-muted-foreground">
+                      Pay now via VNPay payment gateway
+                    </p>
+                  </div>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-3 rounded-lg border p-3 cursor-pointer hover:bg-muted/50">
+                <RadioGroupItem value="later" id="later" />
+                <Label
+                  htmlFor="later"
+                  className="flex items-center gap-2 cursor-pointer flex-1"
+                >
+                  <Wallet className="h-4 w-4" />
+                  <div>
+                    <p className="font-medium">Pay later</p>
+                    <p className="text-xs text-muted-foreground">
+                      Book now and pay at the experience
+                    </p>
+                  </div>
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+
           <p className="text-xs text-muted-foreground">
             You will receive a booking confirmation via email after payment.
           </p>
@@ -164,7 +237,11 @@ export function ExperienceBookingDialog({
             onClick={handleSubmit}
             disabled={loading || availableSlots === 0}
           >
-            {loading ? "Processing..." : "Confirm booking"}
+            {loading
+              ? "Processing..."
+              : paymentMethod === "vnpay"
+              ? "Pay now"
+              : "Confirm booking"}
           </Button>
         </DialogFooter>
       </DialogContent>
