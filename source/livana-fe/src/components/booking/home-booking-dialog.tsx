@@ -17,16 +17,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { createHomeBooking } from "@/services/homeBookingService";
+import { createVNPayPayment } from "@/services/paymentService";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, CreditCard, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { BookingType } from "@/types/response/paymentResponse";
 
 interface HomeBookingDialogProps {
   open: boolean;
@@ -51,6 +54,9 @@ export function HomeBookingDialog({
   const [checkOutDate, setCheckOutDate] = useState<Date>();
   const [guests, setGuests] = useState("1");
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"vnpay" | "later">(
+    "vnpay"
+  );
 
   const calculateNights = () => {
     if (!checkInDate || !checkOutDate) return 0;
@@ -80,12 +86,33 @@ export function HomeBookingDialog({
       const checkOutTime = new Date(checkOutDate);
       checkOutTime.setHours(11, 0, 0, 0); // 11 AM check-out
 
-      await createHomeBooking({
+      const bookingResponse = await createHomeBooking({
         homeListingId: listingId,
         checkInTime: checkInTime.toISOString(),
         checkOutTime: checkOutTime.toISOString(),
         guests: parseInt(guests),
       });
+
+      const bookingId = bookingResponse.data.data.id;
+
+      // If VNPay payment is selected, redirect to payment
+      if (paymentMethod === "vnpay") {
+        try {
+          const paymentResponse = await createVNPayPayment({
+            bookingId: bookingId,
+            bookingType: BookingType.HOME,
+          });
+
+          // Redirect to VNPay payment page
+          window.location.href = paymentResponse.data.data.paymentUrl;
+          return;
+        } catch (paymentError) {
+          console.error("Payment creation failed:", paymentError);
+          toast.error(
+            "Failed to create payment. Your booking is saved but unpaid."
+          );
+        }
+      }
 
       toast.success("Booking successful!");
       onOpenChange(false);
@@ -206,6 +233,49 @@ export function HomeBookingDialog({
               </div>
             </div>
           )}
+
+          {/* Payment Method */}
+          <div className="space-y-3 pt-4 border-t">
+            <Label>Payment method</Label>
+            <RadioGroup
+              value={paymentMethod}
+              onValueChange={(value) =>
+                setPaymentMethod(value as "vnpay" | "later")
+              }
+              className="space-y-2"
+            >
+              <div className="flex items-center space-x-3 rounded-lg border p-3 cursor-pointer hover:bg-muted/50">
+                <RadioGroupItem value="vnpay" id="vnpay" />
+                <Label
+                  htmlFor="vnpay"
+                  className="flex items-center gap-2 cursor-pointer flex-1"
+                >
+                  <CreditCard className="h-4 w-4" />
+                  <div>
+                    <p className="font-medium">Pay with VNPay</p>
+                    <p className="text-xs text-muted-foreground">
+                      Pay now via VNPay payment gateway
+                    </p>
+                  </div>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-3 rounded-lg border p-3 cursor-pointer hover:bg-muted/50">
+                <RadioGroupItem value="later" id="later" />
+                <Label
+                  htmlFor="later"
+                  className="flex items-center gap-2 cursor-pointer flex-1"
+                >
+                  <Wallet className="h-4 w-4" />
+                  <div>
+                    <p className="font-medium">Pay later</p>
+                    <p className="text-xs text-muted-foreground">
+                      Book now and pay at the property
+                    </p>
+                  </div>
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
         </div>
 
         <DialogFooter>
@@ -213,7 +283,11 @@ export function HomeBookingDialog({
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? "Processing..." : "Confirm booking"}
+            {loading
+              ? "Processing..."
+              : paymentMethod === "vnpay"
+              ? "Pay now"
+              : "Confirm booking"}
           </Button>
         </DialogFooter>
       </DialogContent>
