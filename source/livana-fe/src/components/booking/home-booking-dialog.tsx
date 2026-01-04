@@ -101,6 +101,8 @@ export function HomeBookingDialog({
           const paymentResponse = await createVNPayPayment({
             bookingId: bookingId,
             bookingType: BookingType.HOME,
+            amount: calculateTotal(),
+            orderInfo: `Payment for ${listingTitle}`,
           });
 
           // Redirect to VNPay payment page

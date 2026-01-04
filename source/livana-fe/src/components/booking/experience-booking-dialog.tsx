@@ -71,23 +71,25 @@ export function ExperienceBookingDialog({
 
     setLoading(true);
     try {
-      const bookingResponse = await createExperienceBooking({
+      const bookingResult = await createExperienceBooking({
         sessionId,
         quantity: parseInt(quantity),
       });
+      const bookingData = bookingResult.data.data;
 
       // If VNPay payment method selected, create payment and redirect
       if (paymentMethod === "vnpay") {
         try {
-          const paymentResponse = await createVNPayPayment({
-            bookingId: bookingResponse.id,
+          const paymentResult = await createVNPayPayment({
+            bookingId: bookingData.id,
             bookingType: BookingType.EXPERIENCE,
             amount: calculateTotal(),
             orderInfo: `Payment for ${experienceTitle}`,
           });
+          const paymentData = paymentResult.data.data;
 
           // Redirect to VNPay
-          window.location.href = paymentResponse.paymentUrl;
+          window.location.href = paymentData.paymentUrl;
           return;
         } catch {
           toast.error("Failed to create payment. Your booking has been saved.");
