@@ -180,7 +180,7 @@ export function ListingDetailPage() {
                           onClick={() => setShowAllPhotos(true)}
                           className="absolute inset-0 bg-black/40 hover:bg-black/50 transition-all flex items-center justify-center text-white font-semibold"
                         >
-                        >+{listing.images.length - 5} more photos
+                          +{listing.images.length - 5} more photos
                         </button>
                       )}
                     </div>
@@ -202,8 +202,7 @@ export function ListingDetailPage() {
                 {/* Property Info */}
                 <div className="pb-8 border-b border-gray-200">
                   <h2 className="text-2xl font-semibold mb-4">
-                    Home hosted by{" "}
-                    {listing.host?.hostDisplayName || "Host"}
+                    Home hosted by {listing.host?.hostDisplayName || "Host"}
                   </h2>
                   <div className="flex items-center gap-3 text-lg text-muted-foreground">
                     <span>{listing.capacity} guests</span>
@@ -212,7 +211,9 @@ export function ListingDetailPage() {
 
                 {/* Description */}
                 <div className="pb-8 border-b border-gray-200">
-                  <h2 className="text-2xl font-semibold mb-4">About this place</h2>
+                  <h2 className="text-2xl font-semibold mb-4">
+                    About this place
+                  </h2>
                   <p className="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
                     {listing.description}
                   </p>
