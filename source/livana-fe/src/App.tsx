@@ -33,6 +33,7 @@ import { HostListingsPage } from "@/pages/HostListingsPage";
 import { MyListingsPage } from "@/pages/MyListingsPage";
 import { MyBookingsPage } from "@/pages/MyBookingsPage";
 import { HostBookingsPage } from "@/pages/HostBookingsPage";
+import { HostRevenuePage } from "@/pages/HostRevenuePage";
 import PaymentSuccessPage from "@/pages/PaymentSuccessPage";
 import PaymentFailedPage from "@/pages/PaymentFailedPage";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -96,6 +97,7 @@ function App() {
             <Route path="/my-listings" element={<MyListingsPage />} />
             <Route path="/my-bookings" element={<MyBookingsPage />} />
             <Route path="/host-bookings" element={<HostBookingsPage />} />
+            <Route path="/host-revenue" element={<HostRevenuePage />} />
             <Route path="/host/homes/create" element={<CreateHomePage />} />
             <Route path="/host/homes/location" element={<HomeLocationPage />} />
             <Route path="/host/homes/details" element={<HomeDetailsPage />} />

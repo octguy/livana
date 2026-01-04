@@ -51,4 +51,17 @@ public interface ExperienceBookingRepository extends JpaRepository<ExperienceBoo
     
     @Query("SELECT COALESCE(SUM(eb.totalPrice), 0) FROM ExperienceBooking eb WHERE eb.status = 'CONFIRMED' AND eb.createdAt >= :startDate AND eb.createdAt < :endDate AND eb.deletedAt IS NULL")
     BigDecimal sumExperienceRevenueBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    
+    // Host-specific revenue queries
+    @Query("SELECT COUNT(eb) FROM ExperienceBooking eb WHERE eb.session.experienceListing.host.id = :hostId AND eb.deletedAt IS NULL")
+    Long countExperienceBookingsByHostId(@Param("hostId") UUID hostId);
+    
+    @Query("SELECT COUNT(eb) FROM ExperienceBooking eb WHERE eb.session.experienceListing.host.id = :hostId AND eb.createdAt >= :startDate AND eb.createdAt < :endDate AND eb.deletedAt IS NULL")
+    Long countExperienceBookingsByHostIdBetween(@Param("hostId") UUID hostId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    
+    @Query("SELECT COALESCE(SUM(eb.totalPrice), 0) FROM ExperienceBooking eb WHERE eb.session.experienceListing.host.id = :hostId AND eb.status = 'CONFIRMED' AND eb.deletedAt IS NULL")
+    BigDecimal sumExperienceRevenueByHostId(@Param("hostId") UUID hostId);
+    
+    @Query("SELECT COALESCE(SUM(eb.totalPrice), 0) FROM ExperienceBooking eb WHERE eb.session.experienceListing.host.id = :hostId AND eb.status = 'CONFIRMED' AND eb.createdAt >= :startDate AND eb.createdAt < :endDate AND eb.deletedAt IS NULL")
+    BigDecimal sumExperienceRevenueByHostIdBetween(@Param("hostId") UUID hostId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

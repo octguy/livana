@@ -55,4 +55,8 @@ public interface ExperienceListingRepository extends JpaRepository<ExperienceLis
     
     @Query("SELECT COUNT(e) FROM ExperienceListing e WHERE e.createdAt >= :startDate AND e.createdAt < :endDate AND e.deletedAt IS NULL")
     Long countExperienceListingsCreatedBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    
+    // Host-specific queries
+    @Query("SELECT COUNT(e) FROM ExperienceListing e WHERE e.host.id = :hostId AND e.deletedAt IS NULL")
+    Long countByHostId(@Param("hostId") UUID hostId);
 }

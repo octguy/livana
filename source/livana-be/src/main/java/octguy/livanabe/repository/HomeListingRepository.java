@@ -54,4 +54,8 @@ public interface HomeListingRepository extends JpaRepository<HomeListing, UUID> 
     
     @Query("SELECT COUNT(h) FROM HomeListing h WHERE h.createdAt >= :startDate AND h.createdAt < :endDate AND h.deletedAt IS NULL")
     Long countHomeListingsCreatedBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    
+    // Host-specific queries
+    @Query("SELECT COUNT(h) FROM HomeListing h WHERE h.host.id = :hostId AND h.deletedAt IS NULL")
+    Long countByHostId(@Param("hostId") UUID hostId);
 }
