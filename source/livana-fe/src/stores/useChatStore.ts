@@ -338,6 +338,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       currentConversation: null,
       messages: [],
       unreadCount: 0,
+      isConnected: false,
       isChatOpen: false,
     });
   },

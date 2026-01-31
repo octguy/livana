@@ -32,11 +32,9 @@ export function NotificationDropdown() {
     if (user?.id) {
       connect(user.id);
     }
-
-    return () => {
-      disconnect();
-    };
-  }, [user?.id, connect, disconnect]);
+    // Don't disconnect WebSocket on unmount - it's shared with chat
+    // WebSocket will be disconnected on logout
+  }, [user?.id, connect]);
 
   // Show toast for new notifications
   const latestNotificationId = notifications[0]?.id;
