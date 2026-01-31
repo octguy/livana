@@ -67,3 +67,8 @@ vnpay:
 # Frontend URL for redirects
 frontend:
   url: ${FRONTEND_URL:http://localhost:5173}
+
+# Demo data seeding configuration
+app:
+  seed:
+    enabled: ${SEED_DEMO_DATA:false}

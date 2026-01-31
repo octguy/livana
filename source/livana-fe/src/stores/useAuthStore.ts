@@ -9,6 +9,9 @@ import { usePropertyTypeStore } from "./usePropertyTypeStore";
 import { useAmenityStore } from "./useAmenityStore";
 import { useFacilityStore } from "./useFacilityStore";
 import { useExperienceCategoryStore } from "./useExperienceCategoryStore";
+import { useChatStore } from "./useChatStore";
+import { useNotificationStore } from "./useNotificationStore";
+import { websocketService } from "@/services/websocketService";
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   accessToken: null,
@@ -88,6 +91,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       useAmenityStore.getState().clearState();
       useFacilityStore.getState().clearState();
       useExperienceCategoryStore.getState().clearState();
+      useChatStore.getState().clearChat();
+      useNotificationStore.getState().clearNotifications();
+      // Disconnect WebSocket on logout
+      websocketService.disconnect();
       toast.success("Logout successful!");
     }
   },

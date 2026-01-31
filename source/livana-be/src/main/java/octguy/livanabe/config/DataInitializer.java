@@ -1,8 +1,14 @@
 package octguy.livanabe.config;
 
+import lombok.extern.slf4j.Slf4j;
 import octguy.livanabe.dto.request.CreateInterestRequest;
+import octguy.livanabe.dto.request.RegisterRequest;
+import octguy.livanabe.entity.User;
 import octguy.livanabe.enums.UserRole;
+import octguy.livanabe.enums.UserStatus;
+import octguy.livanabe.repository.UserRepository;
 import octguy.livanabe.service.IAmenityService;
+import octguy.livanabe.service.IAuthService;
 import octguy.livanabe.service.IExperienceCategoryService;
 import octguy.livanabe.service.IFacilityService;
 import octguy.livanabe.service.IInterestService;
@@ -11,8 +17,11 @@ import octguy.livanabe.service.IRoleService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Slf4j
+@Order(1)
 public class DataInitializer implements CommandLineRunner {
 
     private final IRoleService roleService;
@@ -27,57 +36,77 @@ public class DataInitializer implements CommandLineRunner {
 
     private final IAmenityService amenityService;
 
+    private final IAuthService authService;
+
+    private final UserRepository userRepository;
+
     public DataInitializer(IRoleService roleService,
                            IInterestService interestService,
                            IPropertyTypeService propertyTypeService,
                            IExperienceCategoryService experienceCategoryService,
                            IFacilityService facilityService,
-                           IAmenityService amenityService) {
+                           IAmenityService amenityService,
+                           IAuthService authService,
+                           UserRepository userRepository) {
         this.propertyTypeService = propertyTypeService;
         this.interestService = interestService;
         this.roleService = roleService;
         this.experienceCategoryService = experienceCategoryService;
         this.facilityService = facilityService;
         this.amenityService = amenityService;
+        this.authService = authService;
+        this.userRepository = userRepository;
     }
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
-//        System.out.println("DataInitializer run method executed.");
+        log.info("DataInitializer run method executed.");
 
-//        System.out.println("Checking and initializing roles...");
         initializeRoles();
-
-//        System.out.println("Checking and initializing interests...");
         initializeInterests();
-
-//        System.out.println("Checking and initializing property types...");
         initializePropertyType();
-
-//        System.out.println("Checking and initializing experience categories...");
         initializeExperienceCategories();
-
-//        System.out.println("Checking and initializing facilities...");
         initializeFacilities();
-
-//        System.out.println("Checking and initializing amenities...");
         initializeAmenities();
+        initOnlyOneAdmin();
+    }
+
+    private void initOnlyOneAdmin() {
+        // Check if admin user already exists by email
+        if (userRepository.existsByEmail("admin@livana.com")) {
+            log.debug("Admin user already exists.");
+        } else {
+            RegisterRequest adminRequest = new RegisterRequest();
+            adminRequest.setEmail("admin@livana.com");
+            adminRequest.setUsername("admin");
+            adminRequest.setPassword("Admin@123");
+            authService.createAdmin(adminRequest);
+
+            // Auto-verify admin user
+            User adminUser = userRepository.findByEmail("admin@livana.com")
+                    .orElseThrow(() -> new RuntimeException("Admin user not found after creation"));
+            adminUser.setEnabled(true);
+            adminUser.setStatus(UserStatus.ACTIVE);
+            userRepository.save(adminUser);
+
+            log.info("Created and verified admin user: admin@livana.com / Admin@123");
+        }
     }
 
     private void initializeRoles() {
         if (roleService.findAll().isEmpty()) {
-            roleService.createNewRole(UserRole.ROLE_ADMIN);
-            roleService.createNewRole(UserRole.ROLE_USER);
-            roleService.createNewRole(UserRole.ROLE_MODERATOR);
-//            System.out.println("Initialized default roles.");
+            for (UserRole role : UserRole.values()) {
+                roleService.createNewRole(role);
+            }
+            log.info("Initialized default roles.");
+        } else {
+            log.debug("Roles already initialized.");
         }
     }
 
     private void initializeInterests() {
-        // Add interest initialization logic here if needed
         if (interestService.findAll().isEmpty()) {
-            // Initialize interests
-//            System.out.println("Initialized default interests.");
             // A
             interestService.create(new CreateInterestRequest("Acting", "🎭"));
             interestService.create(new CreateInterestRequest("Archery", "🏹"));
@@ -261,6 +290,9 @@ public class DataInitializer implements CommandLineRunner {
             interestService.create(new CreateInterestRequest("Zodiac study", "♓"));
             interestService.create(new CreateInterestRequest("Zen gardening", "🌿"));
 
+            log.info("Initialized {} interests.", interestService.findAll().size());
+        } else {
+            log.debug("Interests already initialized.");
         }
     }
 
@@ -278,7 +310,9 @@ public class DataInitializer implements CommandLineRunner {
             propertyTypeService.create("Cave", "🕳️");
             propertyTypeService.create("Container", "📦");
             propertyTypeService.create("Cycladic Home", "🏛️");
-            System.out.println("Initialized default property types.");
+            log.info("Initialized {} property types.", propertyTypeService.findAll().size());
+        } else {
+            log.debug("Property types already initialized.");
         }
     }
 
@@ -289,7 +323,9 @@ public class DataInitializer implements CommandLineRunner {
             experienceCategoryService.create("Food and drink", "🍳");
             experienceCategoryService.create("History and culture", "🏛️");
             experienceCategoryService.create("Nature and outdoors", "🌲");
-            System.out.println("Initialized default experience categories.");
+            log.info("Initialized {} experience categories.", experienceCategoryService.findAll().size());
+        } else {
+            log.debug("Experience categories already initialized.");
         }
     }
 
@@ -299,7 +335,9 @@ public class DataInitializer implements CommandLineRunner {
             facilityService.create("Bed", "🛌");
             facilityService.create("Bathroom", "🛁");
             facilityService.create("Toilet", "🚽");
-            System.out.println("Initialized default facilities.");
+            log.info("Initialized {} facilities.", facilityService.findAll().size());
+        } else {
+            log.debug("Facilities already initialized.");
         }
     }
 
@@ -331,7 +369,9 @@ public class DataInitializer implements CommandLineRunner {
             amenityService.create("First aid kit", "🩹");
             amenityService.create("Fire extinguisher", "🧯");
             amenityService.create("Carbon monoxide alarm", "⚠️");
-            System.out.println("Initialized default amenities.");
+            log.info("Initialized {} amenities.", amenityService.findAll().size());
+        } else {
+            log.debug("Amenities already initialized.");
         }
     }
 }

@@ -121,6 +121,6 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
 
   clearNotifications: () => {
-    set({ notifications: [], unreadCount: 0 });
+    set({ notifications: [], unreadCount: 0, isConnected: false });
   },
 }));
