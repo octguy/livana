@@ -1,513 +1,353 @@
 # Livana
 
-A fullstack marketplace platform for home rentals and experience bookings, inspired by Airbnb. Built with Spring Boot and React, featuring real-time chat, payment processing, and comprehensive booking management.
+An Airbnb-inspired fullstack marketplace for home rentals and experience bookings. Built with Spring Boot 3.5.7 (Java 25) and React 19 + TypeScript + Vite.
 
 ## Features
 
-- **Dual Marketplace**: Browse and book both home rentals and unique experiences
-- **Role-Based Access Control**: Guest, User, Host, and Admin roles with granular permissions
-- **Real-Time Communication**: WebSocket-powered chat and instant notifications
-- **Secure Authentication**: JWT-based auth with automatic token refresh
-- **Payment Integration**: VNPay payment gateway for seamless transactions
-- **Advanced Search**: Location-based filtering with interactive maps
-- **Review System**: Rate and review listings and hosts
-- **Host Dashboard**: Revenue analytics and booking management
-- **Multi-Step Listing Creation**: Intuitive wizard for creating listings
-- **Image Management**: Cloudinary integration for photo uploads
-- **Soft Delete Pattern**: Data preservation with logical deletion
+- **Dual Marketplace** - Home rentals and experience bookings
+- **Real-Time Chat** - WebSocket-powered messaging with STOMP
+- **Payment Processing** - VNPay integration for transactions
+- **Role-Based Access** - Guest, User, Host, and Admin roles
+- **Location Search** - Interactive maps with Leaflet
+- **Host Dashboard** - Revenue analytics and booking management
+- **Image Uploads** - Cloudinary integration
 
 ## Tech Stack
 
-### Backend
-- **Framework**: Spring Boot 3.5.7 (Java 25)
-- **Database**: PostgreSQL with JPA/Hibernate
-- **Authentication**: JWT (HS256) with refresh tokens
-- **Messaging**: RabbitMQ for async operations
-- **WebSocket**: STOMP over WebSocket for real-time features
-- **Storage**: Cloudinary for image hosting
-- **Payment**: VNPay integration
-- **Build Tool**: Gradle
+| Layer | Technologies |
+|-------|-------------|
+| **Backend** | Spring Boot 3.5.7, Java 25, PostgreSQL, JPA/Hibernate, JWT, RabbitMQ, WebSocket/STOMP |
+| **Frontend** | React 19, TypeScript 5.9, Vite 7.1, Zustand, Tailwind CSS 4.1, Radix UI |
+| **Infrastructure** | Docker, Nginx, Cloudinary, VNPay |
 
-### Frontend
-- **Framework**: React 19.1.1 with TypeScript 5.9.3
-- **Build Tool**: Vite 7.1.7
-- **State Management**: Zustand 5.0.8
-- **Styling**: Tailwind CSS 4.1 + Radix UI (shadcn/ui)
-- **HTTP Client**: Axios with interceptors
-- **Routing**: React Router 7.9.5
-- **Forms**: React Hook Form + Zod validation
-- **Charts**: Recharts for analytics
-- **Maps**: Leaflet for location features
-- **WebSocket**: STOMP.js + SockJS
+---
 
-## Prerequisites
+## Quick Start with Docker
 
-- **Java 25** or higher
-- **Node.js 18+** and npm
-- **PostgreSQL 14+**
-- **RabbitMQ 3.x** (for messaging features)
-- **Git**
+The fastest way to run the entire stack.
 
-## Getting Started
+### Prerequisites
 
-### 1. Clone the Repository
+- [Docker](https://docs.docker.com/get-docker/) and Docker Compose
+
+### 1. Clone and Configure
 
 ```bash
 git clone <repository-url>
 cd livana
 ```
 
-### 2. Database Setup
+Create `source/livana-be/.env` with your credentials:
 
-Create a PostgreSQL database:
+```env
+# Database
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=postgres
 
-```sql
-CREATE DATABASE livana;
+# JWT (generate a secure key)
+SPRING_JWT_SECRET_KEY=your-256-bit-secret-key-here
+SPRING_JWT_SECRET_KEY_EXPIRATION=86400000
+REFRESH_TOKEN_EXPIRATION=604800000
+RESET_PASSWORD_TOKEN_EXPIRATION=3600000
+VERIFICATION_CODE_EXPIRATION=3600000
+
+# Email (Gmail App Password)
+SUPPORT_EMAIL=your-email@gmail.com
+APP_PASSWORD=your-gmail-app-password
+
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+CLOUDINARY_FOLDER=livana
+
+# RabbitMQ
+RABBITMQ_USERNAME=guest
+RABBITMQ_PASSWORD=guest
+
+# VNPay (sandbox or production)
+VNPAY_TMN_CODE=your-tmn-code
+VNPAY_HASH_SECRET=your-hash-secret
+VNPAY_PAY_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+VNPAY_RETURN_URL=http://localhost:5173/payment/callback
+
+# Frontend URL
+FRONTEND_URL=http://localhost:5173
+
+# Demo data (optional)
+SEED_DEMO_DATA=false
 ```
 
-Initialize the schema:
+### 2. Start All Services
 
 ```bash
-psql -U your_username -d livana -f source/schema.sql
+cd source
+docker compose up -d
 ```
 
-### 3. Backend Setup
+This starts:
+- **PostgreSQL** on port `5432`
+- **RabbitMQ** on port `5672` (management UI: `15672`)
+- **Backend API** on port `8080`
+- **Frontend** on port `5173`
 
-Navigate to the backend directory:
+### 3. Access the Application
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:5173 |
+| Backend API | http://localhost:8080/api/v1 |
+| Swagger UI | http://localhost:8080/swagger-ui.html |
+| RabbitMQ Management | http://localhost:15672 |
+
+### Docker Commands
+
+```bash
+# Start all services
+docker compose up -d
+
+# View logs
+docker compose logs -f
+
+# View specific service logs
+docker compose logs -f livana-be
+
+# Stop all services
+docker compose down
+
+# Stop and remove volumes (reset data)
+docker compose down -v
+
+# Rebuild after code changes
+docker compose up -d --build
+```
+
+---
+
+## Local Development Setup
+
+For active development with hot reload.
+
+### Prerequisites
+
+- **Java 25+** - `java -version`
+- **Node.js 18+** - `node -v`
+- **PostgreSQL 14+**
+- **RabbitMQ 3.x** (optional, for messaging)
+
+### 1. Database Setup
+
+```bash
+# Create database
+psql -U postgres -c "CREATE DATABASE livana;"
+
+# Initialize schema
+psql -U postgres -d livana -f source/schema.sql
+```
+
+### 2. Backend Setup
 
 ```bash
 cd source/livana-be
 ```
 
-Configure `src/main/resources/application.yaml` with your credentials:
+Configure `src/main/resources/application.yaml` or set environment variables:
 
 ```yaml
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/livana
-    username: your_username
-    password: your_password
-
-  mail:
-    host: smtp.gmail.com
-    username: your_email@gmail.com
-    password: your_app_password
-
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+    username: postgres
+    password: postgres
 
 jwt:
-  secret: your-secret-key-here
-  expiration: 86400000  # 24 hours
+  secret: your-256-bit-secret-key-here
+  expiration: 86400000
 
 cloudinary:
-  cloud-name: your_cloud_name
-  api-key: your_api_key
-  api-secret: your_api_secret
+  cloud-name: your-cloud-name
+  api-key: your-api-key
+  api-secret: your-api-secret
 
 vnpay:
-  vnp-TmnCode: your_tmn_code
-  vnp-HashSecret: your_hash_secret
+  vnp-TmnCode: your-tmn-code
+  vnp-HashSecret: your-hash-secret
   vnp-Url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
 ```
 
-Build and run:
+Run the backend:
 
 ```bash
 ./gradlew bootRun
 ```
 
-The backend will start at `http://localhost:8080`
+Backend starts at `http://localhost:8080`
 
-### 4. Frontend Setup
-
-Navigate to the frontend directory:
+### 3. Frontend Setup
 
 ```bash
 cd source/livana-fe
-```
-
-Install dependencies:
-
-```bash
 npm install
 ```
 
-Configure `.env` file:
+Create `.env`:
 
 ```env
-VITE_API_BASE_URL=http://localhost:8080/api/v1
+VITE_API_URL=http://localhost:8080
 ```
 
-Start the development server:
+Run the frontend:
 
 ```bash
 npm run dev
 ```
 
-The frontend will start at `http://localhost:5173`
+Frontend starts at `http://localhost:5173`
 
-## Project Structure
+---
 
-### Backend (`source/livana-be/`)
-
-```
-src/main/java/octguy/livanabe/
-├── config/              # Security, WebSocket, RabbitMQ configs
-├── controller/          # REST API endpoints
-├── service/
-│   └── implementation/  # Business logic
-├── repository/          # JPA repositories
-├── entity/              # Domain models
-├── dto/
-│   ├── request/        # Request DTOs
-│   └── response/       # Response DTOs
-├── jwt/                # JWT authentication
-├── enums/              # Enumerations
-├── utils/              # Utility classes
-├── exception/          # Custom exceptions
-└── consumer/           # RabbitMQ consumers
-```
-
-### Frontend (`source/livana-fe/`)
-
-```
-src/
-├── components/
-│   ├── ui/             # Reusable UI components (Radix-based)
-│   ├── auth/           # Auth guards and wrappers
-│   └── layout/         # Layout components
-├── pages/              # Page components by feature
-├── stores/             # Zustand state stores
-├── services/           # API service layer
-├── lib/                # Axios config and utilities
-└── types/              # TypeScript type definitions
-```
-
-## Available Commands
+## Development Commands
 
 ### Backend
 
 ```bash
-./gradlew bootRun          # Run the application
-./gradlew build            # Build the project
-./gradlew clean            # Clean build artifacts
-./gradlew bootJar          # Create executable JAR
-./gradlew test             # Run all tests
-./gradlew test --tests com.example.ClassName  # Run specific test
+cd source/livana-be
+
+./gradlew bootRun                    # Run with hot reload
+./gradlew build                      # Build project
+./gradlew test                       # Run all tests
+./gradlew test --tests ClassName     # Run specific test
+./gradlew bootJar                    # Create executable JAR
+./gradlew clean                      # Clean build artifacts
 ```
 
 ### Frontend
 
 ```bash
-npm run dev               # Start dev server (http://localhost:5173)
-npm run build             # Production build
-npm run preview           # Preview production build
-npm run lint              # Run ESLint
+cd source/livana-fe
+
+npm run dev       # Development server with HMR
+npm run build     # Production build
+npm run preview   # Preview production build
+npm run lint      # Run ESLint
 ```
+
+---
+
+## Project Structure
+
+```
+source/
+├── docker-compose.yml          # Full stack Docker setup
+├── schema.sql                  # Database schema
+├── livana-be/                  # Spring Boot backend
+│   ├── src/main/java/octguy/livanabe/
+│   │   ├── config/             # Security, WebSocket, RabbitMQ
+│   │   ├── controller/         # REST endpoints
+│   │   ├── service/            # Business logic
+│   │   ├── repository/         # JPA repositories
+│   │   ├── entity/             # Domain models
+│   │   ├── dto/                # Request/Response DTOs
+│   │   └── jwt/                # Authentication
+│   └── Dockerfile
+└── livana-fe/                  # React frontend
+    ├── src/
+    │   ├── components/         # UI components
+    │   ├── pages/              # Page components
+    │   ├── stores/             # Zustand state
+    │   ├── services/           # API services
+    │   └── types/              # TypeScript types
+    └── Dockerfile
+```
+
+---
 
 ## API Documentation
 
-Once the backend is running, access the Swagger UI documentation at:
-
-```
-http://localhost:8080/swagger-ui.html
-```
+Access Swagger UI at `http://localhost:8080/swagger-ui.html` when the backend is running.
 
 ### Key Endpoints
 
-#### Authentication
-- `POST /api/v1/auth/register` - User registration
-- `POST /api/v1/auth/login` - User login
-- `POST /api/v1/auth/refresh-token` - Refresh JWT token
-- `POST /api/v1/auth/verify` - Email verification
-- `POST /api/v1/auth/forgot-password` - Request password reset
-- `POST /api/v1/auth/reset-password` - Reset password
+| Category | Endpoint | Description |
+|----------|----------|-------------|
+| **Auth** | `POST /api/v1/auth/login` | Login |
+| | `POST /api/v1/auth/register` | Register |
+| | `POST /api/v1/auth/refresh-token` | Refresh JWT |
+| **Listings** | `GET /api/v1/listings/homes` | Search homes |
+| | `GET /api/v1/listings/experiences` | Search experiences |
+| | `POST /api/v1/listings/homes` | Create listing (Host) |
+| **Bookings** | `POST /api/v1/bookings/homes` | Book a home |
+| | `GET /api/v1/bookings/my-bookings` | User's bookings |
+| **Payments** | `POST /api/v1/payments/vnpay/create` | Create payment |
+| **WebSocket** | `/ws` | Real-time connection |
 
-#### Listings
-- `GET /api/v1/listings/homes` - Search home listings
-- `GET /api/v1/listings/homes/{id}` - Get home details
-- `POST /api/v1/listings/homes` - Create home listing (Host)
-- `GET /api/v1/listings/experiences` - Search experiences
-- `GET /api/v1/listings/experiences/{id}` - Get experience details
-- `POST /api/v1/listings/experiences` - Create experience (Host)
+---
 
-#### Bookings
-- `POST /api/v1/bookings/homes` - Book a home
-- `POST /api/v1/bookings/experiences` - Book an experience
-- `GET /api/v1/bookings/my-bookings` - User's bookings
-- `GET /api/v1/bookings/host-bookings` - Host's received bookings
-- `PUT /api/v1/bookings/homes/{id}/confirm` - Confirm booking (Host)
-- `PUT /api/v1/bookings/homes/{id}/cancel` - Cancel booking
+## Environment Variables Reference
 
-#### Payments
-- `POST /api/v1/payments/vnpay/create` - Create VNPay payment URL
-- `GET /api/v1/payments/vnpay/callback` - VNPay callback handler
+### Backend
 
-#### Real-Time (WebSocket)
-- `/ws` - WebSocket endpoint (SockJS enabled)
-- `/topic/chat/{userId}` - Chat message subscription
-- `/topic/notifications/{userId}` - Notification subscription
-- `/app/messages` - Send chat message
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `SPRING_DATASOURCE_URL` | PostgreSQL connection URL | - |
+| `SPRING_DATASOURCE_USERNAME` | Database username | - |
+| `SPRING_DATASOURCE_PASSWORD` | Database password | - |
+| `SPRING_JWT_SECRET_KEY` | JWT signing key (256-bit) | - |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name | - |
+| `CLOUDINARY_API_KEY` | Cloudinary API key | - |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret | - |
+| `VNPAY_TMN_CODE` | VNPay terminal code | - |
+| `VNPAY_HASH_SECRET` | VNPay hash secret | - |
+| `RABBITMQ_HOST` | RabbitMQ host | `localhost` |
+| `FRONTEND_URL` | Frontend URL for CORS | `http://localhost:5173` |
 
-## User Roles and Permissions
+### Frontend
 
-### Guest (Unauthenticated)
-- Browse home and experience listings
-- View listing details
-- Register for an account
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VITE_API_URL` | Backend API base URL | `http://localhost:8080` |
 
-### User (Authenticated)
-- All Guest permissions
-- Book homes and experiences
-- Write reviews
-- Send messages to hosts
-- Manage profile and bookings
+---
 
-### Host
-- All User permissions
-- Create and manage listings
-- Manage bookings and availability
-- View revenue analytics
-- Respond to guest inquiries
-
-### Admin
-- All permissions
-- Manage users and roles
-- Manage platform catalogs
-- Access system analytics
-
-## Key Features Deep Dive
-
-### Authentication Flow
-1. User submits credentials to `/auth/login`
-2. Backend validates and returns JWT + refresh token (HTTP-only cookie)
-3. Frontend stores JWT in Zustand store
-4. JWT automatically added to requests via Axios interceptor
-5. On 401 error, token auto-refreshes with exponential backoff retry
-
-### Real-Time Chat
-- WebSocket connection established on login
-- STOMP protocol for message routing
-- Users subscribe to personal chat topic
-- Messages stored in PostgreSQL
-- Unread message tracking
-
-### Payment Processing (VNPay)
-1. User initiates booking
-2. Backend generates VNPay URL with HMAC-SHA256 signature
-3. User completes payment on VNPay
-4. VNPay calls backend callback with transaction result
-5. Backend verifies signature and updates booking status
-6. Notification sent via RabbitMQ and WebSocket
-
-### Multi-Step Listing Creation
-- **Step 1**: Location selection with interactive map
-- **Step 2**: Property/experience details
-- **Step 3**: Amenities and features selection
-- **Step 4**: Photo upload to Cloudinary
-- **Step 5**: Pricing and availability settings
-- State managed in Zustand (not persisted)
-
-### Location-Based Search
-- Bounding box queries using latitude/longitude
-- Distance calculation for nearby listings
-- Interactive map with markers
-- Filter by price, capacity, amenities, dates
-
-## Architecture Highlights
-
-### Backend Patterns
-- **Layered Architecture**: Controller → Service Interface → Service Implementation → Repository
-- **Soft Delete**: All entities include `deletedAt` timestamp with `@SQLRestriction`
-- **Response Wrapper**: Consistent `ApiResponse<T>` format for all endpoints
-- **Entity Inheritance**: JOINED strategy for `BaseListing` and `Booking` hierarchies
-- **JWT Stateless**: No server-side session storage
-
-### Frontend Patterns
-- **Service Layer**: Business logic separated from components
-- **Custom Hooks**: Reusable logic abstraction
-- **Zustand Stores**: Modular state management per domain
-- **Axios Interceptors**: Centralized request/response handling
-- **Protected Routes**: Role-based route guards
-
-## Database Schema
-
-The complete database schema is available in `source/schema.sql`. Key tables:
-
-- **users**: User accounts and profiles
-- **roles**: Role definitions (GUEST, USER, HOST, ADMIN)
-- **role_users**: User-role associations
-- **base_listing**: Abstract listing table
-- **home_listing**: Home rental listings
-- **experience_listing**: Experience/activity listings
-- **booking**: Abstract booking table
-- **home_booking**: Home rental bookings
-- **experience_booking**: Experience bookings
-- **conversation**: Chat conversations
-- **message**: Chat messages
-- **payment**: Payment transactions
-- **review**: User reviews
-- **notification**: System notifications
-
-## Development Tips
-
-### Backend Hot Reload
-Spring Boot DevTools is configured for automatic restart on code changes.
-
-### Frontend Hot Module Replacement
-Vite provides instant HMR during development.
-
-### Database Migrations
-Currently using SQL schema file. Consider adding Flyway or Liquibase for production.
-
-### CORS Configuration
-Development CORS allows `http://localhost:5173`. Update for production domains in `SecurityConfig.java`.
-
-### Debugging WebSocket
-Use browser developer tools to inspect WebSocket frames. Check connection at `/ws/info` endpoint.
-
-## Testing
-
-### Backend Tests
-```bash
-cd source/livana-be
-./gradlew test
-./gradlew test --tests octguy.livanabe.service.*  # Test specific package
-```
-
-Test files are located in `src/test/java/`.
-
-### Frontend Tests
-Currently no test framework configured. Consider adding Vitest or Jest for unit tests and Playwright for E2E.
-
-## Common Issues and Solutions
+## Troubleshooting
 
 ### Backend won't start
-- **Check Java version**: `java -version` (requires Java 25)
-- **Verify PostgreSQL**: Ensure database is running and credentials are correct
-- **RabbitMQ**: Start RabbitMQ service if using messaging features
-- **Port conflict**: Ensure port 8080 is available
 
-### WebSocket connection fails
-- **Backend running**: Verify backend is accessible at `http://localhost:8080`
-- **CORS**: Check CORS configuration includes frontend URL
-- **Firewall**: Ensure WebSocket traffic is not blocked
+```bash
+# Check Java version (requires 25+)
+java -version
 
-### Token refresh failing
-- **Cookie settings**: Refresh token must be HTTP-only cookie
-- **CORS credentials**: `withCredentials: true` in Axios config
-- **Token expiry**: Check JWT expiration settings
+# Check if PostgreSQL is running
+pg_isready -h localhost -p 5432
 
-### Payment integration issues
-- **VNPay credentials**: Verify credentials in `application.yaml`
-- **Callback URL**: Use ngrok for local testing to make callback accessible
-- **Signature verification**: Check HMAC-SHA256 implementation matches VNPay docs
-
-### Images not uploading
-- **Cloudinary config**: Verify cloud name, API key, and secret
-- **File size limits**: Check Spring Boot max file size settings
-- **CORS**: Ensure Cloudinary URL is not blocked
-
-## Environment Variables
-
-### Backend (`application.yaml`)
-```yaml
-# Database
-spring.datasource.url
-spring.datasource.username
-spring.datasource.password
-
-# JWT
-jwt.secret
-jwt.expiration
-
-# Email
-spring.mail.username
-spring.mail.password
-
-# Cloudinary
-cloudinary.cloud-name
-cloudinary.api-key
-cloudinary.api-secret
-
-# VNPay
-vnpay.vnp-TmnCode
-vnpay.vnp-HashSecret
-
-# RabbitMQ
-spring.rabbitmq.host
-spring.rabbitmq.username
-spring.rabbitmq.password
+# Check if port 8080 is in use
+lsof -i :8080
 ```
 
-### Frontend (`.env`)
-```env
-VITE_API_BASE_URL=http://localhost:8080/api/v1
+### Docker issues
+
+```bash
+# View container logs
+docker compose logs -f livana-be
+
+# Restart a specific service
+docker compose restart livana-be
+
+# Reset everything
+docker compose down -v && docker compose up -d --build
 ```
 
-**Security Note**: Never commit sensitive credentials to version control. Use environment variables or secret management tools.
+### WebSocket not connecting
 
-## Deployment
+- Verify backend is running at `http://localhost:8080`
+- Check browser console for CORS errors
+- Ensure `/ws` endpoint is accessible
 
-### Backend Deployment
-1. Build production JAR:
-   ```bash
-   ./gradlew bootJar
-   ```
-2. JAR file will be in `build/libs/`
-3. Run with production profile:
-   ```bash
-   java -jar livana-be.jar --spring.profiles.active=prod
-   ```
+### Payment callback issues
 
-### Frontend Deployment
-1. Build production bundle:
-   ```bash
-   npm run build
-   ```
-2. Dist files will be in `dist/`
-3. Serve with any static file server (Nginx, Apache, Vercel, Netlify)
+For local development, use [ngrok](https://ngrok.com/) to expose your callback URL:
 
-### Environment Considerations
-- Update CORS origins for production domains
-- Use HTTPS for production
-- Configure proper database connection pooling
-- Set up reverse proxy (Nginx) for backend
-- Enable production logging and monitoring
-- Configure CDN for static assets
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Code Style
-- **Backend**: Follow Spring Boot and Java conventions
-- **Frontend**: ESLint configuration provided, run `npm run lint`
-- Write meaningful commit messages
-- Add tests for new features
-- Update documentation for significant changes
-
-## Documentation
-
-Additional documentation available:
-- **Requirements**: `source/REQUIREMENTS_ACTORS_USECASES.md` (Vietnamese)
-- **Use Cases**: `source/USE_CASES.md` (Vietnamese)
-- **Sitemap**: `source/SITEMAP.md`
-- **Developer Guide**: `source/CLAUDE.md`
-- **Database Schema**: `source/schema.sql`
-
-## License
-
-[Specify your license here - MIT, Apache 2.0, etc.]
-
-## Support
-
-For issues, questions, or contributions, please open an issue on GitHub.
+```bash
+ngrok http 8080
+# Update VNPAY_RETURN_URL with the ngrok URL
+```
