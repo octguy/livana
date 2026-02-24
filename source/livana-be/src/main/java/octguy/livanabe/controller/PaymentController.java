@@ -30,7 +30,7 @@ public class PaymentController {
 
     private final IPaymentService paymentService;
 
-    @Value("${frontend.url:http://localhost:5173}")
+    @Value("${frontend.url}")
     private String frontendUrl;
 
     @PostMapping("/vnpay/create")

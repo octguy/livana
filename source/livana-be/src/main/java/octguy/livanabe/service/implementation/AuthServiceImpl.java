@@ -1,6 +1,7 @@
 package octguy.livanabe.service.implementation;
 
 import jakarta.mail.MessagingException;
+import lombok.extern.slf4j.Slf4j;
 import octguy.livanabe.dto.request.*;
 import octguy.livanabe.dto.response.AuthResponse;
 import octguy.livanabe.entity.*;
@@ -27,11 +28,15 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class AuthServiceImpl implements IAuthService {
 
     @Value("${spring.verification-code.expiration}")
     private Long expiration;
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     private final UserRepository userRepository;
 
@@ -84,15 +89,22 @@ public class AuthServiceImpl implements IAuthService {
 
         // Still throw BadCredentialsException to avoid giving hints to attackers
         if (!user.isEnabled()) {
+            log.warn("Login attempt for disabled account: username='{}'", request.getUsername());
             throw new BadCredentialsException("Email not verified, user disabled");
         }
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            log.warn("Failed login attempt: username='{}', reason=bad credentials", request.getUsername());
+            throw e;
+        }
 
         user.setLastLoginAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
@@ -120,51 +132,74 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        return createUserWithRole(request, UserRole.ROLE_USER);
+        User user = createUser(request, UserRole.ROLE_USER);
+        AuthCredential credential = createCredential(user, request.getPassword(), true);
+        createUserProfile(user, request);
+        sendVerificationEmail(user.getEmail(), credential.getVerificationCode());
+
+        return buildAuthResponse(user);
+    }
+
+    @Override
+    @Transactional
+    public void initAdmin(RegisterRequest request) {
+        createAdminUser(request);
     }
 
     @Override
     @Transactional
     public AuthResponse createAdmin(RegisterRequest request) {
-        return createUserWithRole(request, UserRole.ROLE_ADMIN);
+        User user = createAdminUser(request);
+        return buildAuthResponse(user);
+    }
+
+    // ─── Private helpers ─────────────────────────────────────────────────────
+
+    /** Shared admin creation logic used by both {@link #initAdmin} and {@link #createAdmin}. */
+    private User createAdminUser(RegisterRequest request) {
+        User user = createUser(request, UserRole.ROLE_ADMIN);
+        createCredential(user, request.getPassword(), false);
+        createUserProfile(user, request);
+        return user;
     }
 
     private User createUser(RegisterRequest request, UserRole roleName) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new UserAlreadyExistException("Email already in use");
         }
-
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new UserAlreadyExistException("Username already in use");
         }
 
-        // Create user
+        boolean isAdmin = roleName == UserRole.ROLE_ADMIN;
+
         User user = new User();
         user.setId(UUID.randomUUID());
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
-        user.setEnabled(false);
-        user.setStatus(UserStatus.PENDING_VERIFICATION);
+        user.setEnabled(isAdmin);
+        user.setStatus(isAdmin ? UserStatus.ACTIVE : UserStatus.PENDING_VERIFICATION);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
-        // Assign role
         Role role = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
-
         user.addRole(role);
 
         return userRepository.save(user);
     }
 
-    private AuthCredential createCredential(User user, String password) {
+    private AuthCredential createCredential(User user, String password, boolean requiresVerification) {
         AuthCredential authCredential = new AuthCredential();
         authCredential.setId(UUID.randomUUID());
         authCredential.setUser(user);
         authCredential.setPassword(passwordEncoder.encode(password));
-        String verificationCode = generateVerificationCode();
-        authCredential.setVerificationCode(verificationCode);
-        authCredential.setVerificationExpiration(LocalDateTime.now().plusMinutes(expiration));
+
+        if (requiresVerification) {
+            authCredential.setVerificationCode(generateVerificationCode());
+            authCredential.setVerificationExpiration(LocalDateTime.now().plusMinutes(expiration));
+        }
+
         authCredential.setCreatedAt(LocalDateTime.now());
         authCredential.setUpdatedAt(LocalDateTime.now());
         authCredentialRepository.save(authCredential);
@@ -181,14 +216,7 @@ public class AuthServiceImpl implements IAuthService {
         userProfileService.create(userProfile);
     }
 
-    private AuthResponse createUserWithRole(RegisterRequest request, UserRole roleName) {
-        User user = createUser(request, roleName);
-        AuthCredential credential = createCredential(user, request.getPassword());
-
-        createUserProfile(user, request);
-
-        sendVerificationEmail(user.getEmail(), credential.getVerificationCode());
-
+    private AuthResponse buildAuthResponse(User user) {
         List<String> roles = user.getRoleUsers().stream()
                 .map(roleUser -> roleUser.getRole().getName().name())
                 .collect(Collectors.toList());
@@ -341,7 +369,7 @@ public class AuthServiceImpl implements IAuthService {
 
     private void sendForgetPasswordEmail(String email, String token) {
         String subject = "Password Reset Request";
-        String resetLink = "http://localhost:5173/reset-password?token=" + token; // Replace with your frontend URL
+        String resetLink = frontendUrl + "/reset-password?token=" + token; // Replace with your frontend URL
         String htmlMessage = "<html>"
                 + "<body style=\"font-family: Arial, sans-serif;\">"
                 + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"

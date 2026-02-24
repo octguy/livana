@@ -9,6 +9,8 @@ public interface IAuthService {
 
     AuthResponse register(RegisterRequest request);
 
+    void initAdmin(RegisterRequest request);
+
     AuthResponse createAdmin(RegisterRequest request);
 
     void verifyUser(VerifyUserRequest request);

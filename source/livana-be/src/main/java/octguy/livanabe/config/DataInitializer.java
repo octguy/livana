@@ -3,9 +3,7 @@ package octguy.livanabe.config;
 import lombok.extern.slf4j.Slf4j;
 import octguy.livanabe.dto.request.CreateInterestRequest;
 import octguy.livanabe.dto.request.RegisterRequest;
-import octguy.livanabe.entity.User;
 import octguy.livanabe.enums.UserRole;
-import octguy.livanabe.enums.UserStatus;
 import octguy.livanabe.repository.UserRepository;
 import octguy.livanabe.service.IAmenityService;
 import octguy.livanabe.service.IAuthService;
@@ -73,25 +71,20 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initOnlyOneAdmin() {
-        // Check if admin user already exists by email
         if (userRepository.existsByEmail("admin@livana.com")) {
             log.debug("Admin user already exists.");
-        } else {
-            RegisterRequest adminRequest = new RegisterRequest();
-            adminRequest.setEmail("admin@livana.com");
-            adminRequest.setUsername("admin");
-            adminRequest.setPassword("Admin@123");
-            authService.createAdmin(adminRequest);
-
-            // Auto-verify admin user
-            User adminUser = userRepository.findByEmail("admin@livana.com")
-                    .orElseThrow(() -> new RuntimeException("Admin user not found after creation"));
-            adminUser.setEnabled(true);
-            adminUser.setStatus(UserStatus.ACTIVE);
-            userRepository.save(adminUser);
-
-            log.info("Created and verified admin user: admin@livana.com / Admin@123");
+            return;
         }
+
+        RegisterRequest adminRequest = new RegisterRequest();
+        adminRequest.setFirstName("Admin");
+        adminRequest.setLastName("Livana");
+        adminRequest.setEmail("admin@livana.com");
+        adminRequest.setUsername("admin");
+        adminRequest.setPassword("Password123!");
+        authService.initAdmin(adminRequest);
+
+        log.info("Created and auto-verified admin user: admin@livana.com / Admin@123");
     }
 
     private void initializeRoles() {
