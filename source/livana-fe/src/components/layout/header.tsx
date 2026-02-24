@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import livanaLogo from "@/assets/livana_logo.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Menu } from "lucide-react";
 import { SettingDropdown } from "../setting/setting-dropdown";
@@ -19,7 +20,7 @@ export function Header() {
         <div className="flex items-center gap-6">
           <a href="/" className="flex items-center gap-2">
             <img
-              src="/src/assets/livana_logo.png"
+              src={livanaLogo}
               alt="Livana Logo"
               className="h-16 w-16"
             />

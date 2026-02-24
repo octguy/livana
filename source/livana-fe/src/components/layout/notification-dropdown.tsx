@@ -23,7 +23,6 @@ export function NotificationDropdown() {
     unreadCount,
     isConnected,
     connect,
-    disconnect,
     markAsRead,
     markAllAsRead,
   } = useNotificationStore();

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import livanaLogo from "@/assets/livana_logo.png";
 import {
   Menu,
   X,
@@ -54,7 +55,7 @@ export function PublicHeader() {
         <div className="flex items-center gap-6">
           <a href="/" className="flex items-center gap-2">
             <img
-              src="/src/assets/livana_logo.png"
+              src={livanaLogo}
               alt="Livana Logo"
               className="h-16 w-16"
             />
