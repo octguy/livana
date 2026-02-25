@@ -1,3 +1,16 @@
+# ===================================================================
+# Docker Compose Configuration for Production (VPS Deployment)
+# ===================================================================
+# Usage:
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# Important:
+#   1. Create .env file with all required secrets (see .env.example)
+#   2. Update FRONTEND_URL and VITE_API_URL to your VPS domain/IP
+#   3. Consider using a reverse proxy (nginx/Caddy) for SSL/TLS
+#   4. Don't expose db/rabbitmq ports publicly in production
+# ===================================================================
+
 services:
 
   # ─── PostgreSQL ──────────────────────────────────────────────────────────────
@@ -11,8 +24,9 @@ services:
       POSTGRES_PASSWORD: livana-pass
     volumes:
       - db_data:/var/lib/postgresql/data
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+    # Don't expose to host in production (only accessible within docker network)
+    # ports:
+    #   - "5432:5432"
     networks:
       - livana-network
     healthcheck:
@@ -31,9 +45,9 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    # Only expose management UI if needed (consider removing in production)
     ports:
-      - "5672:5672"        # AMQP
-      - "15672:15672" # Management UI
+      - "127.0.0.1:15672:15672"  # Bind to localhost only
     networks:
       - livana-network
     healthcheck:
@@ -54,20 +68,20 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    env_file: 
-      - .env                           # Main environment file (for VPS deployment)
-      - ./livana-be/.env               # Backend-specific environment file (optional)
+    env_file: .env
     environment:
-      # Override .env values that must point to container names, not localhost
+      # Override database and RabbitMQ hosts to use container names
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/livana
       SPRING_DATASOURCE_USERNAME: livana-user
       SPRING_DATASOURCE_PASSWORD: livana-pass
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
-    ports:
-      - "8080:8080"
     networks:
       - livana-network
+    # Don't expose backend directly in production (nginx will proxy)
+    # If not using nginx reverse proxy, uncomment:
+    # ports:
+    #   - "8080:8080"
 
   # ─── React frontend (nginx) ──────────────────────────────────────────────────
   livana-fe:
@@ -75,13 +89,15 @@ services:
       context: ./livana-fe
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+        # Update this to your VPS domain or IP
+        VITE_API_URL: ${VITE_API_URL}
     container_name: livana-fe
     restart: unless-stopped
     depends_on:
       - livana-be
     ports:
-      - "${FRONTEND_PORT:-5173}:80"
+      - "80:80"    # HTTP
+      # - "443:443"  # HTTPS (if you configure SSL in nginx)
     networks:
       - livana-network
 
