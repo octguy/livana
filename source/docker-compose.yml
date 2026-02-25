@@ -75,7 +75,8 @@ services:
       context: ./livana-fe
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+        # Don't set VITE_API_URL for docker deployments - use nginx proxy
+        VITE_API_URL: ${VITE_API_URL}
     container_name: livana-fe
     restart: unless-stopped
     depends_on:
