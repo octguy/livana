@@ -5,17 +5,16 @@ services:
     image: postgres:17-alpine
     container_name: livana-db
     restart: unless-stopped
-    env_file: ./livana-be/.env        # provides SPRING_DATASOURCE_USERNAME/PASSWORD
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-livana}
-      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME:-postgres}
-      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-octguy}
+      POSTGRES_DB: livana
+      POSTGRES_USER: livana-user
+      POSTGRES_PASSWORD: livana-pass
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${SPRING_DATASOURCE_USERNAME:-postgres} -d ${POSTGRES_DB:-livana}"]
+      test: ["CMD-SHELL", "pg_isready -U livana-user -d livana"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,13 +25,13 @@ services:
     container_name: livana-rabbitmq
     restart: unless-stopped
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-guest}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     ports:
-      - "${RABBITMQ_PORT:-5672}:5672"        # AMQP
-      - "${RABBITMQ_MGMT_PORT:-15672}:15672" # Management UI
+      - "5672:5672"        # AMQP
+      - "15672:15672" # Management UI
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
@@ -54,12 +53,11 @@ services:
     env_file: ./livana-be/.env        # loads all secrets from .env into the container
     environment:
       # Override .env values that must point to container names, not localhost
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-livana}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/livana
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
     ports:
-      - "${BACKEND_PORT:-8080}:8080"
+      - "8080:8080"
 
   # ─── React frontend (nginx) ──────────────────────────────────────────────────
   livana-fe:
@@ -73,7 +71,7 @@ services:
     depends_on:
       - livana-be
     ports:
-      - "${FRONTEND_PORT:-5173}:80"
+      - "5173:80"
 
 volumes:
   db_data:
