@@ -1,4 +1,4 @@
-# Livana
+# Livana 1.0
 
 An Airbnb-inspired fullstack marketplace for home rentals and experience bookings. Built with Spring Boot 3.5.7 (Java 25) and React 19 + TypeScript + Vite.
 
